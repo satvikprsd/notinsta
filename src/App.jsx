@@ -5,16 +5,16 @@ import SignUp from './components/SignUp'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 const router = createBrowserRouter([
-  { path: '/', element: <MainPage />, children: [{path: '/home', component: <Home />}] },
+  { path: '/', element: <MainPage />,children: [{path: '/',element: <Home />},]},
   { path: '/signup', element: <SignUp /> },
   { path: '/login', element: <SignIn /> },
 ])
 function App() {
 
   return (
-    <div className='bg-black w-screen h-screen'>
+    <>
       <RouterProvider router={router}/>
-    </div>
+    </>
   )
 }
 

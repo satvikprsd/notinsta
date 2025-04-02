@@ -4,10 +4,10 @@ import { Outlet } from "react-router-dom";
 
 const MainPage = () => {
     return (
-        <div>
+        <div className="bg-black w-screen h-screen">
             <SideBar />
             <>
-                <Outlet/>
+                <Outlet />
             </>
         </div>
     );
