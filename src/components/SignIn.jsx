@@ -36,7 +36,7 @@ const SignIn = () => {
                     usernameoremail: "",
                     password: "",
                 });
-                navigate("/home"); 
+                navigate("/"); 
             }
             else {
                 toast.error(data.message);
@@ -50,7 +50,7 @@ const SignIn = () => {
     }
     return (
         <div className="fade-in flex p-0 gap-10 items-center w-screen h-screen justify-center">
-            <form onSubmit={LoginUser} className="bg-white-100 shadow-lg p-8 flex gap-5">
+            <form onSubmit={LoginUser} className="shadow-[0_30px_30px_rgba(0,0,0,0.2)] p-8 flex gap-5">
                 <div className="flex items-center">
                 
                 </div>

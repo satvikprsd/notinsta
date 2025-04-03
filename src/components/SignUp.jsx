@@ -52,7 +52,7 @@ const SignUp = () => {
     }
     return (
         <div className="flex p-0 gap-10 items-center w-screen h-screen justify-center">
-            <form onSubmit={CreateUser} className="bg-white-100 shadow-lg p-8 flex gap-5">
+            <form onSubmit={CreateUser} className="shadow-[0_30px_30px_rgba(0,0,0,0.2)] p-8 flex gap-5">
                 <div className="flex items-center">
                 
                 </div>

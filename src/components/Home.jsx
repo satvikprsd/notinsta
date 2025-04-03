@@ -6,7 +6,6 @@ import SuggestionBar from "./SuggestionBar";
 const Home = () => {
     return (
         <div className="text-white flex">
-            Home
             <div className="flex grow">
                 <Feed />
                 <Outlet />  

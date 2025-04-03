@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 const MainPage = () => {
     return (
-        <div className="bg-black w-screen h-screen">
+        <div className="w-screen h-screen fade-in">
             <SideBar />
             <>
                 <Outlet />

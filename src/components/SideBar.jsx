@@ -50,7 +50,7 @@ const SideBar = () => {
             <div className="flex flex-col">
                 <div>
                     <Link to="/">
-                        <img src={Logo} alt="Description" width="200" className="my-8"/>
+                        <img src={Logo} alt="Description" width="200" className="my-8 pl-3"/>
                     </Link>
                     {sidebarItems.map(item => (
                             <div onClick={()=>sidebarClickHandler(item.label)} key={item.label} className="flex items-center gap-5 relative hover:bg-gray-700 cursor-pointer rounded-lg p-3 my-3">
