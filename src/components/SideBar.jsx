@@ -1,12 +1,16 @@
 import { Heart, Home, LogOut, LogOutIcon, MessageCircle, Play, PlayCircle, PlaySquareIcon, PlusSquare, Search, Settings, Video, VideoIcon } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Logo from "./notinsta.png";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setAuthUser } from "@/redux/authSlice";
+import CreatePost from "./CreatePost";
 const SideBar = () => {
+    const [open,setOpen] = useState(false);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const {user} = useSelector(store=>store.auth);
     const sidebarItems = [
         { label: "Home", icon: <Home color="#fff" className="min-w-[24px]"/>, path: "/home" },
@@ -30,6 +34,7 @@ const SideBar = () => {
             console.log(response)
             const data = await response.json();
             if (data.success) {
+                dispatch(setAuthUser(null));
                 toast.success(data.message);
                 navigate("/login");
             } else {
@@ -44,10 +49,13 @@ const SideBar = () => {
         if(itemtext === "Logout") {
             logout();
         }
+        else if(itemtext === "Upload"){
+            setOpen(true);
+        }
     }
 
     return (
-        <div className="fixed top-0 z-10 left-0 px-4 border-r border-gray-900 w-[16%] h-screen">
+        <div className="fixed top-0 z-10 left-0 px-4 border-r border-gray-900 w-[18%] h-screen">
             <div className="flex flex-col">
                 <div>
                     <Link to="/">
@@ -61,6 +69,7 @@ const SideBar = () => {
                     ))}
                 </div>
             </div>
+            <CreatePost open={open} setOpen={setOpen} />
         </div>
     );
 };

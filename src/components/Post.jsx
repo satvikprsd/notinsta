@@ -11,7 +11,7 @@ const Post = () => {
     const [OpenPostDialog, setOpenPostDialog] = useState(false)
 
     return (
-    <div className='my-8 w-full max-w-sm mx-auto'>
+    <div className='my-8 w-full max-w-lg mx-auto'>
         <div className='flex items-center justify-between'>
             <div className='flex items-center gap-3'>
                 <Avatar>
