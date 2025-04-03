@@ -22,7 +22,7 @@ const SideBar = () => {
         { label: "Profile", 
             icon: (
             <Avatar>
-                <AvatarImage src={user?.profilePic} />
+                <AvatarImage src={user?.profilePic} className='object-cover rounded-lg aspect-square'/>
                 <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             ), path: "/profile" },
