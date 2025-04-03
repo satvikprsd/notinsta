@@ -4,25 +4,26 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Logo from "./notinsta.png";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-
-const sidebarItems = [
-    { label: "Home", icon: <Home color="#fff"/>, path: "/home" },
-    { label: "Search", icon: <Search color="#fff"/>, path: "/search" },
-    { label: "Reels", icon: <PlayCircle color="#fff"/>, path: "/reels" },
-    { label: "Messages", icon: <MessageCircle color="#fff"/>, path: "/messages" },
-    { label: "Notifications", icon: <Heart color="#fff"/>, path: "/settings" },
-    { label: "Upload", icon: <PlusSquare color="#fff"/>, path: "/upload" },
-    { label: "Profile", 
-        icon: (
-        <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
-        ), path: "/profile" },
-    { label: "Logout", icon: <LogOut color="#fff"/>, path: "/login" },
-]
+import { useSelector } from "react-redux";
 const SideBar = () => {
     const navigate = useNavigate();
+    const {user} = useSelector(store=>store.auth);
+    const sidebarItems = [
+        { label: "Home", icon: <Home color="#fff" className="min-w-[24px]"/>, path: "/home" },
+        { label: "Search", icon: <Search color="#fff" className="min-w-[24px]"/>, path: "/search" },
+        { label: "Reels", icon: <PlayCircle color="#fff" className="min-w-[24px]"/>, path: "/reels" },
+        { label: "Messages", icon: <MessageCircle color="#fff" className="min-w-[24px]"/>, path: "/messages" },
+        { label: "Notifications", icon: <Heart color="#fff" className="min-w-[24px]"/>, path: "/settings" },
+        { label: "Upload", icon: <PlusSquare color="#fff" className="min-w-[24px]"/>, path: "/upload" },
+        { label: "Profile", 
+            icon: (
+            <Avatar>
+                <AvatarImage src={user?.profilePic} />
+                <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+            ), path: "/profile" },
+        { label: "Logout", icon: <LogOut color="#fff" className="min-w-[24px]"/>, path: "/login" },
+    ]
     const logout = async () => {
         try {
             const response = await fetch('http://localhost:8000/api/v1/user/logout');
@@ -35,7 +36,7 @@ const SideBar = () => {
                 toast.error(data.message);
             }
         } catch (error) {
-            toast.error(error);
+            toast.error(error.message);
         }
     }
 

@@ -5,9 +5,12 @@ import { Label } from "./ui/label";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "./ui/loader";
+import { useDispatch } from "react-redux";
+import { setAuthUser } from "@/redux/authSlice";
 
 const SignIn = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [inputs, setInputs] = useState({
         usernameoremail: "",
         password: "",
@@ -31,6 +34,7 @@ const SignIn = () => {
             });
             const data = await response.json();
             if (data.success) {
+                dispatch(setAuthUser(data.user));
                 toast.success(data.message);
                 setInputs({
                     usernameoremail: "",
@@ -43,7 +47,7 @@ const SignIn = () => {
             }
         }catch(error){
             console.error(error);
-            toast.error(error.response.data.message || "Something went wrong");
+            toast.error(error.message || "Something went wrong");
         }finally{
             setLoading(false);
         }
