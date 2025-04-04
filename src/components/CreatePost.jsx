@@ -42,25 +42,17 @@ const CreatePost = ({ open, setOpen }) => {
             const data = await response.json();
             if (data.success) {
                 toast.success(data.message);
-                setImgPreview(null);
-                setLoading(false);
-                setCaption('');
-                setFile(null);
-                setOpen(false);
             }
             else {
                 console.log(data.message);
                 toast.error(data.message);
-                setImgPreview(null);
-                setLoading(false);
-                setCaption('');
-                setFile(null);
-                setOpen(false);
             }
         }
         catch (error) {
             console.log(error);
             toast.error(error.message);
+        }
+        finally{
             setImgPreview(null);
             setLoading(false);
             setCaption('');

@@ -8,7 +8,7 @@ const useGetPosts = () => {
     useEffect(()=>{
         const fetchAllPosts = async () => {
             try {
-                const response = await fetch('http://localhost:8000/api/v1/post/allposts', {credentials:'include'});
+                const response = await fetch('http://localhost:8000/api/v1/post/feed', {credentials:'include'});
                 const data = await response.json();
                 if (data.success) {
                     console.log(data.posts);

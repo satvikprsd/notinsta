@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import HelpDialog from './HelpDialog'
 import { Button } from './ui/button'
@@ -21,7 +21,25 @@ const timeAgo = (dateString) => {
 }
 
 const PostDialog = ({post}) => {
-    const [commenttext, setCommenttext] = useState('')
+    const [commenttext, setCommenttext] = useState('');
+    const [comments, setComments] = useState([]);
+
+    useEffect(() => {
+        const fetchComments = async () => {
+          try {
+            const response = await fetch(`http://localhost:8000/api/v1/post/${post._id}/allcomments`, {
+              method: 'GET',
+              credentials: 'include',
+            });
+            const data = await response.json();
+            setComments(data.comments.comments);
+          } catch (error) {
+            console.error(error);
+          }
+        };
+        fetchComments();
+    }, [post]);
+
     return (
     <div className='flex flex-1'>
         <div className='rounded-lg w-full h-full aspect-square object-cover'>
@@ -36,11 +54,22 @@ const PostDialog = ({post}) => {
                     </Avatar>
                     <h1>{post.author?.username}</h1>
                 </div>
-                <HelpDialog />
+                <HelpDialog post={post} />
             </div>
             <hr/>
-            <div className='flex-1 overflow-y-auto p-4'>
-                comments
+            <div className='h-100 overflow-y-auto p-4 custom-scrollbar'>
+                {comments.map((comment, index) => (
+                    <div className='flex grow items-center justify-between p-4'>
+                        <div className='flex items-center gap-3'>
+                            <Avatar>
+                                <AvatarImage src={comment.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
+                                <AvatarFallback>Post</AvatarFallback>
+                            </Avatar>
+                            <h1 className='font-semibold'>{comment.username}</h1>
+                            <p className='font-normal'>{comment.comment}</p>
+                        </div>
+                    </div>
+                ))}
             </div>
             <hr />
             <div className='flex items-center justify-between my-2 px-3'>

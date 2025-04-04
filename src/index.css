@@ -153,6 +153,36 @@ html, body {
 .hover\:bounce-once:hover {
   animation: bounce-once 0.4s ease-in-out;
 }
+
+@keyframes fly-up {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  50% {
+    transform: translate(-50%, -100%) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -200%) scale(1);
+  }
+}
+
+.animate-fly-up {
+  animation: fly-up 1.5s ease-out forwards;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 0; 
+  height: 0;
+}
+
+.custom-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none; 
+}
+
+
 /* From Uiverse.io by mobinkakei */ 
 .wrapper {
   width: 200px;
