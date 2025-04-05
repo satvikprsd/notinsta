@@ -5,6 +5,8 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import Loader from './ui/loader';
 import { Loader2, Loader2Icon } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setPosts } from '@/redux/postSlice';
 
 const CreatePost = ({ open, setOpen }) => {
     const imgref = useRef();
@@ -12,9 +14,9 @@ const CreatePost = ({ open, setOpen }) => {
     const [caption, setCaption] = useState('');
     const [imgPreview, setImgPreview] = useState(null);
     const [loading, setLoading] = useState(false);
+    const {posts} = useSelector(store => store.posts);
+    const dispatch = useDispatch();
 
-    console.log(open);
-    console.log(imgPreview);
     const handleFileChange = (e) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -41,6 +43,7 @@ const CreatePost = ({ open, setOpen }) => {
             })
             const data = await response.json();
             if (data.success) {
+                dispatch(setPosts([data.post, ...posts]));
                 toast.success(data.message);
             }
             else {

@@ -2,13 +2,16 @@ import React, { useState } from 'react'
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
 import { Button } from './ui/button'
 import { Loader2Icon, MoreHorizontal } from 'lucide-react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'sonner'
+import { setPosts } from '@/redux/postSlice'
 
 const HelpDialog = ({post}) => {
   const {user} = useSelector(store => store.auth);
+  const {posts} = useSelector(store => store.posts);
   const [openhelp, setOpenhelp] = useState(false);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const DeletPost = async () => {
     setLoading(true);
     try{
@@ -16,6 +19,7 @@ const HelpDialog = ({post}) => {
       const data = await response.json();
       if(data.success){
         setOpenhelp(false);
+        dispatch(setPosts(posts.filter(p => p?._id!==post?._id)))
         toast.success('Post deleted successfully');
       }else{
         toast.error('Failed to delete post');
