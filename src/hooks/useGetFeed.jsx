@@ -1,18 +1,18 @@
-import { setPosts } from "@/redux/postSlice";
+import { setFeed } from "@/redux/postSlice";
 import  { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 
-const useGetPosts = () => {
+const useGetFeed = () => {
     const dispatch = useDispatch();
     useEffect(()=>{
-        const fetchAllPosts = async () => {
+        const fetchFeed = async () => {
             try {
                 const response = await fetch('http://localhost:8000/api/v1/post/feed', {credentials:'include'});
                 const data = await response.json();
                 if (data.success) {
                     console.log(data.posts);
-                    dispatch(setPosts(data.posts));
+                    dispatch(setFeed(data.posts));
                 } else {
                     toast.error(data.message);
                 }
@@ -20,8 +20,8 @@ const useGetPosts = () => {
                 console.error(error);
             }
         }
-        fetchAllPosts();
+        fetchFeed();
     },[])
 };
 
-export default useGetPosts;
+export default useGetFeed;

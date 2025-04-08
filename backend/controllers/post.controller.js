@@ -17,7 +17,7 @@ export const addNewPost = async (req, res) => {
         const cloudResponse = await cloudinary.uploader.upload(fileUri);
         const newPost = await Post.create({caption, image: cloudResponse.secure_url, author: userId});
 
-        const user = await User.findByIdAndUpdate(userId, {$push: {posts: newPost._id}}, {new: true});
+        const user = await User.findByIdAndUpdate(userId, {$push: {posts: { $each: [newPost._id], $position: 0}}}, {new: true});
 
         await newPost.populate({path: 'author', select:'-password'});
         

@@ -54,6 +54,7 @@ export const login = async(req,res) => {
         const userData = {
             id: user._id,
             username: user.username,
+            name: user.name,
             email: user.email,
             profilePic: user.profilePic,
             bio: user.bio,
@@ -88,7 +89,7 @@ export const logout = async(req,res) => {
 
 export const getProfile = async(req,res) => {
     try {
-        const user = await User.findById(req.params.id).select("-password");
+        const user = await User.findOne({ username: req.params.username }).select("-password").populate("posts");
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
@@ -102,7 +103,7 @@ export const getProfile = async(req,res) => {
 export const updateProfile = async(req,res) => {
     try {
         const userID = req.id;
-        const { username, bio } = req.body;
+        const { username, name, bio } = req.body;
         const profilePic = req.file;
         let cloudResponse;
 
@@ -115,6 +116,7 @@ export const updateProfile = async(req,res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
         if(bio) user.bio = bio;
+        if(name) user.name = name;
         if(username) user.username = username;
         if(profilePic && cloudResponse) user.profilePic = cloudResponse.secure_url;
 

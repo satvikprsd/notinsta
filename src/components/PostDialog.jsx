@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import HelpDialog from './HelpDialog'
 import { Button } from './ui/button'
 import { Bookmark, Heart, MessageCircle, SendIcon } from 'lucide-react'
-import { handleLike, handleDoubleClick,handleNewComment } from './Post'
+import { handleLike, handleDoubleClick,handleNewComment } from './PostHandler'
 import { useDispatch, useSelector } from 'react-redux'
 //This function is created by chaptgpt not me, return x days ago for a post
 const timeAgo = (dateString) => {
@@ -21,13 +21,12 @@ const timeAgo = (dateString) => {
     return `Just now`;
 }
 
-const PostDialog = ({post}) => {
+const PostDialog = ({setIsLiked,isLiked,curLikes,setCurLikes,setCurComments,post}) => {
+    console.log("opened")
     const [commenttext, setCommenttext] = useState('');
-    const [curLikes, setCurLikes] = useState(post.likes?.length);
     const { user } = useSelector(store => store.auth);
-    const [isLiked, setIsLiked] = useState(post.likes?.includes(user?.id));
     const [doubleClick,setdoubleClick] = useState(false);
-    const {posts} = useSelector(store => store.posts);
+    const { feed } = useSelector(store => store.posts);
     const [comments, setComments] = useState(post.comments);
     const dispatch = useDispatch();
     const [lastclick, setlastclick] = useState(0);
@@ -51,7 +50,7 @@ const PostDialog = ({post}) => {
     return (
     <div className='flex flex-1'>
         <div className='relative rounded-lg w-full h-full aspect-square object-cover'>
-            <img onClick={()=>handleDoubleClick(user,post,posts,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike)} src={post.image} alt="postimg" className='rounded-l-lg w-full h-full object-cover' />
+            <img onClick={()=>handleDoubleClick(user,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike)} src={post.image} alt="postimg" className='rounded-l-lg w-full h-full object-cover' />
             {doubleClick && <Heart style={{left: "50%",top: "50%",transform: "translate(-50%, -50%)",}} size={'150px'} fill='red' className='absolute text-red-500 animate-fly-up' />}
         </div>
         <div className='min-w-[40%] max-w-[40%] flex flex-col justify-between'>
@@ -67,8 +66,8 @@ const PostDialog = ({post}) => {
             </div>
             <hr/>
             <div className='h-100 overflow-y-auto p-4 custom-scrollbar'>
-                {comments.map((comment, index) => (
-                    <div className='flex grow items-center justify-between p-4'>
+                {comments.map((comment,index) => (
+                    <div key={index} className='flex grow items-center justify-between p-4'>
                         <div className='w-full flex flex-col items-start gap-3'>
                             <div className='flex gap-3 justify-between'>
                                 <Avatar>
@@ -85,22 +84,22 @@ const PostDialog = ({post}) => {
             <hr />
             <div className='flex items-center justify-between my-2 px-3'>
                 <div className='flex items-center gap-5'>
-                    <Heart onClick={()=>handleLike(user,post,posts,isLiked,setIsLiked,setCurLikes,dispatch)} size={'25px'} className={`cursor-pointer hover:text-gray-600 hover:bounce-once`} fill={isLiked ? 'red' : 'none'} stroke={isLiked ? 'red' : 'currentColor'} />
+                    <Heart onClick={()=>handleLike(user,post,feed,isLiked,setIsLiked,setCurLikes,dispatch)} size={'25px'} className={`cursor-pointer hover:text-gray-600 hover:bounce-once`} fill={isLiked ? 'red' : 'none'} stroke={isLiked ? 'red' : 'currentColor'} />
                     <MessageCircle size={'25px'} className='cursor-pointer hover:text-gray-600 hover:bounce-once'/>
                     <SendIcon size={'23px'} className='cursor-pointer hover:text-gray-600 hover:bounce-once' />
                 </div>
                 <Bookmark size={'25px'} className='cursor-pointer hover:text-gray-600 hover:bounce-once'/>
             </div>
-            <span className='font-medium block mb-2 px-3'>{post.likes?.length} likes</span>
+            <span className='font-medium block mb-2 px-3'>{curLikes} likes</span>
             <span className='text-sm block mb-2 px-3'>{timeAgo(post.createdAt)}</span>
             <hr/>
             <div className='flex items-center'>
                 <input type="text" placeholder="Add a comment..." className='w-full p-3 rounded-md h-10 focus:outline-none focus:ring-0' value={commenttext} onChange={(e)=>{e.target.value.trim() ? setCommenttext(e.target.value) : setCommenttext("")}} />
-                <Button onClick={()=>handleNewComment(post,posts,comments,setComments,commenttext,setCommenttext,dispatch)} disabled={!commenttext} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)]">Post</Button>
+                <Button onClick={()=>handleNewComment(post,feed,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments)} disabled={!commenttext} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)]">Post</Button>
             </div>
         </div>
     </div>
   )
 }
 
-export default PostDialog
+export default PostDialog   

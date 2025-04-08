@@ -34,6 +34,7 @@ const SignIn = () => {
             });
             const data = await response.json();
             if (data.success) {
+                console.log(data.user)
                 dispatch(setAuthUser(data.user));
                 toast.success(data.message);
                 setInputs({

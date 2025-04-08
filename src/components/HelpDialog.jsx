@@ -4,7 +4,7 @@ import { Button } from './ui/button'
 import { Loader2Icon, MoreHorizontal } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'sonner'
-import { setPosts } from '@/redux/postSlice'
+import { setFeed } from '@/redux/postSlice'
 
 const HelpDialog = ({post}) => {
   const {user} = useSelector(store => store.auth);
@@ -19,7 +19,7 @@ const HelpDialog = ({post}) => {
       const data = await response.json();
       if(data.success){
         setOpenhelp(false);
-        dispatch(setPosts(posts.filter(p => p?._id!==post?._id)))
+        dispatch(setFeed(posts.filter(p => p?._id!==post?._id)))
         toast.success('Post deleted successfully');
       }else{
         toast.error('Failed to delete post');

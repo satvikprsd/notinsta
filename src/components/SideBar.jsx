@@ -52,6 +52,12 @@ const SideBar = () => {
         else if(itemtext === "Upload"){
             setOpen(true);
         }
+        else if(itemtext === "Profile"){
+            navigate(`/profile/${user?.username}`);
+        }
+        else if(itemtext === "Home"){
+            navigate("/");
+        }
     }
 
     return (

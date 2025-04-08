@@ -6,7 +6,7 @@ import { Textarea } from './ui/textarea';
 import Loader from './ui/loader';
 import { Loader2, Loader2Icon } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setPosts } from '@/redux/postSlice';
+import { setFeed } from '@/redux/postSlice';
 
 const CreatePost = ({ open, setOpen }) => {
     const imgref = useRef();
@@ -43,7 +43,7 @@ const CreatePost = ({ open, setOpen }) => {
             })
             const data = await response.json();
             if (data.success) {
-                dispatch(setPosts([data.post, ...posts]));
+                dispatch(setFeed([data.post, ...posts]));
                 toast.success(data.message);
             }
             else {
