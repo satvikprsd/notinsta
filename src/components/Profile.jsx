@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "./ui/button";
@@ -11,18 +11,26 @@ import { toast } from "sonner";
 import { setProfile } from "@/redux/authSlice";
 import ChangePfp from "./ChangePfp";
 import UpdateProfile from "./EditProfile";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
     const [openPostDialog, setOpenPostDialog] = useState(false);
     const [openPfpDialog, setopenPfpDialog] = useState(false);
     const [openEditDialog, setopenEditDialog] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
+    const navigate = useNavigate();
     const params = useParams();
     const userId = params.username;
     useGetUser(userId);
     const dispatch = useDispatch();
     const { profile,user } = useSelector((store) => store.auth);
-    const [isfollowed, setIsFollowed] = useState(profile?.followers.includes(user.id));
+    const [isfollowed, setIsFollowed] = useState(profile?.followers.includes(user?.id));
+
+    useEffect(() => {
+        if (profile && user) {
+            setIsFollowed(profile?.followers.includes(user?.id));
+        }
+    }, [profile, user]);
 
     const handleFollow = async () => {
         try{
@@ -33,7 +41,7 @@ const Profile = () => {
             const data = await response.json();
             if(data.success){
                 setIsFollowed(prev=>!prev);
-                let newfollowers = isfollowed ? profile.followers.filter((id)=> id!=user.id) : [...profile.followers, user.id]
+                let newfollowers = isfollowed ? profile.followers.filter((id)=> id!=user?.id) : [...profile.followers, user?.id]
                 dispatch(setProfile({...profile, followers : newfollowers}))
                 toast.success(isfollowed ? "Unfollowed successfully" : "Followed successfully");
               }else{
@@ -44,12 +52,12 @@ const Profile = () => {
             console.log(e);
         }
     }
-
+    console.log(isfollowed)
     return (
         <div className="h-full flex-1 my-3 flex flex-col items-center pl-[20%]">
             <div className="w-full flex items-start my-10 px-40 pl-[20%]">
                 <ChangePfp open={openPfpDialog} setOpen={setopenPfpDialog} />
-                <Avatar onClick={()=>{if(profile._id==user.id) setopenPfpDialog(true)}} className="h-40 w-40 hover:cursor-pointer">
+                <Avatar onClick={()=>{if(profile._id==user?.id) setopenPfpDialog(true)}} className="h-40 w-40 hover:cursor-pointer">
                     <AvatarImage src={profile?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
                     <AvatarFallback>USER</AvatarFallback>
                 </Avatar>
@@ -57,7 +65,7 @@ const Profile = () => {
                     <div className="flex gap-5">
                         <h1 className="text-xl ">{profile?.username}</h1>
                         <UpdateProfile open={openEditDialog} setOpen={setopenEditDialog} />
-                        { profile._id==user.id ? (<Button onClick={()=>{setopenEditDialog(true)}}>Edit profile</Button>) : (<Button onClick={()=>handleFollow()} className="bg-blue-400 text-white text-lg">{isfollowed ? "Following" : "Follow"}</Button>)}
+                        {!user ? (<Button onClick={()=>navigate('/login')} className="bg-blue-400 text-white text-sm">Login to Follow</Button>) : profile._id==user?.id ? (<Button onClick={()=>{setopenEditDialog(true)}}>Edit profile</Button>) : (<Button onClick={()=>handleFollow()} className="bg-blue-400 text-white text-lg">{isfollowed ? "Following" : "Follow"}</Button>)}
                     </div>
                     <div className="flex gap-10">
                         <div className="flex">

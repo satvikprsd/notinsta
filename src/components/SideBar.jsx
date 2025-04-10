@@ -50,10 +50,11 @@ const SideBar = () => {
             logout();
         }
         else if(itemtext === "Upload"){
-            setOpen(true);
+            if (user) setOpen(true);
         }
         else if(itemtext === "Profile"){
-            navigate(`/profile/${user?.username}`);
+            if (!user) navigate('/login')
+            else navigate(`/profile/${user?.username}`);
         }
         else if(itemtext === "Home"){
             navigate("/");

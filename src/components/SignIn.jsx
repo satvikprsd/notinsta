@@ -5,12 +5,14 @@ import { Label } from "./ui/label";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "./ui/loader";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setAuthUser } from "@/redux/authSlice";
 
 const SignIn = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { user } = useSelector(store=>store.auth);
+    if (user) navigate('/')
     const [inputs, setInputs] = useState({
         usernameoremail: "",
         password: "",

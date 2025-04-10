@@ -30,7 +30,7 @@ const UpdateProfile = ({ open, setOpen }) => {
             const data = await response.json();
             if (data.success) {
                 dispatch(setAuthUser({...user, name:name, username:username, bio:bio}));
-                dispatch(setProfile({...profile, name:name, username: username, bio:bio}));
+                dispatch(setProfile({...profile, name:name, username: username, bio:bio})); 
                 toast.success(data.message);
             }
             else {

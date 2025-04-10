@@ -39,12 +39,12 @@ const Post = ({post}) => {
             <HelpDialog post={post} />
         </div>
         <div className='relative w-full h-full'>
-            <img onClick={()=>handleDoubleClick(user,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike)} src={post.image} alt="postimg" className='rounded-sm my-2 w-full h-full aspect-square object-cover' />
+            <img onClick={()=>handleDoubleClick(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike)} src={post.image} alt="postimg" className='rounded-sm my-2 w-full h-full aspect-square object-cover' />
             {doubleClick && <Heart style={{left: "50%",top: "50%",transform: "translate(-50%, -50%)",}} size={'150px'} fill='red' className='absolute text-red-500 animate-fly-up' />}
         </div>
         <div className='flex items-center justify-between my-2'>
             <div className='flex items-center gap-3'>
-                <Heart onClick={()=>handleLike(user,post,feed,isLiked,setIsLiked,setCurLikes,dispatch)} size={'25px'} className={`cursor-pointer hover:text-gray-600 hover:bounce-once`} fill={isLiked ? 'red' : 'none'} stroke={isLiked ? 'red' : 'currentColor'} />
+                <Heart onClick={()=>handleLike(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch)} size={'25px'} className={`cursor-pointer hover:text-gray-600 hover:bounce-once`} fill={isLiked ? 'red' : 'none'} stroke={isLiked ? 'red' : 'currentColor'} />
                 <MessageCircle onClick={()=>setOpenPostDialog(true)} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
                 <SendIcon size={'23px'} className='cursor-pointer hover:text-gray-600' />
             </div>
@@ -61,7 +61,7 @@ const Post = ({post}) => {
         </Dialog>
         <div className='flex items-center'>
             <input type="text" placeholder="Add a comment..." className='w-full p-3 rounded-md h-10 focus:outline-none focus:ring-0' value={commenttext} onChange={(e)=>{e.target.value.trim() ? setCommenttext(e.target.value) : setCommenttext("")}} />
-            {commenttext && <Button onClick={()=>handleNewComment(post,feed,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments)} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)]">Post</Button>}
+            {commenttext && <Button onClick={()=>handleNewComment(post,null,feed,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments)} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)]">Post</Button>}
         </div>
     </div>
   )

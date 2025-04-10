@@ -1,9 +1,10 @@
+import { setProfile } from "@/redux/authSlice";
 import { setFeed } from "@/redux/postSlice";
 import { toast } from "sonner";
 
 
-export const handleLike = async (user,post,posts,isLiked,setIsLiked,setCurLikes,dispatch) => {
-    console.log(post,post._id)
+export const handleLike = async (user,profile,post,posts,isLiked,setIsLiked,setCurLikes,dispatch) => {
+    console.log(post)
     try{
         const response = await fetch(`http://localhost:8000/api/v1/post/${post._id}/likeordislike`, {credentials: 'include'});
         const data = await response.json();
@@ -12,6 +13,10 @@ export const handleLike = async (user,post,posts,isLiked,setIsLiked,setCurLikes,
             toast.success(isLiked ? "Disliked post" : "Liked post");
             const newLikes = posts.map(p=> p._id === post._id ? {...p, likes: isLiked ? p.likes.filter(id => id!==user.id) : [...p.likes,user.id]} : p);
             dispatch(setFeed(newLikes));
+            if (profile && profile._id == post.author._id){
+                const newlikes = profile.posts.map(p=> p._id === post._id ? {...p, likes: isLiked ? p.likes.filter(id => id!==user.id) : [...p.likes,user.id]} : p);
+                dispatch(setProfile({...profile, posts:newlikes}));
+            }
             setIsLiked(!isLiked);
             setCurLikes(prev=> isLiked ? prev - 1 : prev + 1);
         }
@@ -25,7 +30,7 @@ export const handleLike = async (user,post,posts,isLiked,setIsLiked,setCurLikes,
     }
 }
 
-export const handleNewComment = async (post,posts,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments) => {
+export const handleNewComment = async (post,profile,posts,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments) => {
     try{
         const response = await fetch(`http://localhost:8000/api/v1/post/${post._id}/newcomment`, {
             method: 'POST',
@@ -40,6 +45,10 @@ export const handleNewComment = async (post,posts,comments,setComments,commentte
             dispatch(setFeed(posts.map(p=> p._id === post._id? {...p, comments: [...comments, data.newcomment]} : p)));
             setComments([data.newcomment,...comments]);
             setCurComments(prev=>prev + 1);
+            if (profile && profile._id == post.author._id){
+                const newcomment = profile.posts.map(p=> p._id === post._id? {...p, comments: [...comments, data.newcomment]} : p)
+                dispatch(setProfile({...profile,posts:newcomment}))
+            }
             toast.success('Comment posted successfully');
             setCommenttext('');
         }
@@ -54,12 +63,12 @@ export const handleNewComment = async (post,posts,comments,setComments,commentte
 }
 
 
-export const handleDoubleClick = (user,post,posts,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,like) => {
+export const handleDoubleClick = (user,profile,post,posts,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,like) => {
     const now = Date.now();
     console.log(now,lastclick,now-lastclick);
     if (now - lastclick < 300){
         setdoubleClick(true);
-        {!isLiked && like(user,post,posts,isLiked,setIsLiked,setCurLikes,dispatch);}
+        {!isLiked && like(user,profile,post,posts,isLiked,setIsLiked,setCurLikes,dispatch);}
         setTimeout(()=>setdoubleClick(false),1000);
     }
     setlastclick(now);

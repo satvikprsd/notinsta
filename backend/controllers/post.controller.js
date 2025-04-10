@@ -34,7 +34,7 @@ export const getAllFeedPost = async (req, res) => {
         const userID = req.id;
         const posts = await Post.find().sort({createdAt: -1})
         .populate({path: 'author', select:'-password -email'})
-        .populate({path: 'comments', sort:{createdAt:-1}, populate:{path:'author', select:'username,profilePic'}});
+        .populate({path: 'comments', sort:{createdAt:-1}, populate:{path:'author', select:'name username profilePic'}});
         return res.status(200).json({success: true, posts});
     }
     catch(error){
