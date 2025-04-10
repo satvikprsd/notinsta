@@ -89,7 +89,8 @@ export const logout = async(req,res) => {
 
 export const getProfile = async(req,res) => {
     try {
-        const user = await User.findOne({ username: req.params.username }).select("-password").populate("posts");
+        const user = await User.findOne({ username: req.params.username }).select("-password").populate({path: "posts",populate: {path: "author",select: "-password",}
+        });
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
@@ -117,7 +118,10 @@ export const updateProfile = async(req,res) => {
         }
         if(bio) user.bio = bio;
         if(name) user.name = name;
-        if(username) user.username = username;
+        if(username) {
+            const searchuser = await User.findOne({username});
+            if (searchuser) {return res.status(400).json({ success: false, message: 'Username or email already exists' });}
+            user.username = username;}
         if(profilePic && cloudResponse) user.profilePic = cloudResponse.secure_url;
 
         await user.save();

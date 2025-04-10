@@ -1,12 +1,13 @@
 import { setProfile } from "@/redux/authSlice";
-import  { use, useEffect } from "react";
+import  {useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 
 
 const useGetUser = (username) => {
     const dispatch = useDispatch();
     useEffect(()=>{
-        const fetchAllPosts = async () => {
+        const fetchProfile = async () => {
             try {
                 const response = await fetch(`http://localhost:8000/api/v1/user/${username}/profile`, {credentials:'include'});
                 const data = await response.json();
@@ -20,7 +21,7 @@ const useGetUser = (username) => {
                 console.error(error);
             }
         }
-        fetchAllPosts();
+        fetchProfile();
     },[username])
 };
 

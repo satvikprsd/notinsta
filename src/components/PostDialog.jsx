@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import HelpDialog from './HelpDialog'
@@ -21,7 +22,7 @@ const timeAgo = (dateString) => {
     return `Just now`;
 }
 
-const PostDialog = ({setIsLiked,isLiked,curLikes,setCurLikes,setCurComments,post}) => {
+const PostDialog = ({newsetIsLiked,newisLiked,newcurLikes,newsetCurLikes,newsetCurComments,post}) => {
     console.log("opened")
     const [commenttext, setCommenttext] = useState('');
     const { user } = useSelector(store => store.auth);
@@ -30,7 +31,14 @@ const PostDialog = ({setIsLiked,isLiked,curLikes,setCurLikes,setCurComments,post
     const [comments, setComments] = useState(post.comments);
     const dispatch = useDispatch();
     const [lastclick, setlastclick] = useState(0);
-
+    const [isLikedState, setIsLikedState] = useState(post.likes?.includes(user?.id));
+    const [curLikesState, setCurLikesState] = useState(post.likes?.length || 0);
+    const [curCommentsState, setCurCommentsState] = useState(post.comments?.length||0);
+    const isLiked = newisLiked ?? isLikedState;
+    const setIsLiked = newsetIsLiked ?? setIsLikedState;
+    const curLikes = newcurLikes ?? curLikesState;
+    const setCurLikes = newsetCurLikes ?? setCurLikesState;
+    const setCurComments = newsetCurComments ?? setCurCommentsState;
     useEffect(() => {
         const fetchComments = async () => {
           try {

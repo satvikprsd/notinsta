@@ -7,6 +7,7 @@ import PostDialog from './PostDialog'
 import HelpDialog from './HelpDialog'
 import { useDispatch, useSelector } from 'react-redux'
 import { handleDoubleClick, handleLike, handleNewComment } from './PostHandler'
+import { Link } from 'react-router-dom'
 
 const Post = ({post}) => {
     const [commenttext, setCommenttext] = useState('')
@@ -25,11 +26,15 @@ const Post = ({post}) => {
     <div className='my-8 w-full max-w-lg mx-auto'>
         <div className='flex items-center justify-between'>
             <div className='flex items-center gap-3'>
-                <Avatar>
+                <Link to={`/profile/${post?.author.username}`}>
+                <Avatar className="h-10 w-10">
                     <AvatarImage src={post.author?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
-                    <AvatarFallback>Post</AvatarFallback>
+                    <AvatarFallback>User</AvatarFallback>
                 </Avatar>
-                <h1>{post.author?.username}</h1>
+                </Link>
+                <Link to={`/profile/${post?.author.username}`}>
+                    <h1>{post.author?.username}</h1>
+                </Link>
             </div>
             <HelpDialog post={post} />
         </div>
@@ -51,7 +56,7 @@ const Post = ({post}) => {
         {curComments>0 && <span onClick={()=>setOpenPostDialog(true)} className='font-light block hover:cursor-pointer'>View all {curComments} comments</span>}
         <Dialog open={OpenPostDialog}>
             <DialogContent className='max-w-5xl p-0 flex flex-col focus:outline-none focus:ring-0' onInteractOutside={()=>setOpenPostDialog(false)}>
-                <PostDialog  post={post}/>
+                <PostDialog newsetIsLiked={setIsLiked} newisLiked={isLiked} newcurLikes={curLikes} newsetCurLikes={setCurLikes} newsetCurComments={setCurComments}  post={post}/>
             </DialogContent>
         </Dialog>
         <div className='flex items-center'>
