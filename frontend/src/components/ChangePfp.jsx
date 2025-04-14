@@ -32,7 +32,7 @@ const ChangePfp = ({ open, setOpen }) => {
             postData.append('profilePic', file);
         }
         try {
-            const response = await fetch('https://notinsta-backend.vercel.app/api/v1/user/profile/edit', {
+            const response = await fetch('https://notinsta.vercel.app/api/v1/user/profile/edit', {
                 method: 'POST',
                 credentials: 'include',
                 body: postData,

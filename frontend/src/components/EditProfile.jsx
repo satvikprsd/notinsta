@@ -27,7 +27,7 @@ const UpdateProfile = ({ open, setOpen }) => {
         if(username!=user?.username) postData.append('username', username);
         if(bio!=user?.bio) postData.append('bio', bio);
         try {
-            const response = await fetch('https://notinsta-backend.vercel.app/api/v1/user/profile/edit', {
+            const response = await fetch('https://notinsta.vercel.app/api/v1/user/profile/edit', {
                 method: 'POST',
                 credentials: 'include',
                 body: postData,
