@@ -134,7 +134,11 @@ export const updateProfile = async(req,res) => {
 
 export const getSuggestions = async(req,res) => {
     try {
-        const suggestions = await User.find({_id:{$ne:req.id}}).select("-password").limit(5);
+        const currentUser = await User.findById(req.id).select('following');
+        if (!currentUser) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        const suggestions = await User.find({_id:{ $nin: [...currentUser.following, req.id]}}).select("-password").limit(10);
         if (!suggestions) {
             return res.status(400).json({ success: false, message: 'You are the only one :)' });
         }

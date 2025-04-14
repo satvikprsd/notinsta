@@ -15,7 +15,7 @@ const CreatePost = ({ open, setOpen }) => {
     const [caption, setCaption] = useState('');
     const [imgPreview, setImgPreview] = useState(null);
     const [loading, setLoading] = useState(false);
-    const {posts} = useSelector(store => store.posts);
+    const {feed} = useSelector(store => store.posts);
     const { user,profile } = useSelector(store => store.auth);
     const dispatch = useDispatch();
 
@@ -31,6 +31,7 @@ const CreatePost = ({ open, setOpen }) => {
         }
     };
     const handleNewPost = async () => {
+        console.log(feed,"posts")
         setLoading(true);
         const postData = new FormData();
         if (imgPreview) {
@@ -45,7 +46,7 @@ const CreatePost = ({ open, setOpen }) => {
             })
             const data = await response.json();
             if (data.success) {
-                dispatch(setFeed([data.post, ...posts]));
+                dispatch(setFeed([data.post, ...feed]));
                 if (profile._id == user.id) {
                     dispatch(setProfile({...profile,posts:[data.post,...profile.posts]}))
                 }
@@ -70,11 +71,11 @@ const CreatePost = ({ open, setOpen }) => {
     }
     return (
         <Dialog open={open}>
-            <DialogContent onInteractOutside={() => setOpen(false)} className={`px-0 max-w-4xl ${imgPreview ? "h-5/6" : "h-1/2"} focus:outline-none focus:ring-0 bg-[rgb(38,38,38)] flex flex-col`}>
+            <DialogContent onInteractOutside={() => setOpen(false)} className={`px-0 w-[95vw] sm:max-w-4xl ${imgPreview ? "h-5/6" : "h-1/2"} focus:outline-none focus:ring-0 bg-[rgb(38,38,38)] flex flex-col`}>
                 <div className='flex flex-col gap-5 items-center w-full h-full flex-1 overflow-hidden'>
                     <DialogHeader className='text-xl font-semibold text-center w-full sm:text-center'>
                         <div className="relative w-full flex items-center justify-center">
-                            <div className="text-center w-full">Create new post</div>
+                            <div className="text-center w-full ">Create new post</div>
                             {imgPreview && (
                                 <div className="absolute right-0">
                                     <Button disabled={!caption} onClick={handleNewPost} className="mr-2 max-h-7 bg-blue-600 text-white hover:bg-blue-700 hover:cursor-pointer">
@@ -84,11 +85,11 @@ const CreatePost = ({ open, setOpen }) => {
                             )}
                         </div>
                     </DialogHeader>
-                    <div className={`h-full w-full flex flex-1 ${imgPreview ? '' : 'items-center justify-center'}`}>
+                    <div className={`h-full w-full flex flex-col sm:flex-row flex-1 ${imgPreview ? '' : 'items-center justify-center'}`}>
                         {
                             imgPreview && (
-                                <div className='flex-1 flex justify-center items-center'>
-                                    <img className='object-cover max-w-2xl h-full' src={imgPreview} alt='post' />
+                                <div className='flex w-full justify-center items-center'>
+                                    <img className='object-cover max-w-2xl max-h-80 sm:max-h-full' src={imgPreview} alt='post' />
                                 </div>)
                         }
                         <input ref={imgref} type='file' className='hidden' onChange={handleFileChange} />

@@ -1,19 +1,19 @@
-import { setFeed } from "@/redux/postSlice";
+import { setSuggestedUsers } from "@/redux/authSlice";
 import  { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 
 
-const useGetFeed = () => {
+const useGetSuggestions = () => {
     const dispatch = useDispatch();
     useEffect(()=>{
-        const fetchFeed = async () => {
+        const fetchAllSuggestions = async () => {
             try {
-                const response = await fetch('http://localhost:8000/api/v1/post/feed', {credentials:'include'});
+                const response = await fetch('http://localhost:8000/api/v1/user/suggestions', {credentials:'include'});
                 const data = await response.json();
                 if (data.success) {
-                    console.log(data.posts);
-                    dispatch(setFeed(data.posts));
+                    console.log(data.suggestions);
+                    dispatch(setSuggestedUsers(data.suggestions));
                 } else {
                     toast.error(data.message);
                 }
@@ -21,8 +21,8 @@ const useGetFeed = () => {
                 console.error(error);
             }
         }
-        fetchFeed();
+        fetchAllSuggestions();
     },[])
 };
 
-export default useGetFeed;
+export default useGetSuggestions;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader } from './ui/dialog';
 import { Button } from './ui/button';
@@ -15,6 +15,11 @@ const UpdateProfile = ({ open, setOpen }) => {
     const [bio, setBio] = useState(user?.bio);
     const dispatch = useDispatch();
 
+    useEffect(()=>{
+        setName(user?.name);
+        setUsername(user?.username);
+        setBio(user?.bio);
+    },[open])
 
     const handleChanges = async () => {
         const postData = new FormData();

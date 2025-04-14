@@ -24,7 +24,8 @@ const timeAgo = (dateString) => {
     return `Just now`;
 }
 
-const PostDialog = ({newsetIsLiked,newisLiked,newcurLikes,newsetCurLikes,newsetCurComments,post}) => {
+const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,newsetCurLikes,newsetCurComments,post}) => {
+    
     const [commenttext, setCommenttext] = useState('');
     const { user,profile } = useSelector(store => store.auth);
     const [doubleClick,setdoubleClick] = useState(false);
@@ -40,6 +41,7 @@ const PostDialog = ({newsetIsLiked,newisLiked,newcurLikes,newsetCurLikes,newsetC
     const curLikes = newcurLikes ?? curLikesState;
     const setCurLikes = newsetCurLikes ?? setCurLikesState;
     const setCurComments = newsetCurComments ?? setCurCommentsState;
+    console.log(comments, "newtest");
     useEffect(() => {
         const fetchComments = async () => {
           try {
@@ -71,22 +73,22 @@ const PostDialog = ({newsetIsLiked,newisLiked,newcurLikes,newsetCurLikes,newsetC
                     </Avatar>
                     <h1>{post.author?.username}</h1>
                 </div>
-                <HelpDialog post={post} />
+                <HelpDialog setDialog={setOpenPostDialog} post={post} />
             </div>
             <hr/>
             <div className='h-100 overflow-y-auto p-4 custom-scrollbar'>
                 {comments.map((comment,index) => (
                     <div key={index} className='flex grow items-center justify-between p-4'>
-                        {console.log(comment)}
+                        {console.log(comment,"y")}
                         <div className='w-full flex flex-col items-start gap-3'>
                             <div className='flex gap-3 justify-between'>
-                                <Link to={`/profile/${comment?.username}`}>
+                                <Link to={`/profile/${comment?.author?.username}`}>
                                     <Avatar>
-                                        <AvatarImage src={comment.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
+                                        <AvatarImage src={comment?.author?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
                                         <AvatarFallback>Post</AvatarFallback>
                                     </Avatar>
                                 </Link>
-                                <h1 className='font-semibold'>{comment.username}</h1>
+                                <h1 className='font-semibold'>{comment?.author?.username}</h1>
                             </div>
                             <p className='font-normal break-words whitespace-pre-wrap overflow-hidden'>{comment.comment}</p>
                         </div>

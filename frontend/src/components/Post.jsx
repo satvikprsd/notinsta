@@ -27,7 +27,7 @@ const Post = ({post}) => {
         <div className='flex items-center justify-between'>
             <div className='flex items-center gap-3'>
                 <Link to={`/profile/${post?.author.username}`}>
-                <Avatar className="h-10 w-10">
+                <Avatar className="ml-5 md:ml-0 h-10 w-10">
                     <AvatarImage src={post.author?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
                     <AvatarFallback>User</AvatarFallback>
                 </Avatar>
@@ -42,7 +42,7 @@ const Post = ({post}) => {
             <img onClick={()=>handleDoubleClick(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike)} src={post.image} alt="postimg" className='rounded-sm my-2 w-full h-full aspect-square object-cover' />
             {doubleClick && <Heart style={{left: "50%",top: "50%",transform: "translate(-50%, -50%)",}} size={'150px'} fill='red' className='absolute text-red-500 animate-fly-up' />}
         </div>
-        <div className='flex items-center justify-between my-2'>
+        <div className='mx-5 md:mx-0 flex items-center justify-between my-2'>
             <div className='flex items-center gap-3'>
                 <Heart onClick={()=>handleLike(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch)} size={'25px'} className={`cursor-pointer hover:text-gray-600 hover:bounce-once`} fill={isLiked ? 'red' : 'none'} stroke={isLiked ? 'red' : 'currentColor'} />
                 <MessageCircle onClick={()=>setOpenPostDialog(true)} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
@@ -50,16 +50,16 @@ const Post = ({post}) => {
             </div>
             <Bookmark size={'25px'} className='cursor-pointer hover:text-gray-600'/>
         </div>
-        <span className='font-medium block '>{curLikes} likes</span>
-        <span className='font-medium mb-2'>{post.author?.username} </span>
-        <span className='font-light mb-2'>{post.caption}</span>
-        {curComments>0 && <span onClick={()=>setOpenPostDialog(true)} className='font-light block hover:cursor-pointer'>View all {curComments} comments</span>}
+        <span className='mx-5 md:mx-0 font-medium block '>{curLikes} likes</span>
+        <span className='ml-5 md:ml-0 font-medium mb-2'>{post.author?.username} </span>
+        <span className='mr-5 md:mr-0 font-light mb-2'>{post.caption}</span>
+        {curComments>0 && <span onClick={()=>setOpenPostDialog(true)} className='mx-5 md:mx-0 font-light block hover:cursor-pointer'>View all {curComments} comments</span>}
         <Dialog open={OpenPostDialog}>
             <DialogContent className='max-w-5xl p-0 flex flex-col focus:outline-none focus:ring-0' onInteractOutside={()=>setOpenPostDialog(false)}>
-                <PostDialog newsetIsLiked={setIsLiked} newisLiked={isLiked} newcurLikes={curLikes} newsetCurLikes={setCurLikes} newsetCurComments={setCurComments}  post={post}/>
+                <PostDialog setOpenPostDialog={setOpenPostDialog} newsetIsLiked={setIsLiked} newisLiked={isLiked} newcurLikes={curLikes} newsetCurLikes={setCurLikes} newsetCurComments={setCurComments}  post={post}/>
             </DialogContent>
         </Dialog>
-        <div className='flex items-center'>
+        <div className='mx-2 md:mx-0 flex items-center'>
             <input type="text" placeholder="Add a comment..." className='w-full p-3 rounded-md h-10 focus:outline-none focus:ring-0' value={commenttext} onChange={(e)=>{e.target.value.trim() ? setCommenttext(e.target.value) : setCommenttext("")}} />
             {commenttext && <Button onClick={()=>handleNewComment(post,null,feed,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments)} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)]">Post</Button>}
         </div>

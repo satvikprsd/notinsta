@@ -54,20 +54,20 @@ const Profile = () => {
     }
     console.log(isfollowed)
     return (
-        <div className="h-full flex-1 my-3 flex flex-col items-center pl-[20%]">
-            <div className="w-full flex items-start my-10 px-40 pl-[20%]">
+        <div className="min-h-screen flex-1 my-3 flex flex-col items-center sm:pl-[20%]">
+            <div className="w-full flex items-start mt-10 mb-5 p-2 sm:pl-[20%]">
                 <ChangePfp open={openPfpDialog} setOpen={setopenPfpDialog} />
-                <Avatar onClick={()=>{if(profile._id==user?.id) setopenPfpDialog(true)}} className="h-40 w-40 hover:cursor-pointer">
+                <Avatar onClick={()=>{if(profile?._id==user?.id) setopenPfpDialog(true)}} className="h-25 w-25 sm:h-40 sm:w-40 hover:cursor-pointer">
                     <AvatarImage src={profile?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
                     <AvatarFallback>USER</AvatarFallback>
                 </Avatar>
-                <div className="flex flex-col gap-5 mx-20">
+                <div className="flex flex-col gap-5 mx-5 sm:mx-20">
                     <div className="flex gap-5">
                         <h1 className="text-xl ">{profile?.username}</h1>
                         <UpdateProfile open={openEditDialog} setOpen={setopenEditDialog} />
-                        {!user ? (<Button onClick={()=>navigate('/login')} className="bg-blue-400 text-white text-sm">Login to Follow</Button>) : profile._id==user?.id ? (<Button onClick={()=>{setopenEditDialog(true)}}>Edit profile</Button>) : (<Button onClick={()=>handleFollow()} className="bg-blue-400 text-white text-lg">{isfollowed ? "Following" : "Follow"}</Button>)}
+                        {!user ? (<Button onClick={()=>navigate('/login')} className="bg-blue-400 text-white text-sm">Login to Follow</Button>) : profile?._id==user?.id ? (<Button onClick={()=>{setopenEditDialog(true)}}>Edit profile</Button>) : (<Button onClick={()=>handleFollow()} className="bg-blue-400 text-white text-lg">{isfollowed ? "Following" : "Follow"}</Button>)}
                     </div>
-                    <div className="flex gap-10">
+                    <div className="flex gap-5 sm:gap-10">
                         <div className="flex">
                             <p className="font-medium">{profile?.posts.length}</p>
                             <span className="mx-2 text-gray-400">posts</span>
@@ -81,16 +81,20 @@ const Profile = () => {
                             <span className="mx-2 text-gray-400">following</span>
                         </div>
                     </div>
-                    <div className="flex flex-col gap-1">
+                    <div className="hidden sm:flex flex-col self-start gap-1">
                         <h1 className="font-bold">{profile?.name}</h1>
                         <p>{profile?.bio}</p>
                     </div>
                 </div>
             </div>
+            <div className="pl-5 flex sm:hidden flex-col self-start gap-1 mb-5">
+                        <h1 className="font-bold">{profile?.name}</h1>
+                        <p>{profile?.bio}</p>
+            </div>
             <div className="flex items-center w-full px-30">
                 <hr className="text-white w-full"/>
             </div>
-            <div className="grid my-10 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1">
+            <div className="grid my-10 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1 items-center pb-10">
                 {profile?.posts.map((post) => {
                     return (
                         <div onClick={() => {setSelectedPost(post);setOpenPostDialog(true);}} key={post._id} className="relative h-[400px] w-[300px] group hover:cursor-pointer overflow-hidden rounded-lg">
@@ -116,7 +120,7 @@ const Profile = () => {
                         className="max-w-5xl p-0 flex flex-col focus:outline-none focus:ring-0"
                         onInteractOutside={() => setOpenPostDialog(false)}
                         >
-                        <PostDialog post={selectedPost} />
+                        <PostDialog setOpenPostDialog={setOpenPostDialog} post={selectedPost} />
                         </DialogContent>
                     </Dialog>
                 )}

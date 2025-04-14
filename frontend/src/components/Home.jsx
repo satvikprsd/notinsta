@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Feed from "./Feed";
 import { Outlet } from "react-router-dom";
 import SuggestionBar from "./SuggestionBar";
@@ -11,8 +11,14 @@ const Home = () => {
     useGetFeed();
     useGetSuggestions();
     const navigate = useNavigate();
-    const { user } = useSelector(store=>store.auth);
-    if (!user) navigate('/login')
+    const { user } = useSelector((store) => store.auth);
+
+    useEffect(() => {
+        if (!user) {
+            navigate("/login");
+        }
+    }, [user, navigate]);
+    
     return (
         <div className="text-white flex">
             <div className="flex grow">

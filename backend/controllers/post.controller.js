@@ -83,7 +83,7 @@ export const addCommentToPost = async (req, res) => {
         console.log(req.body);
         if (!comment) return res.status(400).json({message: 'No comment provided', success: false});
         const user = await User.findById(userId);
-        const newcomment = {user:userId, username: user.username, profilePic: user.profilePic, comment}
+        const newcomment = {author:userId, comment}
         const post = await Post.findByIdAndUpdate(postId, {$push: {comments: newcomment}}, {new: true});
         // await post.populate({path: 'author', select:'username,profilePic'});
         await post.populate({path: 'comments', sort:{createdAt:-1}, populate:{path:'author', select:'username,profilePic'}});
@@ -97,7 +97,7 @@ export const addCommentToPost = async (req, res) => {
 export const getCommentsByPost = async (req, res) => {
     try{
         const postId = req.params.postId;
-        const comments = await Post.findById(postId).select('comments').sort({createdAt:-1});
+        const comments = await Post.findById(postId).select('comments').populate({path: 'comments.author', select: 'name username profilePic',});;
         if (!comments) return res.status(404).json({message: 'No comments found', success: false});
         return res.status(200).json({success: true, comments});
     }

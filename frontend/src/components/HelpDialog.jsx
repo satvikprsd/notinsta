@@ -7,20 +7,23 @@ import { toast } from 'sonner'
 import { setFeed } from '@/redux/postSlice'
 import { setProfile } from '@/redux/authSlice'
 
-const HelpDialog = ({post}) => {
+const HelpDialog = ({post,setDialog}) => {
   const { user,profile } = useSelector(store=>store.auth);
-  const {posts} = useSelector(store => store.posts);
+  const {feed} = useSelector(store => store.posts);
   const [openhelp, setOpenhelp] = useState(false);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  console.log(setDialog,"diloag")
   const DeletPost = async () => {
     setLoading(true);
     try{
-      const response = await fetch(`http://localhost:8000/api/v1/post//delete/${post._id}`,{method: 'POST', credentials: 'include'});
+      const response = await fetch(`http://localhost:8000/api/v1/post/delete/${post._id}`,{method: 'POST', credentials: 'include'});
       const data = await response.json();
       if(data.success){
+        
+        if (setDialog) setDialog(false);
         setOpenhelp(false);
-        dispatch(setFeed(posts.filter(p => p?._id!==post?._id)))
+        dispatch(setFeed(feed.filter(p => p?._id!==post?._id)))
         if (profile._id == user.id){
           dispatch(setProfile({...profile,posts:profile?.posts.filter((p)=>p?._id!=post?._id)}))
         }
@@ -37,9 +40,27 @@ const HelpDialog = ({post}) => {
       setLoading(false);
     }
   }
+
+  const SavePost = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/v1/post/${post._id}/save`)
+      const data = response.json();
+      if (data.success){
+        if (setDialog) setDialog(false);
+        toast.success('Post Saved successfully');
+      }
+      else{
+          toast.error('Failed to save Post');
+      }
+    }catch(e){
+      console.log(e);
+      toast.error('Failed to save Post');
+    }
+  }
+
   return (
     <Dialog open={openhelp}>
-        <DialogTrigger onClick={()=>setOpenhelp(true)} asChild><MoreHorizontal className='cursor-pointer' /></DialogTrigger>
+        <DialogTrigger onClick={()=>setOpenhelp(true)} asChild><MoreHorizontal className='cursor-pointer mr-5 md:mr-0' /></DialogTrigger>
         <DialogContent className="w-[300px] px-0 py-2" onInteractOutside={()=>setOpenhelp(false)}>
             <div className='flex flex-col gap-2'>
                 <Button className='bg-background text-red-600 hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0'>Report</Button>
