@@ -1,17 +1,12 @@
 {
+    "version": 2,
     "builds": [
-      {
-        "src": "frontend/vite.config.js",
-        "use": "@vercel/static-build",
-        "config": {
-          "distDir": "public"
-        }
-      }
+      { "src": "api/**/*.js", "use": "@vercel/node" }
     ],
     "routes": [
       {
-        "src": "/(.*)",
-        "dest": "/index.html"
+        "src": "/api/(.*)",
+        "dest": "backend/index.js"
       }
     ]
   }
