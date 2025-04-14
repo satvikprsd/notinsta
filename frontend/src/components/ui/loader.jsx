@@ -1,9 +1,9 @@
 import React from "react";
 
-const Loader = () => {
+const Loader = ({className}) => {
     return (
         //I did not write this, From Uiverse.io by mobinkakei
-        <div class="wrapper">
+        <div className={`wrapper ${className}`}>
             <div class="circle"></div>
             <div class="circle"></div>
             <div class="circle"></div>

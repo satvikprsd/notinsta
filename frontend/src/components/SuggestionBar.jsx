@@ -52,8 +52,8 @@ const SuggestionBar = () => {
           <h1 className='font-semibold text-gray-600'>Suggested for you</h1>
           <span onClick={()=>setShowAllSuggestions(prev=>!prev)} className='font-bold text-white hover:cursor-pointer'>{showAllSuggestions?'See less' : 'See more'}</span>
         </div>
-        {
-          visibleSuggestions.map((user) => {
+        {visibleSuggestions?.length > 0 ?
+          visibleSuggestions?.map((user) => {
              return (
               <div key={user._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4'>
                 <Link to={`/profile/${user.username}`}>
@@ -72,6 +72,7 @@ const SuggestionBar = () => {
               </div>
             )
           })
+          : (<h2>You are the only one</h2>)
         }
       </div>
     </div>

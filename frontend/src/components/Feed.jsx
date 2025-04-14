@@ -7,7 +7,7 @@ const Feed = () => {
   return (
     <div className='h-full flex-1 my-8 flex flex-col items-center xl:pl-[20%] md:pl-[8%] sm:pl-0'>
         <div className='h-full'>
-          {feed?.map((post) => (<Post  key={post._id} post={post}/>))}
+          {feed?.length > 0 ? feed?.map((post) => (<Post  key={post._id} post={post}/>)) : (<div className='flex h-screen items-center justify-center'><h1 className='text-2xl'>No posts yet</h1></div>)}
         </div>
     </div>
   )

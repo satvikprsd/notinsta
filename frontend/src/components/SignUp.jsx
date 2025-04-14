@@ -22,7 +22,7 @@ const SignUp = () => {
         console.log(inputs);
         try {
             setLoading(true);
-            const response = await fetch("http://localhost:8000/api/v1/user/register", {
+            const response = await fetch("http://10.6.2.3:8000/api/v1/user/register", {
                 method: "POST",
                 credentials: 'include',
                 headers: {
@@ -62,7 +62,7 @@ const SignUp = () => {
                     <Input className="text-white focus-visible:ring-transparent" type="email" name="email" placeholder="Email" value={inputs.email} onChange={handleChange} />
                     <Input className="text-white focus-visible:ring-transparent" type="password" name="password" placeholder="Password" value={inputs.password} onChange={handleChange} />
                     <Button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md transition-transform duration-150 active:scale-95 active:shadow-sm">
-                        {loading? <Loader/> : "Sign Up"}
+                        {loading? <Loader className="mb-5" /> : "Sign Up"}
                     </Button>
                     <p className="text-xl text-white">Already have an account ? <Link className="text-blue-500" to="/login">Sign In</Link></p>
                 </div>

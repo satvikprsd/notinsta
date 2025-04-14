@@ -95,7 +95,7 @@ const Profile = () => {
                 <hr className="text-white w-full"/>
             </div>
             <div className="grid my-10 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1 items-center pb-10">
-                {profile?.posts.map((post) => {
+                {profile?.posts.length > 0 ? profile?.posts.map((post) => {
                     return (
                         <div onClick={() => {setSelectedPost(post);setOpenPostDialog(true);}} key={post._id} className="relative h-[400px] w-[300px] group hover:cursor-pointer overflow-hidden rounded-lg">
                             <img src={post.image} alt="postimg" className="object-cover w-full h-full group-hover:opacity-70 "/>
@@ -113,7 +113,7 @@ const Profile = () => {
                             </div>
                         </div>
                     );
-                })}
+                }) : (<div className='flex h-full items-center justify-center'><h1 className='text-2xl'>No posts yet</h1></div>)}
                 {selectedPost && (
                     <Dialog open={openPostDialog} onOpenChange={setOpenPostDialog}>
                         <DialogContent
