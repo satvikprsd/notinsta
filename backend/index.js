@@ -20,12 +20,11 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
-    origin: 'https://notinsta.vercel.app',
+    origin: [process.env.URL],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE']
 }
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
 
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/post', postRoutes);
