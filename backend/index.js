@@ -15,8 +15,6 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 const __dirname = path.resolve();
-console.log(__dirname)
-
 
 app.use(express.json());
 app.use(cookieParser());

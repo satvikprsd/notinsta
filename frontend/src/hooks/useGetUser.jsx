@@ -9,7 +9,7 @@ const useGetUser = (username) => {
     useEffect(()=>{
         const fetchProfile = async () => {
             try {
-                const response = await fetch(`https://notinsta.vercel.app/api/v1/user/${username}/profile`, {credentials:'include'});
+                const response = await fetch(`https://notinsta-backend.vercel.app/api/v1/user/${username}/profile`, {credentials:'include'});
                 const data = await response.json();
                 if (data.success) {
                     console.log(data.user);
