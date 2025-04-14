@@ -25,6 +25,7 @@ const corsOptions = {
     methods: ['GET', 'POST', 'PUT', 'DELETE']
 }
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/post', postRoutes);
