@@ -17,7 +17,7 @@ const HelpDialog = ({post,setDialog}) => {
   const DeletPost = async () => {
     setLoading(true);
     try{
-      const response = await fetch(`http://localhost:8000/api/v1/post/delete/${post._id}`,{method: 'POST', credentials: 'include'});
+      const response = await fetch(`https://notinsta.vercel.app/api/v1/post/delete/${post._id}`,{method: 'POST', credentials: 'include'});
       const data = await response.json();
       if(data.success){
         
@@ -43,7 +43,7 @@ const HelpDialog = ({post,setDialog}) => {
 
   const SavePost = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/post/${post._id}/save`)
+      const response = await fetch(`https://notinsta.vercel.app/api/v1/post/${post._id}/save`)
       const data = response.json();
       if (data.success){
         if (setDialog) setDialog(false);

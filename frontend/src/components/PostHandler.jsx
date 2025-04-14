@@ -6,7 +6,7 @@ import { toast } from "sonner";
 export const handleLike = async (user,profile,post,posts,isLiked,setIsLiked,setCurLikes,dispatch) => {
     console.log(post)
     try{
-        const response = await fetch(`http://localhost:8000/api/v1/post/${post._id}/likeordislike`, {credentials: 'include'});
+        const response = await fetch(`https://notinsta.vercel.app/api/v1/post/${post._id}/likeordislike`, {credentials: 'include'});
         const data = await response.json();
         if(data.success) {
             console.log(data);
@@ -32,7 +32,7 @@ export const handleLike = async (user,profile,post,posts,isLiked,setIsLiked,setC
 
 export const handleNewComment = async (post,profile,posts,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments) => {
     try{
-        const response = await fetch(`http://localhost:8000/api/v1/post/${post._id}/newcomment`, {
+        const response = await fetch(`https://notinsta.vercel.app/api/v1/post/${post._id}/newcomment`, {
             method: 'POST',
             credentials: 'include',
             headers: {

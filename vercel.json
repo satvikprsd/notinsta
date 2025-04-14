@@ -1,0 +1,18 @@
+{
+    "builds": [
+      {
+        "src": "frontend/vite.config.js",
+        "use": "@vercel/static-build",
+        "config": {
+          "distDir": "public"
+        }
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/index.html"
+      }
+    ]
+  }
+  
