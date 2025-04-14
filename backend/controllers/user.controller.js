@@ -66,11 +66,11 @@ export const login = async(req,res) => {
         }
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        setTimeout(()=>{return res.cookie('token', token, { httpOnly: true, sameSit: 'strict', maxAge: 24*60*60*1000 }).json({
+        return res.cookie('token', token, { httpOnly: true, sameSit: 'strict', maxAge: 24*60*60*1000 }).json({
             success: true,
             message: `${user.username} logged in successfully`,
             user: userData
-        })},2000); //Timeout only for me to test the loading animation
+        }) //Timeout only for me to test the loading animation
     }
     catch (error) {
         console.error(error);
