@@ -39,7 +39,7 @@ const CreatePost = ({ open, setOpen }) => {
         }
         postData.append('caption', caption);
         try {
-            const response = await fetch('https://notinsta-backend.vercel.app/api/v1/post/newpost', {
+            const response = await fetch('https://notinsta-gr7b.onrender.com/api/v1/post/newpost', {
                 method: 'POST',
                 credentials: 'include',
                 body: postData,
