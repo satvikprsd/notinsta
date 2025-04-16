@@ -35,7 +35,7 @@ const SideBar = () => {
     const bottombarItems = sidebarItems.filter((items)=>!['Search','Messages','Notifications'].includes(items.label))
     const logout = async () => {
         try {
-            const response = await fetch('https://notinsta-backend.onrender.com/api/v1/user/logout');
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/logout`);
             console.log(response)
             const data = await response.json();
             if (data.success) {

@@ -6,8 +6,6 @@ import connectDB from './components/db.js';
 import userRoutes from './routes/user.route.js';
 import postRoutes from './routes/post.route.js';
 import messageRoutes from './routes/message.route.js';
-import path from "path";
-
 
 dotenv.config();
 const app = express();
@@ -18,7 +16,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
-    origin: ['https://notinsta-gr7b.onrender.com','https://notinsta.vercel.app'],
+    origin: [process.env.URL,'https://notinsta-gr7b.onrender.com','https://notinsta.vercel.app'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE']
 }

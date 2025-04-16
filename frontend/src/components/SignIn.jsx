@@ -26,7 +26,7 @@ const SignIn = () => {
         console.log(inputs);
         try {
             setLoading(true);
-            const response = await fetch("https://notinsta-backend.onrender.com/api/v1/user/login", {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/login`, {
                 method: "POST",
                 credentials: 'include',
                 headers: {

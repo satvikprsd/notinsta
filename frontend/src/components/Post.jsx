@@ -27,7 +27,7 @@ const Post = ({post}) => {
     
     const SavePost = async () => {
         try {
-          const response = await fetch(`https://notinsta-backend.onrender.com/api/v1/post/${post?._id}/save`, {credentials: 'include'})
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/post/${post?._id}/save`, {credentials: 'include'})
           const data = await response.json();
           if (data.success){
             if (isSaved){

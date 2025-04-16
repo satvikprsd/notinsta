@@ -39,7 +39,7 @@ const CreatePost = ({ open, setOpen }) => {
         }
         postData.append('caption', caption);
         try {
-            const response = await fetch('https://notinsta-backend.onrender.com/api/v1/post/newpost', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/post/newpost`, {
                 method: 'POST',
                 credentials: 'include',
                 body: postData,

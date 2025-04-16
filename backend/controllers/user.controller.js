@@ -3,9 +3,6 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import getDataUri from '../components/datauri.js';
 import cloudinary from '../components/cloudinary.js';
-import { Post } from '../models/post.model.js';
-import { error } from 'console';
-import { useTransition } from 'react';
 
 export const register = async(req,res) => {
     try {
