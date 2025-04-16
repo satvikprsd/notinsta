@@ -68,7 +68,7 @@ export const login = async(req,res) => {
         }
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        setTimeout(()=>{return res.cookie('token', token, { httpOnly: true, sameSit: 'strict', maxAge: 24*60*60*1000 }).json({
+        setTimeout(()=>{return res.cookie('token', token, { httpOnly: true, sameSite: 'strict', maxAge: 24*60*60*1000 }).json({
             success: true,
             message: `${user.username} logged in successfully`,
             user: userData
