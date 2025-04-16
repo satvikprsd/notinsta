@@ -22,7 +22,7 @@ const SignUp = () => {
         console.log(inputs);
         try {
             setLoading(true);
-            const response = await fetch("https://testingnotinsta.onrender.com/api/v1/user/register", {
+            const response = await fetch("https://notinsta-backend.onrender.com/api/v1/user/register", {
                 method: "POST",
                 credentials: 'include',
                 headers: {

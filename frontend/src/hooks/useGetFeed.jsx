@@ -10,7 +10,7 @@ const useGetFeed = () => {
     useEffect(()=>{
         const fetchFeed = async () => {
             try {
-                const response = await fetch('https://testingnotinsta.onrender.com/api/v1/post/feed', {credentials:'include'});
+                const response = await fetch('https://notinsta-backend.onrender.com/api/v1/post/feed', {credentials:'include'});
                 const data = await response.json();
                 console.log(data, "yes");
                 if (data.success) {
