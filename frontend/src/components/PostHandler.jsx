@@ -73,3 +73,28 @@ export const handleDoubleClick = (user,profile,post,posts,isLiked,setIsLiked,set
     }
     setlastclick(now);
 }
+
+ export  const SavePost = async (isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch) => {
+    try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/post/${post?._id}/save`, {credentials: 'include'})
+        const data = await response.json();
+        if (data.success){
+        if (isSaved){
+            dispatch(setSavedPosts(savedPosts.filter((post)=>post._id!=post?._id)));
+            toast.success('Post removed from saved successfully');
+        }
+        else{
+            dispatch(setSavedPosts([post, ...savedPosts]))
+            toast.success('Post added to saved successfully');
+        }
+        setisSaved(prev=>!prev);
+        }
+        else{
+            console.log(data);
+            toast.error('Failed to save Post');
+        }
+    }catch(e){
+        console.log(e);
+        toast.error('Failed to save Post');
+    }
+}

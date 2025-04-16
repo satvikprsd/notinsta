@@ -4,9 +4,10 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import HelpDialog from './HelpDialog'
 import { Button } from './ui/button'
 import { Bookmark, Heart, MessageCircle, SendIcon } from 'lucide-react'
-import { handleLike, handleDoubleClick,handleNewComment } from './PostHandler'
+import { handleLike, handleDoubleClick,handleNewComment, SavePost } from './PostHandler'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { setSavedPosts } from '@/redux/authSlice'
 
 //This function is created by chaptgpt not me, return x days ago for a post
 const timeAgo = (dateString) => {
@@ -27,7 +28,7 @@ const timeAgo = (dateString) => {
 const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,newsetCurLikes,newsetCurComments,post}) => {
     
     const [commenttext, setCommenttext] = useState('');
-    const { user,profile } = useSelector(store => store.auth);
+    const { user,profile,savedPosts } = useSelector(store => store.auth);
     const [doubleClick,setdoubleClick] = useState(false);
     const { feed } = useSelector(store => store.posts);
     const [comments, setComments] = useState(post.comments);
@@ -41,6 +42,7 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
     const curLikes = newcurLikes ?? curLikesState;
     const setCurLikes = newsetCurLikes ?? setCurLikesState;
     const setCurComments = newsetCurComments ?? setCurCommentsState;
+    const [isSaved, setisSaved] = useState(savedPosts?.map((post)=>post._id).includes(post?._id));
     console.log(comments, "newtest");
     useEffect(() => {
         const fetchComments = async () => {
@@ -73,7 +75,7 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
                     </Avatar>
                     <h1>{post.author?.username}</h1>
                 </div>
-                <HelpDialog setDialog={setOpenPostDialog} post={post} />
+                <HelpDialog isSaved={isSaved} setisSaved={setisSaved} setDialog={setOpenPostDialog} post={post} />
             </div>
             <hr/>
             <div className='h-100 overflow-y-auto p-4 custom-scrollbar'>
@@ -102,7 +104,7 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
                     <MessageCircle size={'25px'} className='cursor-pointer hover:text-gray-600 hover:bounce-once'/>
                     <SendIcon size={'23px'} className='cursor-pointer hover:text-gray-600 hover:bounce-once' />
                 </div>
-                <Bookmark size={'25px'} className='cursor-pointer hover:text-gray-600 hover:bounce-once'/>
+                <Bookmark onClick={()=>SavePost(isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch)} fill={isSaved ? 'white' : ''} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
             </div>
             <span className='font-medium block mb-2 px-3'>{curLikes} likes</span>
             <span className='text-sm block mb-2 px-3'>{timeAgo(post.createdAt)}</span>

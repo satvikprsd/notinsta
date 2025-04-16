@@ -8,12 +8,11 @@ import { setFeed } from '@/redux/postSlice'
 import { setProfile, setSavedPosts } from '@/redux/authSlice'
 import { useNavigate } from 'react-router-dom'
 
-const HelpDialog = ({post,setDialog}) => {
+const HelpDialog = ({post,setDialog,setisSaved,isSaved}) => {
   const { user,profile,savedPosts } = useSelector(store=>store.auth);
   const {feed} = useSelector(store => store.posts);
   const [openhelp, setOpenhelp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isSaved, setisSaved] = useState(savedPosts?.map((post)=>post._id).includes(post?._id));
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const DeletPost = async () => {

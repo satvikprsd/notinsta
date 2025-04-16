@@ -18,12 +18,13 @@ const Profile = () => {
     const [openPfpDialog, setopenPfpDialog] = useState(false);
     const [openEditDialog, setopenEditDialog] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
+    const [postorsaved, setPostOrSaved] = useState(true);
     const navigate = useNavigate();
     const params = useParams();
     const userId = params.username;
     useGetUser(userId);
     const dispatch = useDispatch();
-    const { profile,user } = useSelector((store) => store.auth);
+    const { profile,user,savedPosts } = useSelector((store) => store.auth);
     const [isfollowed, setIsFollowed] = useState(profile?.followers.includes(user?.id));
 
     useEffect(() => {
@@ -109,8 +110,15 @@ const Profile = () => {
             <div className="flex items-center w-full pt-5">
                 <hr className="text-white w-full"/>
             </div>
+            {profile?._id==user?.id ?
+            <div className="flex items-center justify-between gap-10">
+                <Button onClick={()=>setPostOrSaved(true)} className={`bg-transparent text-white hover:cursor-pointer hover:bg-transparent ${postorsaved ? 'border-t-4 border-white' : ''}`}>POSTS</Button>
+                <Button onClick={()=>setPostOrSaved(false)} className={`bg-transparent text-white hover:cursor-pointer hover:bg-transparent ${postorsaved ? '' : 'border-t-4 border-white'}`}>SAVED</Button>
+            </div>
+            : <></>
+            }
             <div className="grid my-10 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1 items-center pb-10">
-                {profile?.posts.length > 0 ? profile?.posts.map((post) => {
+                {postorsaved ? profile?.posts.length > 0 ? profile?.posts.map((post) => {
                     return (
                         <div onClick={() => {setSelectedPost(post);setOpenPostDialog(true);}} key={post._id} className="relative h-[400px] w-[300px] group hover:cursor-pointer overflow-hidden rounded-lg">
                             <img src={post.image} alt="postimg" className="object-cover w-full h-full group-hover:opacity-70 "/>
@@ -128,7 +136,27 @@ const Profile = () => {
                             </div>
                         </div>
                     );
-                }) : (<div className='flex h-full items-center justify-center'><h1 className='text-2xl'>No posts yet</h1></div>)}
+                }) : (<div className='col-start-2'><h1 className='text-2xl'>No posts yet</h1></div>)
+                : savedPosts?.length > 0 ? savedPosts?.map((post) => {
+                    return (
+                        <div onClick={() => {setSelectedPost(post);setOpenPostDialog(true);}} key={post._id} className="relative h-[400px] w-[300px] group hover:cursor-pointer overflow-hidden rounded-lg">
+                            <img src={post.image} alt="postimg" className="object-cover w-full h-full group-hover:opacity-70 "/>
+                            <div className="absolute flex items-center justify-center bottom-0 left-0 h-full w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div className="flex gap-5 text-white">
+                                <div className="flex items-center">
+                                    <Heart fill="white" />
+                                    <span className="font-bold mx-2">{post.likes.length}</span>
+                                </div>
+                                <div className="flex items-center">
+                                    <MessageCircle fill="white" />
+                                    <span className="font-bold mx-2">{post.comments.length}</span>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                }) : (<div className='col-start-2'><h1 className='text-2xl'>No saved posts yet</h1></div>)
+                }
                 {selectedPost && (
                     <Dialog open={openPostDialog} onOpenChange={setOpenPostDialog}>
                         <DialogContent

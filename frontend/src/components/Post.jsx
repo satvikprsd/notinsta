@@ -6,10 +6,9 @@ import { Button } from './ui/button'
 import PostDialog from './PostDialog'
 import HelpDialog from './HelpDialog'
 import { useDispatch, useSelector } from 'react-redux'
-import { handleDoubleClick, handleLike, handleNewComment } from './PostHandler'
+import { handleDoubleClick, handleLike, handleNewComment, SavePost } from './PostHandler'
 import { Link } from 'react-router-dom'
 import { setSavedPosts } from '@/redux/authSlice'
-import { toast } from 'sonner'
 
 const Post = ({post}) => {
     const [commenttext, setCommenttext] = useState('')
@@ -25,32 +24,6 @@ const Post = ({post}) => {
     const [isSaved, setisSaved] = useState(savedPosts?.map((post)=>post._id).includes(post?._id));
     const dispatch = useDispatch();
     
-    const SavePost = async () => {
-        try {
-          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/post/${post?._id}/save`, {credentials: 'include'})
-          const data = await response.json();
-          if (data.success){
-            if (isSaved){
-              dispatch(setSavedPosts(savedPosts.filter((post)=>post._id!=post?._id)));
-              toast.success('Post removed from saved successfully');
-            }
-            else{
-              dispatch(setSavedPosts([post, ...savedPosts]))
-              toast.success('Post added to saved successfully');
-            }
-            setisSaved(prev=>!prev);
-          }
-          else{
-              console.log(data);
-              toast.error('Failed to save Post');
-          }
-        }catch(e){
-          console.log(e);
-          toast.error('Failed to save Post');
-        }
-      }
-    
-
     return (
     <div className='my-8 w-full max-w-lg mx-auto'>
         <div className='flex items-center justify-between'>
@@ -65,7 +38,7 @@ const Post = ({post}) => {
                     <h1>{post.author?.username}</h1>
                 </Link>
             </div>
-            <HelpDialog post={post} />
+            <HelpDialog isSaved={isSaved} setisSaved={setisSaved} post={post} />
         </div>
         <div className='relative w-full h-full'>
             <img onClick={()=>handleDoubleClick(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike)} src={post.image} alt="postimg" className='rounded-sm my-2 w-full h-full aspect-square object-cover' />
@@ -77,7 +50,7 @@ const Post = ({post}) => {
                 <MessageCircle onClick={()=>setOpenPostDialog(true)} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
                 <SendIcon size={'23px'} className='cursor-pointer hover:text-gray-600' />
             </div>
-            <Bookmark onClick={()=>SavePost()} fill={isSaved ? 'white' : ''} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
+            <Bookmark onClick={()=>SavePost(isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch)} fill={isSaved ? 'white' : ''} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
         </div>
         <span className='mx-5 md:mx-0 font-medium block '>{curLikes} likes</span>
         <span className='ml-5 md:ml-0 font-medium mb-2'>{post.author?.username} </span>
