@@ -10,7 +10,7 @@ const SuggestionBar = () => {
   const [showAllSuggestions, setShowAllSuggestions] = useState(false);
   const handleFollow = async (userID) => {
     try{
-        const response = await fetch(`https://notinsta-backend.vercel.app/api/v1/user/followorunfollow/${userID}`,{
+        const response = await fetch(`https://testingnotinsta.onrender.com/api/v1/user/followorunfollow/${userID}`,{
             method: 'GET',
             credentials: 'include',
         });
