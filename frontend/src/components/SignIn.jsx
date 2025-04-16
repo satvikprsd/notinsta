@@ -26,7 +26,7 @@ const SignIn = () => {
         console.log(inputs);
         try {
             setLoading(true);
-            const response = await fetch("https://notinsta-gr7b.onrender.com/api/v1/user/login", {
+            const response = await fetch("https://notinsta-backend.vercel.app/api/v1/user/login", {
                 method: "POST",
                 credentials: 'include',
                 headers: {

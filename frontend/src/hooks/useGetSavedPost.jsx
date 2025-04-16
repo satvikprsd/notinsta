@@ -10,7 +10,7 @@ const useGetSavedPosts = () => {
     useEffect(()=>{
         const fetchSavedPosts = async () => {
             try {
-                const response = await fetch('https://notinsta-gr7b.onrender.com/api/v1/user/savedposts', {credentials:'include'});
+                const response = await fetch('https://notinsta-backend.vercel.app/api/v1/user/savedposts', {credentials:'include'});
                 const data = await response.json();
                 if (data.success) {
                     console.log(data.savedPosts);
