@@ -75,7 +75,7 @@ export const login = async(req,res) => {
         })},1000); //Timeout only for me to test the loading animation
     }
     catch (error) {
-        console.error(error);
+        return res.status(400).json({ success: false, message: error });
     }
 };
 
