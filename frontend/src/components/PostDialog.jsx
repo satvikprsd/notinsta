@@ -45,7 +45,7 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
     useEffect(() => {
         const fetchComments = async () => {
           try {
-            const response = await fetch(`https://notinsta-gr7b.onrender.com/api/v1/post/${post._id}/allcomments`, {
+            const response = await fetch(`http://localhost:8000/api/v1/post/${post._id}/allcomments`, {
               method: 'GET',
               credentials: 'include',
             });

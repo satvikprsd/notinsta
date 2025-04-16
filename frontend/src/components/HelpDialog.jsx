@@ -1,23 +1,25 @@
 import React, { useState } from 'react'
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
 import { Button } from './ui/button'
-import { Loader2Icon, MoreHorizontal } from 'lucide-react'
+import { Loader2Icon, MoreHorizontal, Save, View } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'sonner'
 import { setFeed } from '@/redux/postSlice'
-import { setProfile } from '@/redux/authSlice'
+import { setProfile, setSavedPosts } from '@/redux/authSlice'
+import { useNavigate } from 'react-router-dom'
 
 const HelpDialog = ({post,setDialog}) => {
-  const { user,profile } = useSelector(store=>store.auth);
+  const { user,profile,savedPosts } = useSelector(store=>store.auth);
   const {feed} = useSelector(store => store.posts);
   const [openhelp, setOpenhelp] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isSaved, setisSaved] = useState(savedPosts?.map((post)=>post._id).includes(post?._id));
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  console.log(setDialog,"diloag")
   const DeletPost = async () => {
     setLoading(true);
     try{
-      const response = await fetch(`https://notinsta-gr7b.onrender.com/api/v1/post/delete/${post._id}`,{method: 'POST', credentials: 'include'});
+      const response = await fetch(`http://localhost:8000/api/v1/post/delete/${post._id}`,{method: 'POST', credentials: 'include'});
       const data = await response.json();
       if(data.success){
         
@@ -43,19 +45,33 @@ const HelpDialog = ({post,setDialog}) => {
 
   const SavePost = async () => {
     try {
-      const response = await fetch(`https://notinsta-gr7b.onrender.com/api/v1/post/${post._id}/save`)
-      const data = response.json();
+      const response = await fetch(`http://localhost:8000/api/v1/post/${post?._id}/save`, {credentials: 'include'})
+      const data = await response.json();
       if (data.success){
         if (setDialog) setDialog(false);
-        toast.success('Post Saved successfully');
+        setOpenhelp(false);
+        if (isSaved){
+          dispatch(setSavedPosts(savedPosts.filter((post)=>post._id!=post?._id)));
+          toast.success('Post removed from saved successfully');
+        }
+        else{
+          dispatch(setSavedPosts([post, ...savedPosts]))
+          toast.success('Post added to saved successfully');
+        }
+        setisSaved(prev=>!prev);
       }
       else{
+          console.log(data);
           toast.error('Failed to save Post');
       }
     }catch(e){
       console.log(e);
       toast.error('Failed to save Post');
     }
+  }
+
+  const ViewProfile = () => {
+      navigate(`/profile/${post?.author.username}`)
   }
 
   return (
@@ -69,11 +85,11 @@ const HelpDialog = ({post,setDialog}) => {
                 <hr/>
                 <Button className='bg-background text-white hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0 '>Go to Post</Button>
                 <hr/>
-                <Button className='bg-background text-white hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0'>View Profile</Button>
+                <Button onClick={()=>ViewProfile()} className='bg-background text-white hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0'>View Profile</Button>
                 <hr/>
                 <Button className='bg-background text-white hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0'>Copy Link</Button>
                 <hr/>
-                <Button className='bg-background text-white hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0'>Add to Saved</Button>
+                <Button onClick={()=>SavePost()} className='bg-background text-white hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0'>{isSaved ? 'Remove from Saved' : 'Add to Saved'}</Button>
                 <hr/>
                 <Button onClick={()=>setOpenhelp(false)} className='bg-background text-white hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0'>Close</Button>
             </div>

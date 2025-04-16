@@ -22,7 +22,7 @@ const SignUp = () => {
         console.log(inputs);
         try {
             setLoading(true);
-            const response = await fetch("https://notinsta-gr7b.onrender.com/api/v1/user/register", {
+            const response = await fetch("http://localhost:8000/api/v1/user/register", {
                 method: "POST",
                 credentials: 'include',
                 headers: {

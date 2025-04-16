@@ -34,7 +34,7 @@ const Profile = () => {
 
     const handleFollow = async () => {
         try{
-            const response = await fetch(`https://notinsta-gr7b.onrender.com/api/v1/user/followorunfollow/${profile._id}`,{
+            const response = await fetch(`http://localhost:8000/api/v1/user/followorunfollow/${profile._id}`,{
                 method: 'GET',
                 credentials: 'include',
             });
@@ -67,7 +67,7 @@ const Profile = () => {
                         <UpdateProfile open={openEditDialog} setOpen={setopenEditDialog} />
                         {!user ? (<Button onClick={()=>navigate('/login')} className="bg-blue-400 text-white text-sm">Login to Follow</Button>) : profile?._id==user?.id ? (<Button onClick={()=>{setopenEditDialog(true)}}>Edit profile</Button>) : (<Button onClick={()=>handleFollow()} className="bg-blue-400 text-white text-lg">{isfollowed ? "Following" : "Follow"}</Button>)}
                     </div>
-                    <div className="flex gap-5 sm:gap-10">
+                    <div className="hidden sm:flex gap-5 sm:gap-10">
                         <div className="flex">
                             <p className="font-medium">{profile?.posts.length}</p>
                             <span className="mx-2 text-gray-400">posts</span>
@@ -85,13 +85,28 @@ const Profile = () => {
                         <h1 className="font-bold">{profile?.name}</h1>
                         <p>{profile?.bio}</p>
                     </div>
-                </div>
-            </div>
-            <div className="pl-5 flex sm:hidden flex-col self-start gap-1 mb-5">
+                    <div className="pl-5 flex flex-col sm:hidden gap-1 mb-5">
                         <h1 className="font-bold">{profile?.name}</h1>
                         <p>{profile?.bio}</p>
+                </div>
+                </div>
             </div>
-            <div className="flex items-center w-full px-30">
+
+            <div className="flex sm:hidden gap-10">
+                        <div className="flex">
+                            <p className="font-medium">{profile?.posts.length}</p>
+                            <span className="mx-2 text-gray-400">posts</span>
+                        </div>
+                        <div className="flex">
+                            <p className="font-medium">{profile?.followers.length}</p>
+                            <span className="mx-2 text-gray-400">followers</span>
+                        </div>
+                        <div className="flex">
+                            <p className="font-medium">{profile?.following.length}</p>
+                            <span className="mx-2 text-gray-400">following</span>
+                        </div>
+            </div>
+            <div className="flex items-center w-full pt-5">
                 <hr className="text-white w-full"/>
             </div>
             <div className="grid my-10 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1 items-center pb-10">

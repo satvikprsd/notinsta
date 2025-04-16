@@ -1,15 +1,16 @@
 import { setSuggestedUsers } from "@/redux/authSlice";
 import  { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 
 
 const useGetSuggestions = () => {
     const dispatch = useDispatch();
+    const {user} = useSelector(store=>store.auth)
     useEffect(()=>{
         const fetchAllSuggestions = async () => {
             try {
-                const response = await fetch('https://notinsta-gr7b.onrender.com/api/v1/user/suggestions', {credentials:'include'});
+                const response = await fetch('http://localhost:8000/api/v1/user/suggestions', {credentials:'include'});
                 const data = await response.json();
                 if (data.success) {
                     console.log(data.suggestions);
@@ -21,8 +22,8 @@ const useGetSuggestions = () => {
                 console.error(error);
             }
         }
-        fetchAllSuggestions();
-    },[])
+        if (user) fetchAllSuggestions();
+    },[user,dispatch])
 };
 
 export default useGetSuggestions;

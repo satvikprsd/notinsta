@@ -10,7 +10,7 @@ const SuggestionBar = () => {
   const [showAllSuggestions, setShowAllSuggestions] = useState(false);
   const handleFollow = async (userID) => {
     try{
-        const response = await fetch(`https://notinsta-gr7b.onrender.com/api/v1/user/followorunfollow/${userID}`,{
+        const response = await fetch(`http://localhost:8000/api/v1/user/followorunfollow/${userID}`,{
             method: 'GET',
             credentials: 'include',
         });
@@ -72,7 +72,7 @@ const SuggestionBar = () => {
               </div>
             )
           })
-          : (<h2>You are the only one</h2>)
+          : (<h2>No one new to follow</h2>)
         }
       </div>
     </div>

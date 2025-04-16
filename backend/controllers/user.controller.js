@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken';
 import getDataUri from '../components/datauri.js';
 import cloudinary from '../components/cloudinary.js';
 import { Post } from '../models/post.model.js';
+import { error } from 'console';
+import { useTransition } from 'react';
 
 export const register = async(req,res) => {
     try {
@@ -22,7 +24,7 @@ export const register = async(req,res) => {
             email,
             password:hashedPassword
         });
-        setTimeout(()=>{return res.status(201).json({ success: true, message: "User created successfully"})},2000); //timeout for testing animations
+        setTimeout(()=>{return res.status(201).json({ success: true, message: "User created successfully"})},1000); //timeout for testing animations
     }
     catch (error) {
         console.error(error);
@@ -66,11 +68,11 @@ export const login = async(req,res) => {
         }
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        return res.cookie('token', token, { httpOnly: true, sameSit: 'strict', maxAge: 24*60*60*1000 }).json({
+        setTimeout(()=>{return res.cookie('token', token, { httpOnly: true, sameSit: 'strict', maxAge: 24*60*60*1000 }).json({
             success: true,
             message: `${user.username} logged in successfully`,
             user: userData
-        }) //Timeout only for me to test the loading animation
+        })},1000); //Timeout only for me to test the loading animation
     }
     catch (error) {
         console.error(error);
@@ -134,11 +136,7 @@ export const updateProfile = async(req,res) => {
 
 export const getSuggestions = async(req,res) => {
     try {
-        const currentUser = await User.findById(req.id).select('following');
-        if (!currentUser) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
-        const suggestions = await User.find({_id:{ $nin: [...currentUser.following, req.id]}}).select("-password").limit(10);
+        const suggestions = await User.find({_id:{$ne:req.id}}).select("-password").limit(5);
         if (!suggestions) {
             return res.status(400).json({ success: false, message: 'You are the only one :)' });
         }
@@ -148,6 +146,19 @@ export const getSuggestions = async(req,res) => {
         console.error(error);
     }
 };
+
+export const getSavedPosts = async(req,res) => {
+    const userID = req.id
+    try {
+        const user = await User.findById(userID)
+        .populate('savedPosts')
+        const savedPosts = user.savedPosts
+        return res.status(200).json({success: true, savedPosts})
+    }catch(e){
+        console.error(e);
+        res.status(400).json({ success: false, message: e})
+    }
+}
 
 export const followOrUnfollowUser = async(req,res) => {
     

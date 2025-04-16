@@ -1,21 +1,20 @@
-import { setFeed } from "@/redux/postSlice";
+import { setSavedPosts } from "@/redux/authSlice";
 import  { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 
 
-const useGetFeed = () => {
+const useGetSavedPosts = () => {
     const dispatch = useDispatch();
     const {user} = useSelector(store=>store.auth)
     useEffect(()=>{
-        const fetchFeed = async () => {
+        const fetchSavedPosts = async () => {
             try {
-                const response = await fetch('http://localhost:8000/api/v1/post/feed', {credentials:'include'});
+                const response = await fetch('http://localhost:8000/api/v1/user/savedposts', {credentials:'include'});
                 const data = await response.json();
-                console.log(data, "yes");
                 if (data.success) {
-                    console.log(data.posts);
-                    dispatch(setFeed(data.posts));
+                    console.log(data.savedPosts);
+                    dispatch(setSavedPosts(data.savedPosts));
                 } else {
                     toast.error(data.message);
                 }
@@ -23,8 +22,8 @@ const useGetFeed = () => {
                 console.error(error);
             }
         }
-        if (user) fetchFeed();
+        if (user) fetchSavedPosts();
     },[user,dispatch])
 };
 
-export default useGetFeed;
+export default useGetSavedPosts;

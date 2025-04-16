@@ -6,19 +6,20 @@ import useGetFeed from "@/hooks/useGetFeed";
 import useGetSuggestions from "@/hooks/useGetSuggestions";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import useGetSavedPosts from "@/hooks/useGetSavedPost";
 
 const Home = () => {
-    useGetFeed();
-    useGetSuggestions();
     const navigate = useNavigate();
     const { user } = useSelector((store) => store.auth);
-
     useEffect(() => {
         if (!user) {
             navigate("/login");
         }
     }, [user, navigate]);
-    
+
+    useGetFeed();
+    useGetSuggestions();
+    useGetSavedPosts();
     return (
         <div className="text-white flex">
             <div className="flex grow">
