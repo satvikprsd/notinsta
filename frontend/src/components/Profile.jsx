@@ -34,7 +34,7 @@ const Profile = () => {
 
     const handleFollow = async () => {
         try{
-            const response = await fetch(`http://localhost:8000/api/v1/user/followorunfollow/${profile._id}`,{
+            const response = await fetch(`https://notinsta-gr7b.onrender.com/api/v1/user/followorunfollow/${profile._id}`,{
                 method: 'GET',
                 credentials: 'include',
             });

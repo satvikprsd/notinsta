@@ -10,7 +10,7 @@ const useGetSuggestions = () => {
     useEffect(()=>{
         const fetchAllSuggestions = async () => {
             try {
-                const response = await fetch('http://localhost:8000/api/v1/user/suggestions', {credentials:'include'});
+                const response = await fetch('https://notinsta-gr7b.onrender.com/api/v1/user/suggestions', {credentials:'include'});
                 const data = await response.json();
                 if (data.success) {
                     console.log(data.suggestions);

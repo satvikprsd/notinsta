@@ -27,7 +27,7 @@ const Post = ({post}) => {
     
     const SavePost = async () => {
         try {
-          const response = await fetch(`http://localhost:8000/api/v1/post/${post?._id}/save`, {credentials: 'include'})
+          const response = await fetch(`https://notinsta-gr7b.onrender.com/api/v1/post/${post?._id}/save`, {credentials: 'include'})
           const data = await response.json();
           if (data.success){
             if (isSaved){
