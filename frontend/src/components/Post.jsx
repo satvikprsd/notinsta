@@ -16,7 +16,7 @@ const Post = ({post}) => {
     const [curLikes, setCurLikes] = useState(post.likes?.length);
     const [curComments, setCurComments] = useState(post.comments?.length);
     const { user, savedPosts } = useSelector(store => store.auth);
-    const [isLiked, setIsLiked] = useState(post.likes?.includes(user?.id));
+    const [isLiked, setIsLiked] = useState(post.likes?.includes(user?._id));
     const [doubleClick,setdoubleClick] = useState(false);
     const { feed } = useSelector(store => store.posts);
     const [comments, setComments] = useState(post.comments);
@@ -50,7 +50,7 @@ const Post = ({post}) => {
                 <MessageCircle onClick={()=>setOpenPostDialog(true)} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
                 <SendIcon size={'23px'} className='cursor-pointer hover:text-gray-600' />
             </div>
-            <Bookmark onClick={()=>SavePost(isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch)} fill={isSaved ? 'white' : ''} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
+            <Bookmark onClick={()=>SavePost(user, isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch)} fill={isSaved ? 'white' : ''} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
         </div>
         <span className='mx-5 md:mx-0 font-medium block '>{curLikes} likes</span>
         <span className='ml-5 md:ml-0 font-medium mb-2'>{post.author?.username} </span>
@@ -63,7 +63,7 @@ const Post = ({post}) => {
         </Dialog>
         <div className='mx-2 md:mx-0 flex items-center'>
             <input type="text" placeholder="Add a comment..." className='w-full p-3 rounded-md h-10 focus:outline-none focus:ring-0' value={commenttext} onChange={(e)=>{e.target.value.trim() ? setCommenttext(e.target.value) : setCommenttext("")}} />
-            {commenttext && <Button onClick={()=>handleNewComment(post,null,feed,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments)} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)]">Post</Button>}
+            {commenttext && <Button onClick={()=>handleNewComment(user,post,null,feed,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments)} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)]">Post</Button>}
         </div>
     </div>
   )

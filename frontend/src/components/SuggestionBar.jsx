@@ -1,23 +1,36 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { setAuthUser } from '@/redux/authSlice';
 
 const SuggestionBar = () => {
   const {user, suggestedUsers} = useSelector(store=>store.auth);
+  const following = user?.following;
   const [isfollowed, setIsFollowed] = useState({});
   const [showAllSuggestions, setShowAllSuggestions] = useState(false);
-  const handleFollow = async (userID) => {
+  const dispatch = useDispatch();
+  const handleFollow = async (profile) => {
+    const profileID = profile._id;
+    const {username, profilePic} = profile ;
     try{
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/followorunfollow/${userID}`,{
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/followorunfollow/${profileID}`,{
             method: 'GET',
             credentials: 'include',
         });
         const data = await response.json();
+        console.log(data);
         if(data.success){
-            setIsFollowed(prev => ({...prev,  [userID]:!prev[userID]}))
-            toast.success(isfollowed[userID] ? "Unfollowed successfully" : "Followed successfully");
+            setIsFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
+            if (isfollowed[profileID]){
+              const newfollowing = following.filter((f)=>f._id!=profileID);
+              dispatch(setAuthUser({...user, following: newfollowing}));
+            }
+            else{
+              dispatch(setAuthUser({...user, following: [...following, {_id:profileID, username, profilePic} ]}))
+            }
+            toast.success(isfollowed[profileID] ? "Unfollowed successfully" : "Followed successfully");
           }else{
             toast.error('Failed to Follow/Unfollow');
           }
@@ -53,22 +66,22 @@ const SuggestionBar = () => {
           <span onClick={()=>setShowAllSuggestions(prev=>!prev)} className='font-bold text-white hover:cursor-pointer'>{showAllSuggestions?'See less' : 'See more'}</span>
         </div>
         {visibleSuggestions?.length > 0 ?
-          visibleSuggestions?.map((user) => {
+          visibleSuggestions?.map((users) => {
              return (
-              <div key={user._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4'>
-                <Link to={`/profile/${user.username}`}>
+              <div key={users._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4'>
+                <Link to={`/profile/${users.username}`}>
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src={user.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
+                    <AvatarImage src={users.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
                     <AvatarFallback>USER</AvatarFallback>
                   </Avatar>
                 </Link>
                 <div className='text-sm flex flex-col items-start gap-1'>
-                  <Link to={`/profile/${user.username}`}>
-                    <h1 className='font-bold'>{user.username}</h1>
+                  <Link to={`/profile/${users.username}`}>
+                    <h1 className='font-bold'>{users.username}</h1>
                   </Link>
-                  <span className='font-semibold text-gray-600'>{user.name || "NotInsta User"}</span>
+                  <span className='font-semibold text-gray-600'>{users.name || "NotInsta User"}</span>
                 </div>
-                <span onClick={()=>{handleFollow(user._id)}} className='text-xs hover:cursor-pointer hover:text-white font-bold text-blue-400'>{isfollowed[user._id] ? "Following" : "Follow"}</span>
+                <span onClick={()=>{handleFollow(users)}} className='text-xs hover:cursor-pointer hover:text-white font-bold text-blue-400'>{isfollowed[users._id] ? "Following" : "Follow"}</span>
               </div>
             )
           })

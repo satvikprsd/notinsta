@@ -23,7 +23,7 @@ const useGetSavedPosts = () => {
             }
         }
         if (user) fetchSavedPosts();
-    },[user,dispatch])
+    },[])
 };
 
 export default useGetSavedPosts;

@@ -47,7 +47,7 @@ const CreatePost = ({ open, setOpen }) => {
             const data = await response.json();
             if (data.success) {
                 dispatch(setFeed([data.post, ...feed]));
-                if (profile._id == user.id) {
+                if (profile._id == user._id) {
                     dispatch(setProfile({...profile,posts:[data.post,...profile.posts]}))
                 }
                 toast.success(data.message);

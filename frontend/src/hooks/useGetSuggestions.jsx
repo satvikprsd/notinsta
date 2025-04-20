@@ -23,7 +23,7 @@ const useGetSuggestions = () => {
             }
         }
         if (user) fetchAllSuggestions();
-    },[user,dispatch])
+    },[])
 };
 
 export default useGetSuggestions;

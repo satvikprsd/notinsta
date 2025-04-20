@@ -8,7 +8,7 @@ const router = express.Router();
 router.route('/register').post(register);
 router.route('/login').post(login);
 router.route('/logout').get(logout);
-router.route('/:username/profile').get(isauthenticated, getProfile);
+router.route('/:username/profile').get(getProfile);
 router.route('/profile/edit').post(isauthenticated, upload.single('profilePic'), updateProfile);
 router.route('/suggestions').get(isauthenticated, getSuggestions);
 router.route('/savedposts').get(isauthenticated, getSavedPosts);

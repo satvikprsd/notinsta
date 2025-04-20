@@ -34,7 +34,7 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
     const [comments, setComments] = useState(post.comments);
     const dispatch = useDispatch();
     const [lastclick, setlastclick] = useState(0);
-    const [isLikedState, setIsLikedState] = useState(post.likes?.includes(user?.id));
+    const [isLikedState, setIsLikedState] = useState(post.likes?.includes(user?._id));
     const [curLikesState, setCurLikesState] = useState(post.likes?.length || 0);
     const [curCommentsState, setCurCommentsState] = useState(post.comments?.length||0);
     const isLiked = newisLiked ?? isLikedState;
@@ -69,11 +69,15 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
         <div className='min-w-[40%] max-w-[40%] flex flex-col justify-between'>
             <div className='flex items-center justify-between p-4'>
                 <div className='flex items-center gap-3'>
-                    <Avatar>
-                        <AvatarImage src={post.author?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
-                        <AvatarFallback>Post</AvatarFallback>
-                    </Avatar>
-                    <h1>{post.author?.username}</h1>
+                    <Link onClick={()=>setOpenPostDialog(false)}>
+                        <Avatar>
+                            <AvatarImage src={post.author?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
+                            <AvatarFallback>Post</AvatarFallback>
+                        </Avatar>
+                    </Link>
+                    <Link onClick={()=>setOpenPostDialog(false)}>
+                        <h1>{post.author?.username}</h1>
+                    </Link>
                 </div>
                 <HelpDialog isSaved={isSaved} setisSaved={setisSaved} setDialog={setOpenPostDialog} post={post} />
             </div>
@@ -84,13 +88,15 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
                         {console.log(comment,"y")}
                         <div className='w-full flex flex-col items-start gap-3'>
                             <div className='flex gap-3 justify-between'>
-                                <Link to={`/profile/${comment?.author?.username}`}>
+                                <Link onClick={()=>setOpenPostDialog(false)} to={`/profile/${comment?.author?.username}`}>
                                     <Avatar>
                                         <AvatarImage src={comment?.author?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
                                         <AvatarFallback>Post</AvatarFallback>
                                     </Avatar>
                                 </Link>
+                                <Link onClick={()=>setOpenPostDialog(false)} to={`/profile/${comment?.author?.username}`}>
                                 <h1 className='font-semibold'>{comment?.author?.username}</h1>
+                                </Link>
                             </div>
                             <p className='font-normal break-words whitespace-pre-wrap overflow-hidden'>{comment.comment}</p>
                         </div>
@@ -104,14 +110,14 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
                     <MessageCircle size={'25px'} className='cursor-pointer hover:text-gray-600 hover:bounce-once'/>
                     <SendIcon size={'23px'} className='cursor-pointer hover:text-gray-600 hover:bounce-once' />
                 </div>
-                <Bookmark onClick={()=>SavePost(isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch)} fill={isSaved ? 'white' : ''} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
+                <Bookmark onClick={()=>SavePost(user, isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch)} fill={isSaved ? 'white' : ''} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
             </div>
             <span className='font-medium block mb-2 px-3'>{curLikes} likes</span>
             <span className='text-sm block mb-2 px-3'>{timeAgo(post.createdAt)}</span>
             <hr/>
             <div className='flex items-center'>
                 <input type="text" placeholder="Add a comment..." className='w-full p-3 rounded-md h-10 focus:outline-none focus:ring-0' value={commenttext} onChange={(e)=>{e.target.value.trim() ? setCommenttext(e.target.value) : setCommenttext("")}} />
-                <Button onClick={()=>handleNewComment(post,profile,feed,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments)} disabled={!commenttext} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)]">Post</Button>
+                <Button onClick={()=>handleNewComment(user,post,profile,feed,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments)} disabled={!commenttext} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)]">Post</Button>
             </div>
         </div>
     </div>

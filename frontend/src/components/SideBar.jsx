@@ -6,9 +6,8 @@ import NotextLogo from "./notinstalogo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
-import { setAuthUser } from "@/redux/authSlice";
+import { setAuthUser} from "@/redux/authSlice";
 import CreatePost from "./CreatePost";
-import { Textarea } from "./ui/textarea";
 import { Input } from "./ui/input";
 const SideBar = () => {
     const [open,setOpen] = useState(false);

@@ -24,7 +24,7 @@ const useGetFeed = () => {
             }
         }
         if (user) fetchFeed();
-    },[user,dispatch])
+    },[])
 };
 
 export default useGetFeed;

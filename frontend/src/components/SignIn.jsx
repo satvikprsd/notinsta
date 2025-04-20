@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
@@ -6,13 +6,23 @@ import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "./ui/loader";
 import { useDispatch, useSelector } from "react-redux";
-import { setAuthUser } from "@/redux/authSlice";
+import { setAuthUser, setProfile, setSavedPosts, setSuggestedUsers} from "@/redux/authSlice";
+import { setFeed } from "@/redux/postSlice";
+
 
 const SignIn = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { user } = useSelector(store=>store.auth);
+
     if (user) navigate('/')
+    useEffect(()=>{    
+        dispatch(setFeed([]))
+        dispatch(setSavedPosts([]))
+        dispatch(setSuggestedUsers([]))
+        dispatch(setProfile(null))
+    },[])
+
     const [inputs, setInputs] = useState({
         usernameoremail: "",
         password: "",

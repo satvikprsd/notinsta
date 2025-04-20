@@ -51,7 +51,7 @@ export const login = async(req,res) => {
         const populatedFollowing = await User.findById(user._id).populate({path:'following', select:'username profilePic'});
         
         const userData = {
-            id: user._id,
+            _id: user._id,
             username: user.username,
             name: user.name,
             email: user.email,
@@ -88,7 +88,7 @@ export const logout = async(req,res) => {
 
 export const getProfile = async(req,res) => {
     try {
-        const user = await User.findOne({ username: req.params.username }).select("-password").populate({path: "posts",populate: {path: "author",select: "-password",}
+        const user = await User.findOne({ username: req.params.username }).select("-password").populate("followers", "username profilePic").populate("following", "username profilePic").populate({path: "posts",populate: {path: "author",select: "-password",}
         });
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
@@ -133,7 +133,9 @@ export const updateProfile = async(req,res) => {
 
 export const getSuggestions = async(req,res) => {
     try {
-        const suggestions = await User.find({_id:{$ne:req.id}}).select("-password").limit(5);
+        const CurUser = await User.findById(req.id);
+        const exclude = [CurUser._id, ...CurUser.following.map((f)=>f._id)]
+        const suggestions = await User.find({_id:{$nin:exclude}}).select("-password").limit(10);
         if (!suggestions) {
             return res.status(400).json({ success: false, message: 'You are the only one :)' });
         }
