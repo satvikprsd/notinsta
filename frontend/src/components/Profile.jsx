@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import NotextLogo from "./notinstalogo.png";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Input } from "./ui/input";
+import { useLoading } from "./LoadingContext";
 
 const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, isfollowerfollowed, setIsFollowerFollowed, dispatch ,user}) => {
     const [searchfollowers, setSearchFollowers] = useState(followers);
@@ -144,7 +145,7 @@ const FollowingDialog = ({openfollowingdialog, setOpenFollowingDialog, following
             <DialogContent className="pt-3 px-0 w-sm max-w-[90%] max-h-[50vh] overflow-y-auto custom-scrollbar focus:outline-none focus:ring-0" onInteractOutside={()=> setOpenFollowingDialog(false)}>
                 <div className="w-full flex items-center justify-between">
                     <div className="w-full flex-1 text-center font-bold">
-                        <DialogTitle>Followers</DialogTitle>
+                        <DialogTitle>Following</DialogTitle>
                     </div>
                     <XIcon onClick={()=>setOpenFollowingDialog(false)} className="absolute right-4 hover:cursor-pointer"/>
                 </div>
@@ -186,8 +187,8 @@ const Profile = () => {
     const params = useParams();
     console.log(params,"params");
     const userId = params.username;
-    const [loading, setLoading] = useState(true);
-    useGetUser(userId,setLoading);
+    const { loading, setLoading } = useLoading();
+    useGetUser(userId);
     const dispatch = useDispatch();
     const { profile,user,savedPosts } = useSelector((store) => store.auth);
     const [isfollowed, setIsFollowed] = useState(profile?.followers?.map((f)=>f._id).includes(user?._id));

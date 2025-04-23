@@ -1,4 +1,5 @@
 import Home from './components/Home'
+import { LoadingProvider } from './components/LoadingContext'
 import MainPage from './components/MainPage'
 import Profile from './components/Profile'
 import SignIn from './components/SignIn'
@@ -14,7 +15,9 @@ function App() {
 
   return (
     <div className='bg-background'>
-      <RouterProvider router={router}/>
+      <LoadingProvider>
+        <RouterProvider router={router}/>
+      </LoadingProvider>
     </div>
   )
 }
