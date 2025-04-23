@@ -45,7 +45,8 @@ const HelpDialog = ({post,setDialog,setisSaved,isSaved}) => {
 
 
   const ViewProfile = () => {
-      navigate(`/profile/${post?.author.username}`)
+    if(setDialog) setDialog(false);
+    navigate(`/profile/${post?.author.username}`)
   }
 
   return (

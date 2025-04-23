@@ -4,12 +4,15 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { setAuthUser } from '@/redux/authSlice';
+import NotextLogo from "./notinstalogo.png";
+import { useSearch } from './SearchContext';
 
 const SuggestionBar = () => {
   const {user, suggestedUsers} = useSelector(store=>store.auth);
   const following = user?.following;
   const [isfollowed, setIsFollowed] = useState({});
   const [showAllSuggestions, setShowAllSuggestions] = useState(false);
+  const { searchOpen, setSearchOpen } = useSearch();
   const dispatch = useDispatch();
   const handleFollow = async (profile) => {
     const profileID = profile._id;
@@ -43,11 +46,11 @@ const SuggestionBar = () => {
   const visibleSuggestions = showAllSuggestions ? suggestedUsers : suggestedUsers.slice(0, 5);
 
   return (
-    <div className='hidden lg:block w-[25%] px-0 my-10 pr-32' style={{"padding-right": "30px", "padding-left": "10px"}}>
+    <div onClick={()=>setSearchOpen(false)} className='hidden lg:block w-[25%] px-0 my-10 pr-32' style={{"padding-right": "30px", "padding-left": "10px"}}>
       <div className='flex items-center gap-3'>
           <Link to={`/profile/${user?.username}`}>
             <Avatar className="h-12 w-12">
-                <AvatarImage src={user?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
+                <AvatarImage src={user?.profilePic=='default.jpg' ? NotextLogo : user?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
                 <AvatarFallback>USER</AvatarFallback>
             </Avatar>
           </Link>
@@ -71,7 +74,7 @@ const SuggestionBar = () => {
               <div key={users._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4'>
                 <Link to={`/profile/${users.username}`}>
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src={users.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
+                    <AvatarImage src={users.profilePic=='default.jpg' ? NotextLogo : users.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
                     <AvatarFallback>USER</AvatarFallback>
                   </Avatar>
                 </Link>

@@ -1,36 +1,53 @@
 import React, { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
-import { Bookmark, BookMarked, Heart, MessageCircle, MoreHorizontal, SendIcon } from 'lucide-react'
+import { Bookmark, BookMarked, Heart, MessageCircle, MoreHorizontal, SendIcon, XIcon } from 'lucide-react'
 import { Button } from './ui/button'
 import PostDialog from './PostDialog'
 import HelpDialog from './HelpDialog'
 import { useDispatch, useSelector } from 'react-redux'
-import { handleDoubleClick, handleLike, handleNewComment, SavePost } from './PostHandler'
+import { handleDoubleClick, handleLike, handleNewComment, LikesDialog, SavePost } from './PostHandler'
 import { Link } from 'react-router-dom'
 import { setSavedPosts } from '@/redux/authSlice'
+import NotextLogo from "./notinstalogo.png";
+
 
 const Post = ({post}) => {
     const [commenttext, setCommenttext] = useState('')
     const [OpenPostDialog, setOpenPostDialog] = useState(false)
-    const [curLikes, setCurLikes] = useState(post.likes?.length);
+    const [curLikes, setCurLikes] = useState(post?.likes.length);
     const [curComments, setCurComments] = useState(post.comments?.length);
     const { user, savedPosts } = useSelector(store => store.auth);
-    const [isLiked, setIsLiked] = useState(post.likes?.includes(user?._id));
+    const [isLiked, setIsLiked] = useState(post?.likes.map((f)=>f._id).includes(user?._id));
     const [doubleClick,setdoubleClick] = useState(false);
     const { feed } = useSelector(store => store.posts);
     const [comments, setComments] = useState(post.comments);
     const [lastclick, setlastclick] = useState(0);
     const [isSaved, setisSaved] = useState(savedPosts?.map((post)=>post._id).includes(post?._id));
+    const [islikerfollowed, setIslikerFollowed] = useState({});
+    const [openlikesdialog, setOpenlikesDialog] = useState(false);
+    const likes = post?.likes;
+    console.log(likes,"likes")
     const dispatch = useDispatch();
     
+    const getLikes = () => {
+        const followingIDs = new Set(user?.following?.map(f => f._id));
+        const followedStatus = {};
+        likes?.forEach(f => {
+          followedStatus[f._id] = followingIDs.has(f._id);
+        });
+        setIslikerFollowed(followedStatus);
+        setOpenlikesDialog(true)
+    }
+
     return (
     <div className='my-8 w-full max-w-lg mx-auto'>
+        {user && <LikesDialog openlikesdialog={openlikesdialog} setOpenlikesDialog={setOpenlikesDialog} likes={likes} islikerfollowed={islikerfollowed} setIslikerFollowed={setIslikerFollowed} dispatch={dispatch} user={user} />}
         <div className='flex items-center justify-between'>
             <div className='flex items-center gap-3'>
                 <Link to={`/profile/${post?.author.username}`}>
                 <Avatar className="ml-5 md:ml-0 h-10 w-10">
-                    <AvatarImage src={post.author?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
+                    <AvatarImage src={post?.author.profilePic=='default.jpg' ? NotextLogo : post?.author.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
                     <AvatarFallback>User</AvatarFallback>
                 </Avatar>
                 </Link>
@@ -52,7 +69,7 @@ const Post = ({post}) => {
             </div>
             <Bookmark onClick={()=>SavePost(user, isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch)} fill={isSaved ? 'white' : ''} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
         </div>
-        <span className='mx-5 md:mx-0 font-medium block '>{curLikes} likes</span>
+        <span onClick={()=>getLikes()} className='mx-5 md:mx-0 font-medium block '>{curLikes} likes</span>
         <span className='ml-5 md:ml-0 font-medium mb-2'>{post.author?.username} </span>
         <span className='mr-5 md:mr-0 font-light mb-2'>{post.caption}</span>
         {curComments>0 && <span onClick={()=>setOpenPostDialog(true)} className='mx-5 md:mx-0 font-light block hover:cursor-pointer'>View all {curComments} comments</span>}

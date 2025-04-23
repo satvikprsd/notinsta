@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button } from "./ui/button";
 import { Link, useParams } from "react-router-dom";
 import useGetUser from "@/hooks/useGetUser";
-import { Heart, MessageCircle } from "lucide-react";
+import { Cross, CrossIcon, Heart, MessageCircle, Search, XIcon } from "lucide-react";
 import { Dialog, DialogContent } from "./ui/dialog";
 import PostDialog from "./PostDialog";
 import { toast } from "sonner";
@@ -13,8 +13,24 @@ import ChangePfp from "./ChangePfp";
 import UpdateProfile from "./EditProfile";
 import { useNavigate } from "react-router-dom";
 import NotextLogo from "./notinstalogo.png";
+import { DialogTitle } from "@radix-ui/react-dialog";
+import { Input } from "./ui/input";
 
 const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, isfollowerfollowed, setIsFollowerFollowed, dispatch ,user}) => {
+    const [searchfollowers, setSearchFollowers] = useState(followers);
+    const [searchtext, setSearchText] = useState('');
+
+    useEffect(()=>{
+        const timer = setTimeout(()=>{
+            const newfollowing = followers.filter((f)=>f.username.toLowerCase().includes(searchtext.toLowerCase()))
+            console.log(newfollowing,"newfollwing");
+            setSearchFollowers(newfollowing);
+        },300)
+        return () => {
+            clearTimeout(timer)
+        };
+    },[searchtext])
+
     const handleFollow = async (profile) => {
         const profileID = profile._id;
         try{
@@ -45,9 +61,22 @@ const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, 
     }
     return (
         <Dialog open={openfollowerdialog}>
-            <DialogContent className="w-sm focus:outline-none focus:ring-0" onInteractOutside={()=> setOpenFollowerDialog(false)}>
-                {followers?.map((f)=> {return (
-                    <div key={f._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4'>
+            <DialogContent className="pt-3 px-0 w-sm max-w-[90%] max-h-[50vh] overflow-y-auto custom-scrollbar focus:outline-none focus:ring-0" onInteractOutside={()=> setOpenFollowerDialog(false)}>
+                <div className="w-full flex items-center justify-between">
+                <div className="w-full flex-1 text-center font-bold">
+                    <DialogTitle>Followers</DialogTitle>
+                </div>
+                <XIcon onClick={()=>setOpenFollowerDialog(false)} className="absolute right-4 hover:cursor-pointer"/>
+                </div>
+                <hr className="border-t-2 p-0"/>
+                <div className="relative flex items-center justify-center">
+                    <Search className="absolute left-6 w-5 h-5 search-icon"/>
+                    <Input value={searchtext} onChange={(e)=>setSearchText(e.target.value.trim())} className={`w-[90%] h-[120%] ${searchtext ? 'pl-2' : 'pl-7'} focus:pl-2`} placeholder="Search" 
+                    onFocus={() => document.querySelector('.search-icon').classList.add('hidden')} 
+                    onBlur={() => {if(!searchtext) document.querySelector('.search-icon').classList.remove('hidden')}}/>
+                </div>
+                {searchfollowers?.map((f)=> {return (
+                    <div key={f._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4 px-5'>
                     <Link onClick={()=>openfollowerdialog(false)} to={`/profile/${f.username}`}>
                         <Avatar className="h-12 w-12">
                         <AvatarImage src={f.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
@@ -68,6 +97,20 @@ const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, 
 }
 
 const FollowingDialog = ({openfollowingdialog, setOpenFollowingDialog, followings, isfollowingfollowed, setIsFollowingFollowed, dispatch ,user}) => {
+    const [searchfollowings, setSearchFollowings] = useState(followings);
+    const [searchtext, setSearchText] = useState('');
+
+    useEffect(()=>{
+        const timer = setTimeout(()=>{
+            const newfollowing = followings.filter((f)=>f.username.toLowerCase().includes(searchtext.toLowerCase()))
+            console.log(newfollowing,"newfollwing");
+            setSearchFollowings(newfollowing);
+        },300)
+        return () => {
+            clearTimeout(timer)
+        };
+    },[searchtext])
+
     const handleFollow = async (profile) => {
         const profileID = profile._id;
         try{
@@ -98,9 +141,22 @@ const FollowingDialog = ({openfollowingdialog, setOpenFollowingDialog, following
     }
     return (
         <Dialog open={openfollowingdialog}>
-            <DialogContent className="w-sm focus:outline-none focus:ring-0" onInteractOutside={()=> setOpenFollowingDialog(false)}>
-                {followings?.map((f)=> {return (
-                    <div key={f._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4'>
+            <DialogContent className="pt-3 px-0 w-sm max-w-[90%] max-h-[50vh] overflow-y-auto custom-scrollbar focus:outline-none focus:ring-0" onInteractOutside={()=> setOpenFollowingDialog(false)}>
+                <div className="w-full flex items-center justify-between">
+                    <div className="w-full flex-1 text-center font-bold">
+                        <DialogTitle>Followers</DialogTitle>
+                    </div>
+                    <XIcon onClick={()=>setOpenFollowingDialog(false)} className="absolute right-4 hover:cursor-pointer"/>
+                </div>
+                <hr className="border-t-2 p-0"/>
+                <div className="relative flex items-center justify-center">
+                    <Search className="absolute left-6 w-5 h-5 search-icon"/>
+                    <Input value={searchtext} onChange={(e)=>setSearchText(e.target.value.trim())} className={`w-[90%] h-[120%] ${searchtext ? 'pl-2' : 'pl-7'} focus:pl-2`} placeholder="Search" 
+                    onFocus={() => document.querySelector('.search-icon').classList.add('hidden')} 
+                    onBlur={() => {if(!searchtext) document.querySelector('.search-icon').classList.remove('hidden')}}/>
+                </div>
+                {searchfollowings?.map((f)=> {return (
+                    <div key={f._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4 px-5'>
                     <Link onClick={()=>openfollowingdialog(false)} to={`/profile/${f.username}`}>
                         <Avatar className="h-12 w-12">
                         <AvatarImage src={f.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
@@ -202,16 +258,16 @@ const Profile = () => {
 
     return (
         <div className="min-h-screen flex-1 my-3 flex flex-col items-center sm:pl-[20%]">
-            <div className="w-full flex items-start mt-10 mb-5 p-2 sm:pl-[20%]">
+            <div className="w-full flex items-start mt-10 mb-2 p-2 pl-5 sm:pl-[20%]">
                 {user && <FollowersDialog openfollowerdialog={openfollowerdialog} setOpenFollowerDialog={setOpenFollowerDialog} followers={followers} isfollowerfollowed={isfollowerfollowed} setIsFollowerFollowed={setIsFollowerFollowed} dispatch={dispatch} user={user} />}
                 {user && <FollowingDialog openfollowingdialog={openfollowingdialog} setOpenFollowingDialog={setOpenFollowingDialog} followings={followings} isfollowingfollowed={isfollowingfollowed} setIsFollowingFollowed={setIsFollowingFollowed} dispatch={dispatch} user={user} />}
                 <ChangePfp open={openPfpDialog} setOpen={setopenPfpDialog} />
                 <Avatar onClick={()=>{if(profile?._id==user?._id) setopenPfpDialog(true)}} className={`h-25 w-25 sm:h-40 sm:w-40 ${profile?._id==user?._id ? 'hover:cursor-pointer' : ''}`}>
-                    <AvatarImage src={profile?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
-                    <AvatarFallback>USER</AvatarFallback>
+                    <AvatarImage src={profile?.profilePic=='default.jpg' ? NotextLogo : profile?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
+                    <AvatarFallback>User</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col gap-5 mx-5 sm:mx-20">
-                    <div className="flex gap-5">
+                    <div className="flex flex-col sm:flex-row gap-5">
                         <h1 className="text-xl ">{profile?.username}</h1>
                         <UpdateProfile open={openEditDialog} setOpen={setopenEditDialog} />
                         {!user ? (<Button onClick={()=>navigate('/login')} className="bg-blue-400 text-white text-sm">Login to Follow</Button>) : profile?._id==user?._id ? (<Button onClick={()=>{setopenEditDialog(true)}}>Edit profile</Button>) : (<Button onClick={()=>handleFollow()} className="bg-blue-400 text-white text-lg">{isfollowed ? "Following" : "Follow"}</Button>)}
@@ -234,13 +290,12 @@ const Profile = () => {
                         <h1 className="font-bold">{profile?.name}</h1>
                         <p>{profile?.bio}</p>
                     </div>
-                    <div className="pl-5 flex flex-col sm:hidden gap-1 mb-5">
-                        <h1 className="font-bold">{profile?.name}</h1>
-                        <p>{profile?.bio}</p>
-                </div>
                 </div>
             </div>
-
+            <div className="w-full pl-5 items-start flex flex-col sm:hidden gap-1 mb-5">
+                        <h1 className="font-bold">{profile?.name}</h1>
+                        <p>{profile?.bio}</p>
+            </div>
             <div className="flex sm:hidden gap-10">
                         <div className="flex">
                             <p className="font-medium">{profile?.posts.length}</p>
@@ -274,7 +329,7 @@ const Profile = () => {
                                 <div className="flex gap-5 text-white">
                                 <div className="flex items-center">
                                     <Heart fill="white" />
-                                    <span className="font-bold mx-2">{post.likes.length}</span>
+                                    <span className="font-bold mx-2">{post?.likes.length}</span>
                                 </div>
                                 <div className="flex items-center">
                                     <MessageCircle fill="white" />
@@ -293,7 +348,7 @@ const Profile = () => {
                                 <div className="flex gap-5 text-white">
                                 <div className="flex items-center">
                                     <Heart fill="white" />
-                                    <span className="font-bold mx-2">{post.likes.length}</span>
+                                    <span className="font-bold mx-2">{post?.likes.length}</span>
                                 </div>
                                 <div className="flex items-center">
                                     <MessageCircle fill="white" />

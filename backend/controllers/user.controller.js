@@ -64,8 +64,8 @@ export const login = async(req,res) => {
             saved: user.savedPosts
         }
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        setTimeout(()=>{return res.cookie('token', token, { httpOnly: true, sameSite: 'none', secure: true, maxAge: 24*60*60*1000 }).json({
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+        setTimeout(()=>{return res.cookie('token', token, { httpOnly: true, sameSite: 'none', secure: true, maxAge: 30*24*60*60*1000 }).json({
             success: true,
             message: `${user.username} logged in successfully`,
             user: userData
@@ -88,7 +88,7 @@ export const logout = async(req,res) => {
 
 export const getProfile = async(req,res) => {
     try {
-        const user = await User.findOne({ username: req.params.username }).select("-password").populate("followers", "username profilePic").populate("following", "username profilePic").populate({path: "posts",populate: {path: "author",select: "-password",}
+        const user = await User.findOne({ username: req.params.username }).select("-password").populate("followers", "username profilePic").populate("following", "username profilePic").populate({path: "posts",populate: [{path: "author",select: "-password",},{path: "likes",select: "username profilePic",}]
         });
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
@@ -150,7 +150,7 @@ export const getSavedPosts = async(req,res) => {
     const userID = req.id
     try {
         const user = await User.findById(userID)
-        .populate('savedPosts')
+        .populate({path: 'savedPosts',populate: [{path:'author', select:'username profilePic'},{ path: 'likes', select: 'username profilePic' }]});
         const savedPosts = user.savedPosts
         return res.status(200).json({success: true, savedPosts})
     }catch(e){
@@ -188,5 +188,23 @@ export const followOrUnfollowUser = async(req,res) => {
     }
     catch (error) {
         console.error(error);
+    }
+};
+
+export const searchUser = async(req, res) => {
+    try {
+        const username = req.params.username;
+        if (!username) {
+            return res.status(400).json({ success: false, message: 'This should not happen' });
+        }
+        const users = await User.find({
+            username: { $regex: username, $options: "i" }
+        })
+        .limit(10)
+        .select("username profilePic name");
+        return res.status(200).json({ success: true, users });
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({ success: false, message: error});
     }
 };

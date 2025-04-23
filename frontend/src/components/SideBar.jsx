@@ -1,5 +1,5 @@
 import { Heart, Home, LogOut, LogOutIcon, MessageCircle, Play, PlayCircle, PlaySquareIcon, PlusSquare, Search, Settings, Video, VideoIcon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Logo from "./notinsta.png";
 import NotextLogo from "./notinstalogo.png";
@@ -9,11 +9,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { setAuthUser} from "@/redux/authSlice";
 import CreatePost from "./CreatePost";
 import { Input } from "./ui/input";
+import Searchuser from "./SearchUser";
+import { useSearch } from "./SearchContext";
 const SideBar = () => {
     const [open,setOpen] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const {user} = useSelector(store=>store.auth);
+    const { searchOpen, setSearchOpen } = useSearch();
+    const [searchtext, setSearchText] = useState('')
     const sidebarItems = [
         { label: "Home", icon: <Home color="#fff" className="min-w-[24px]"/>, path: "/home" },
         { label: "Search", icon: <Search color="#fff" className="min-w-[24px]"/>, path: "/search" },
@@ -23,7 +27,7 @@ const SideBar = () => {
         { label: "Upload", icon: <PlusSquare color="#fff" className="min-w-[24px]"/>, path: "/upload" },
         { label: "Profile", 
             icon: (
-            <Avatar>
+            <Avatar className="-ml-1">
                 <AvatarImage src={user?.profilePic} className='object-cover rounded-lg aspect-square'/>
                 <AvatarFallback>CN</AvatarFallback>
             </Avatar>
@@ -51,36 +55,64 @@ const SideBar = () => {
 
     const sidebarClickHandler = (itemtext) => {
         if(itemtext === "Logout") {
+            setSearchOpen(false);
             logout();
         }
         else if(itemtext === "Upload"){
+            setSearchOpen(false);
             if (user) setOpen(true);
         }
         else if(itemtext === "Profile"){
+            setSearchOpen(false);
             if (!user) navigate('/login')
             else navigate(`/profile/${user?.username}`);
         }
         else if(itemtext === "Home"){
+            setSearchOpen(false);
             navigate("/");
+        }
+        else if (itemtext === "Search") {
+            setSearchOpen(prev => !prev);
         }
     }
 
+    useEffect(()=>{
+        if(!searchOpen) setSearchText('')
+    },[searchOpen])
+
     return (
         <div>
-        <div className="hidden md:block fixed top-0 z-10 left-0 px-4 border-r border-gray-900 xl:w-[18%] h-screen">
-            <div className="flex flex-col">
-                <div>
-                    <Link to="/">
-                        <img src={Logo} alt="Description" width="150" className="hidden xl:block my-8 pl-3"/>
-                        <img src={NotextLogo} alt="Description" width="50" className="block xl:hidden my-8 pl-3"/>
-                    </Link>
-                    {sidebarItems.map(item => (
-                            <div onClick={()=>sidebarClickHandler(item.label)} key={item.label} className="flex items-center gap-5 relative hover:bg-gray-700 cursor-pointer rounded-lg p-3 my-3">
-                                    {item.icon}
-                                    <span className="hidden xl:block text-sm text-gray-400">{item.label}</span>
-                            </div>
-                    ))}
+        <div className={`hidden md:block fixed top-0 z-10 left-0 px-4 border-r border-gray-900 ${searchOpen ? "xl:w-[30%]" : "xl:w-[18%]"} bg-background h-screen`}>
+            <div className="flex min-h-32">
+                <Link to="/">
+                    <img src={Logo} alt="Description" width="150" className={`hidden ${searchOpen ? "" : "xl:block"} my-8 pl-3`}/>
+                    <img src={NotextLogo} alt="Description" width="50" className={`block ${searchOpen ? "" : "xl:hidden"} my-8 pl-1`}/>
+                </Link>
+                {searchOpen && 
+                <div className="flex pl-10 pb-1 justify-start items-center w-full">
+                    <h1 className="font-bold text-2xl">Search</h1>
+                </div>}
+            </div>
+            <div className="flex gap-10">
+                <div className={`flex w-full ${searchOpen ? "max-w-[12%]" : ""}`}>
+                    <div className="w-full">
+                        {sidebarItems.map(item => (
+                                <div onClick={()=>sidebarClickHandler(item.label)} key={item.label} className={`flex items-center gap-5 relative hover:bg-gray-700 cursor-pointer rounded-lg p-3 my-3`}>
+                                        {item.icon}
+                                        <span className={`hidden ${searchOpen ? "" : "xl:block"} text-sm text-gray-400`}>{item.label}</span>
+                                </div>
+                        ))}
+                    </div>
                 </div>
+                {searchOpen && 
+                    <div className="w-full">
+                        <Search className='absolute xl:left-[25%]  left-[30%] top-34 w-6 h-6 search-icon' />
+                        <Input autoFocus value={searchtext} onChange={(e)=>setSearchText(e.target.value.trim())} className={`w-[100%]  mb-5  ${searchtext ? 'pl-2' : 'pl-8'} focus:pl-2 bg-gray-500/50  h-10  placeholder:text-white text-white`} placeholder="Search"
+                            onFocus={() => document.querySelector('.search-icon').classList.add('hidden')} 
+                            onBlur={() => {if(!searchtext) {document.querySelector('.search-icon').classList.remove('hidden')}}}
+                        />
+                        <Searchuser searchtext={searchtext} />
+                    </div>}
             </div>
             <CreatePost open={open} setOpen={setOpen} />
         </div>
@@ -92,13 +124,23 @@ const SideBar = () => {
             ))}
         </div>
         <div className="fixed top-0 z-10 left-0 right-0 border-b border-gray-800 bg-black md:hidden flex justify-around items-center h-12">
-            <div className="flex gap-3 w-full">
+            <div className="flex gap-3 w-full relative">
                 <Link className="w-20" to="/">
                     <img src={NotextLogo} alt="Description" width="50" className="my-10 pl-3"/>
                 </Link>
-                <Input className='w-full bg-gray-500 opacity-50 h-10 my-10 placeholder:text-white text-white' placeholder="Search"/>
+                <div className="w-full relative mt-10 h-9">
+                    <Input value={searchtext} onChange={(e)=>setSearchText(e.target.value.trim())} className={`w-[100%]  mb-5  ${searchtext ? 'pl-2' : 'pl-8'} focus:pl-2 bg-gray-500/50  h-10  placeholder:text-white text-white`} placeholder="Search"
+                        onFocus={() => {setSearchOpen(true); document.querySelector('.search-icon').classList.add('hidden')}} 
+                        onBlur={() => {if(!searchtext) {document.querySelector('.search-icon').classList.remove('hidden')}}}
+                    />
+                    {searchtext && searchOpen && (
+                        <div className="absolute top-full left-0 right-0 bg-black bg-opacity-80 p-2 mt-2 rounded-lg max-h-100 overflow-y-auto z-20">
+                            <Searchuser searchtext={searchtext} />
+                        </div>
+                    )}
+                </div>
                 {topbarItems.map(item => (
-                <div onClick={()=>sidebarClickHandler(item.label)} key={item.label+'-top'} className="flex flex-col items-center justify-center hover:text-white cursor-pointer text-gray-400 text-sm mr-1">
+                <div onClick={()=>sidebarClickHandler(item.label)} key={item.label+'-top'} className="flex flex-col items-center justify-center hover:text-white cursor-pointer text-gray-400 text-sm mr-1  ">
                         {item.icon}
                     </div>
                 ))}

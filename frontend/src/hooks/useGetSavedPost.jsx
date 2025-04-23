@@ -13,7 +13,7 @@ const useGetSavedPosts = () => {
                 const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/savedposts`, {credentials:'include'});
                 const data = await response.json();
                 if (data.success) {
-                    console.log(data.savedPosts);
+                    console.log(data.savedPosts, "saved posts 123");
                     dispatch(setSavedPosts(data.savedPosts));
                 } else {
                     toast.error(data.message);

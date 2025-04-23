@@ -4,10 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import HelpDialog from './HelpDialog'
 import { Button } from './ui/button'
 import { Bookmark, Heart, MessageCircle, SendIcon } from 'lucide-react'
-import { handleLike, handleDoubleClick,handleNewComment, SavePost } from './PostHandler'
+import { handleLike, handleDoubleClick,handleNewComment, SavePost, LikesDialog } from './PostHandler'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { setSavedPosts } from '@/redux/authSlice'
+import NotextLogo from "./notinstalogo.png";
 
 //This function is created by chaptgpt not me, return x days ago for a post
 const timeAgo = (dateString) => {
@@ -34,8 +35,8 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
     const [comments, setComments] = useState(post.comments);
     const dispatch = useDispatch();
     const [lastclick, setlastclick] = useState(0);
-    const [isLikedState, setIsLikedState] = useState(post.likes?.includes(user?._id));
-    const [curLikesState, setCurLikesState] = useState(post.likes?.length || 0);
+    const [isLikedState, setIsLikedState] = useState(post?.likes.map((f)=>f._id).includes(user?._id));
+    const [curLikesState, setCurLikesState] = useState(post?.likes.length || 0);
     const [curCommentsState, setCurCommentsState] = useState(post.comments?.length||0);
     const isLiked = newisLiked ?? isLikedState;
     const setIsLiked = newsetIsLiked ?? setIsLikedState;
@@ -43,7 +44,21 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
     const setCurLikes = newsetCurLikes ?? setCurLikesState;
     const setCurComments = newsetCurComments ?? setCurCommentsState;
     const [isSaved, setisSaved] = useState(savedPosts?.map((post)=>post._id).includes(post?._id));
-    console.log(comments, "newtest");
+    const [islikerfollowed, setIslikerFollowed] = useState({});
+    const [openlikesdialog, setOpenlikesDialog] = useState(false);
+    const likes = post?.likes;
+    console.log(post, "newtest");
+
+    const getLikes = () => {
+        const followingIDs = new Set(user?.following?.map(f => f._id));
+        const followedStatus = {};
+        likes?.forEach(f => {
+          followedStatus[f._id] = followingIDs.has(f._id);
+        });
+        setIslikerFollowed(followedStatus);
+        setOpenlikesDialog(true)
+    }
+
     useEffect(() => {
         const fetchComments = async () => {
           try {
@@ -62,6 +77,7 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
 
     return (
     <div className='flex flex-1'>
+        {user && <LikesDialog openlikesdialog={openlikesdialog} setOpenlikesDialog={setOpenlikesDialog} likes={likes} islikerfollowed={islikerfollowed} setIslikerFollowed={setIslikerFollowed} dispatch={dispatch} user={user} />}
         <div className='relative rounded-lg w-full h-full aspect-square object-cover'>
             <img onClick={()=>handleDoubleClick(user,profile,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike)} src={post.image} alt="postimg" className='rounded-l-lg w-full h-full object-cover' />
             {doubleClick && <Heart style={{left: "50%",top: "50%",transform: "translate(-50%, -50%)",}} size={'150px'} fill='red' className='absolute text-red-500 animate-fly-up' />}
@@ -71,7 +87,7 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
                 <div className='flex items-center gap-3'>
                     <Link onClick={()=>setOpenPostDialog(false)}>
                         <Avatar>
-                            <AvatarImage src={post.author?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
+                            <AvatarImage src={post?.author.profilePic=='default.jpg' ? NotextLogo : post?.author.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
                             <AvatarFallback>Post</AvatarFallback>
                         </Avatar>
                     </Link>
@@ -90,7 +106,7 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
                             <div className='flex gap-3 justify-between'>
                                 <Link onClick={()=>setOpenPostDialog(false)} to={`/profile/${comment?.author?.username}`}>
                                     <Avatar>
-                                        <AvatarImage src={comment?.author?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
+                                        <AvatarImage src={comment?.author.profilePic=='default.jpg' ? NotextLogo : comment?.author.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
                                         <AvatarFallback>Post</AvatarFallback>
                                     </Avatar>
                                 </Link>
@@ -112,7 +128,7 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
                 </div>
                 <Bookmark onClick={()=>SavePost(user, isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch)} fill={isSaved ? 'white' : ''} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
             </div>
-            <span className='font-medium block mb-2 px-3'>{curLikes} likes</span>
+            <span onClick={()=>getLikes()} className='font-medium block mb-2 px-3'>{curLikes} likes</span>
             <span className='text-sm block mb-2 px-3'>{timeAgo(post.createdAt)}</span>
             <hr/>
             <div className='flex items-center'>
