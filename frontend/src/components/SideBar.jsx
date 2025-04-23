@@ -129,7 +129,7 @@ const SideBar = () => {
                     <img src={NotextLogo} alt="Description" width="50" className="my-10 pl-3"/>
                 </Link>
                 <div className="w-full relative mt-10 h-9">
-                    <Input value={searchtext} onChange={(e)=>setSearchText(e.target.value.trim())} className={`w-[100%]  mb-5  ${searchtext ? 'pl-2' : 'pl-8'} focus:pl-2 bg-gray-500/50  h-10  placeholder:text-white text-white`} placeholder="Search"
+                    <Input value={searchtext} onChange={(e)=>setSearchText(e.target.value.trim())} className={`w-[100%]  mb-5  ${searchtext ? 'pl-2' : 'pl-8'} focus:pl-2 bg-gray-500/50  h-9  placeholder:text-white text-white`} placeholder="Search"
                         onFocus={() => {setSearchOpen(true); document.querySelector('.search-icon').classList.add('hidden')}} 
                         onBlur={() => {if(!searchtext) {document.querySelector('.search-icon').classList.remove('hidden')}}}
                     />
