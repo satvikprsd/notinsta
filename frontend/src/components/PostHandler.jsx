@@ -9,14 +9,16 @@ import { Button } from "./ui/button";
 
 
 export const handleLike = async (user,profile,post,posts,isLiked,setIsLiked,setCurLikes,dispatch) => {
-    console.log(post)
+    // console.log(post)
+    setCurLikes(prev=> isLiked ? prev - 1 : prev + 1);
+    setIsLiked(prev=>!prev);
     if (!user) toast.error('Please login to like');
     else {
         try{
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/post/${post._id}/likeordislike`, {credentials: 'include'});
             const data = await response.json();
             if(data.success) {
-                console.log(data);
+                // console.log(data);
                 toast.success(isLiked ? "Disliked post" : "Liked post");
                 const {_id,username, profilePic} = user
                 const newLikes = posts.map(p=> p._id === post._id ? {...p, likes: isLiked ? p.likes.filter(f => f._id!==user._id) : [...p.likes,{_id, username, profilePic}]} : p);
@@ -25,14 +27,16 @@ export const handleLike = async (user,profile,post,posts,isLiked,setIsLiked,setC
                     const newlikes = profile.posts.map(p=> p._id === post._id ? {...p, likes: isLiked ? p.likes.filter(id => id!==user._id) : [...p.likes,user._id]} : p);
                     dispatch(setProfile({...profile, posts:newlikes}));
                 }
-                setIsLiked(!isLiked);
-                setCurLikes(prev=> isLiked ? prev - 1 : prev + 1);
             }
             else {
+                setIsLiked(prev=>!prev);
+                setCurLikes(prev=> isLiked ? prev + 1 : prev - 1);
                 toast.error(data.message);
             }
         }
         catch(error) {
+            setIsLiked(prev=>!prev);
+            setCurLikes(prev=> isLiked ? prev + 1 : prev - 1);
             console.error(error);
             toast.error('Failed to like or dislike post');
         }
@@ -77,7 +81,6 @@ export const handleNewComment = async (user,post,profile,posts,comments,setComme
 
 export const handleDoubleClick = (user,profile,post,posts,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,like) => {
     const now = Date.now();
-    console.log(now,lastclick,now-lastclick);
     if (now - lastclick < 300){
         setdoubleClick(true);
         {!isLiked && like(user,profile,post,posts,isLiked,setIsLiked,setCurLikes,dispatch);}
@@ -89,25 +92,27 @@ export const handleDoubleClick = (user,profile,post,posts,isLiked,setIsLiked,set
  export  const SavePost = async (user,isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch) => {
     if (!user) toast.error('Please login to save');
     else{
+        setisSaved(prev=>!prev);
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/post/${post?._id}/save`, {credentials: 'include'})
             const data = await response.json();
             if (data.success){
-            if (isSaved){
-                dispatch(setSavedPosts(savedPosts.filter((post)=>post._id!=post?._id)));
-                toast.success('Post removed from saved successfully');
+                if (isSaved){
+                    dispatch(setSavedPosts(savedPosts.filter((post)=>post._id!=post?._id)));
+                    toast.success('Post removed from saved successfully');
+                }
+                else{
+                    dispatch(setSavedPosts([post, ...savedPosts]))
+                    toast.success('Post added to saved successfully');
+                }
             }
             else{
-                dispatch(setSavedPosts([post, ...savedPosts]))
-                toast.success('Post added to saved successfully');
-            }
-            setisSaved(prev=>!prev);
-            }
-            else{
+                setisSaved(prev=>!prev);
                 console.log(data);
                 toast.error('Failed to save Post');
             }
         }catch(e){
+            setisSaved(prev=>!prev);
             console.log(e);
             toast.error('Failed to save Post');
         }
@@ -116,6 +121,7 @@ export const handleDoubleClick = (user,profile,post,posts,isLiked,setIsLiked,set
 
 export const LikesDialog = ({openlikesdialog, setOpenlikesDialog, likes, islikerfollowed, setIslikerFollowed, dispatch ,user}) => {
     const handleFollow = async (profile) => {
+        setIslikerFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
         const profileID = profile._id;
         try{
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/followorunfollow/${profileID}`,{
@@ -123,9 +129,8 @@ export const LikesDialog = ({openlikesdialog, setOpenlikesDialog, likes, isliker
                 credentials: 'include',
             });
             const data = await response.json();
-            console.log(data);
+            // console.log(data);
             if(data.success){
-                setIslikerFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
                 if (islikerfollowed[profileID]){
                     const newfollowing = user?.following.filter((f)=>f._id!=profileID)
                     dispatch(setAuthUser({...user, following: newfollowing}))
@@ -136,9 +141,11 @@ export const LikesDialog = ({openlikesdialog, setOpenlikesDialog, likes, isliker
                 }
                 toast.success(islikerfollowed[profileID] ? "Unfollowed successfully" : "Followed successfully");
               }else{
+                setIslikerFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
                 toast.error(data.message);
               }
         }catch(e){
+            setIslikerFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
             toast.error(e.message);
             console.log(e);
         }

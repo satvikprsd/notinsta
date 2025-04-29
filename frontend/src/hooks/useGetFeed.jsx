@@ -8,7 +8,7 @@ import { toast } from "sonner";
 const logout = async (dispatch,navigate) => {
     try {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/logout`);
-        console.log(response)
+        // console.log(response)
         const data = await response.json();
         if (data.success) {
             dispatch(setAuthUser(null));
@@ -33,7 +33,7 @@ const useGetFeed = () => {
                 const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/post/feed`, {credentials:'include'});
                 const data = await response.json();
                 if (data.success) {
-                    console.log(data.posts);
+                    // console.log(data.posts);
                     dispatch(setFeed(data.posts));
                 } else {
                     logout(dispatch,navigate);

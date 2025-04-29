@@ -1,5 +1,5 @@
-import { Heart, Home, LogOut, LogOutIcon, MessageCircle, Play, PlayCircle, PlaySquareIcon, PlusSquare, Search, Settings, Video, VideoIcon } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import { Heart, Home, LogOut, MessageCircle, PlayCircle, PlusSquare, Search } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Logo from "./notinsta.png";
 import NotextLogo from "./notinstalogo.png";
@@ -39,7 +39,7 @@ const SideBar = () => {
     const logout = async () => {
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/logout`);
-            console.log(response)
+            // console.log(response)
             const data = await response.json();
             if (data.success) {
                 dispatch(setAuthUser(null));

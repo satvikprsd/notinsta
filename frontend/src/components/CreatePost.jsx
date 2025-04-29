@@ -31,7 +31,7 @@ const CreatePost = ({ open, setOpen }) => {
         }
     };
     const handleNewPost = async () => {
-        console.log(feed,"posts")
+        // console.log(feed,"posts")
         setLoading(true);
         const postData = new FormData();
         if (imgPreview) {

@@ -13,7 +13,7 @@ const useGetSuggestions = () => {
                 const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/suggestions`, {credentials:'include'});
                 const data = await response.json();
                 if (data.success) {
-                    console.log(data.suggestions);
+                    // console.log(data.suggestions);
                     dispatch(setSuggestedUsers(data.suggestions));
                 } else {
                     toast.error(data.message);

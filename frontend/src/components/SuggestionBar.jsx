@@ -12,20 +12,20 @@ const SuggestionBar = () => {
   const following = user?.following;
   const [isfollowed, setIsFollowed] = useState({});
   const [showAllSuggestions, setShowAllSuggestions] = useState(false);
-  const { searchOpen, setSearchOpen } = useSearch();
+  const { setSearchOpen } = useSearch();
   const dispatch = useDispatch();
   const handleFollow = async (profile) => {
     const profileID = profile._id;
     const {username, profilePic} = profile ;
+    setIsFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
     try{
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/followorunfollow/${profileID}`,{
             method: 'GET',
             credentials: 'include',
         });
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         if(data.success){
-            setIsFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
             if (isfollowed[profileID]){
               const newfollowing = following.filter((f)=>f._id!=profileID);
               dispatch(setAuthUser({...user, following: newfollowing}));
@@ -35,9 +35,11 @@ const SuggestionBar = () => {
             }
             toast.success(isfollowed[profileID] ? "Unfollowed successfully" : "Followed successfully");
           }else{
+            setIsFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
             toast.error('Failed to Follow/Unfollow');
           }
     }catch(e){
+        setIsFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
         toast.error(e.message);
         console.log(e);
     }
@@ -46,7 +48,7 @@ const SuggestionBar = () => {
   const visibleSuggestions = showAllSuggestions ? suggestedUsers : suggestedUsers.slice(0, 5);
 
   return (
-    <div onClick={()=>setSearchOpen(false)} className='hidden lg:block w-[25%] px-0 my-10 pr-32' style={{"padding-right": "30px", "padding-left": "10px"}}>
+    <div onClick={()=>setSearchOpen(false)} className='hidden lg:block w-[25%] px-0 my-10 pr-32' style={{"paddingRight": "30px", "paddingLeft": "10px"}}>
       <div className='flex items-center gap-3'>
           <Link to={`/profile/${user?.username}`}>
             <Avatar className="h-12 w-12">

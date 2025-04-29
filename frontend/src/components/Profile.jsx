@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button } from "./ui/button";
 import { Link, useParams } from "react-router-dom";
 import useGetUser from "@/hooks/useGetUser";
-import { Cross, CrossIcon, Heart, MessageCircle, Search, XIcon } from "lucide-react";
+import { Heart, MessageCircle, Search, XIcon } from "lucide-react";
 import { Dialog, DialogContent } from "./ui/dialog";
 import PostDialog from "./PostDialog";
 import { toast } from "sonner";
@@ -24,7 +24,7 @@ const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, 
     useEffect(()=>{
         const timer = setTimeout(()=>{
             const newfollowing = followers.filter((f)=>f.username.toLowerCase().includes(searchtext.toLowerCase()))
-            console.log(newfollowing,"newfollwing");
+            // console.log(newfollowing,"newfollwing");
             setSearchFollowers(newfollowing);
         },300)
         return () => {
@@ -34,15 +34,15 @@ const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, 
 
     const handleFollow = async (profile) => {
         const profileID = profile._id;
+        setIsFollowerFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
         try{
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/followorunfollow/${profileID}`,{
                 method: 'GET',
                 credentials: 'include',
             });
             const data = await response.json();
-            console.log(data);
+            // console.log(data);
             if(data.success){
-                setIsFollowerFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
                 if (isfollowerfollowed[profileID]){
                     const newfollowing = user?.following.filter((f)=>f._id!=profileID)
                     dispatch(setAuthUser({...user, following: newfollowing}))
@@ -53,9 +53,12 @@ const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, 
                 }
                 toast.success(isfollowerfollowed[profileID] ? "Unfollowed successfully" : "Followed successfully");
               }else{
+                setIsFollowerFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
                 toast.error(data.message);
+
               }
         }catch(e){
+            setIsFollowerFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
             toast.error(e.message);
             console.log(e);
         }
@@ -104,7 +107,7 @@ const FollowingDialog = ({openfollowingdialog, setOpenFollowingDialog, following
     useEffect(()=>{
         const timer = setTimeout(()=>{
             const newfollowing = followings.filter((f)=>f.username.toLowerCase().includes(searchtext.toLowerCase()))
-            console.log(newfollowing,"newfollwing");
+            // console.log(newfollowing,"newfollwing");
             setSearchFollowings(newfollowing);
         },300)
         return () => {
@@ -114,15 +117,15 @@ const FollowingDialog = ({openfollowingdialog, setOpenFollowingDialog, following
 
     const handleFollow = async (profile) => {
         const profileID = profile._id;
+        setIsFollowingFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
         try{
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/followorunfollow/${profileID}`,{
                 method: 'GET',
                 credentials: 'include',
             });
             const data = await response.json();
-            console.log(data);
+            // console.log(data);
             if(data.success){
-                setIsFollowingFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
                 if (isfollowingfollowed[profileID]){
                     const newfollowing = user?.following.filter((f)=>f._id!=profileID)
                     dispatch(setAuthUser({...user, following: newfollowing}))
@@ -133,9 +136,11 @@ const FollowingDialog = ({openfollowingdialog, setOpenFollowingDialog, following
                 }
                 toast.success(isfollowingfollowed[profileID] ? "Unfollowed successfully" : "Followed successfully");
               }else{
+                setIsFollowingFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
                 toast.error(data.message);
               }
         }catch(e){
+            setIsFollowingFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
             toast.error(e.message);
             console.log(e);
         }
@@ -185,9 +190,9 @@ const Profile = () => {
     const [postorsaved, setPostOrSaved] = useState(true);
     const navigate = useNavigate();
     const params = useParams();
-    console.log(params,"params");
+    // console.log(params,"params");
     const userId = params.username;
-    const { loading, setLoading } = useLoading();
+    const { loading } = useLoading();
     useGetUser(userId);
     const dispatch = useDispatch();
     const { profile,user,savedPosts } = useSelector((store) => store.auth);
@@ -199,7 +204,7 @@ const Profile = () => {
     const followers = profile?.followers;
     const followings = profile?.following;
     useEffect(()=>{
-        console.log('profile refetch')
+        // console.log('profile refetch')
         setIsFollowed(profile?.followers?.map((f)=>f._id).includes(user?._id));
     },[loading])
 
@@ -219,32 +224,34 @@ const Profile = () => {
         profile?.following?.forEach(f => {
           followedStatus[f._id] = followingIDs.has(f._id);
         });
-        console.log(user.following,profile.following,followedStatus, "idontcare")
+        // console.log(user.following,profile.following,followedStatus, "idontcare")
         setIsFollowingFollowed(followedStatus);
         setOpenFollowingDialog(true)
     }
 
     const handleFollow = async () => {
+        setIsFollowed(prev=>!prev); 
         try{
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/followorunfollow/${profile._id}`,{
                 method: 'GET',
                 credentials: 'include',
             });
             const data = await response.json();
-            if(data.success){
-                setIsFollowed(prev=>!prev);   
+            if(data.success){  
                 const { _id: userId, username: userUsername, profilePic: userProfilePic } = user;
                 let newfollowers = isfollowed ? profile?.followers.filter((f)=> f._id!=user?._id) : [...profile.followers, { _id: userId, username: userUsername, profilePic: userProfilePic }]
                 const { _id: profileId, username: profileUsername, profilePic: profileProfilePic } = profile;
                 let usernewfollowing = isfollowed ? user?.following.filter((f)=> f._id!=profile?._id) : [...user.following, { _id: profileId, username: profileUsername, profilePic: profileProfilePic }]
-                console.log(usernewfollowing, "new folllowing")
+                // console.log(usernewfollowing, "new folllowing")
                 dispatch(setProfile({...profile, followers : newfollowers}))
                 dispatch(setAuthUser({...user, following: usernewfollowing}))
                 toast.success(isfollowed ? "Unfollowed successfully" : "Followed successfully");
               }else{
+                setIsFollowed(prev=>!prev); 
                 toast.error('Failed to Follow/Unfollow');
               }
         }catch(e){
+            setIsFollowed(prev=>!prev); 
             toast.error(e.message);
             console.log(e);
         }

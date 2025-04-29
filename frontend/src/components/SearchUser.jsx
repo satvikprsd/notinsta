@@ -5,7 +5,7 @@ import NotextLogo from "./notinstalogo.png";
 import { useSearch } from './SearchContext';
 const Searchuser = ({searchtext}) => {
     const [results, setResults] = useState([])
-    const { searchOpen, setSearchOpen } = useSearch();
+    const { setSearchOpen } = useSearch();
     const fetchsearch = async () => {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/search/${searchtext}`, {credentials: 'include'})
         const data = await response.json()

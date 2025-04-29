@@ -47,7 +47,7 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
     const [islikerfollowed, setIslikerFollowed] = useState({});
     const [openlikesdialog, setOpenlikesDialog] = useState(false);
     const likes = post?.likes;
-    console.log(post, "newtest");
+    // console.log(post, "newtest");
 
     const getLikes = () => {
         const followingIDs = new Set(user?.following?.map(f => f._id));
@@ -101,7 +101,6 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
             <div className='h-100 overflow-y-auto p-4 custom-scrollbar'>
                 {comments.map((comment,index) => (
                     <div key={index} className='flex grow items-center justify-between p-4'>
-                        {console.log(comment,"y")}
                         <div className='w-full flex flex-col items-start gap-3'>
                             <div className='flex gap-3 justify-between'>
                                 <Link onClick={()=>setOpenPostDialog(false)} to={`/profile/${comment?.author?.username}`}>

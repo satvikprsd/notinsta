@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
 import { Button } from './ui/button'
-import { Loader2Icon, MoreHorizontal, Save, View } from 'lucide-react'
+import { Loader2Icon, MoreHorizontal} from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'sonner'
 import { setFeed } from '@/redux/postSlice'

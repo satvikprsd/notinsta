@@ -6,7 +6,7 @@ import { useSearch } from './SearchContext';
 
 const Feed = () => {
   const { feed } = useSelector(store=>store.posts);
-  const { searchOpen, setSearchOpen } = useSearch();
+  const { setSearchOpen } = useSearch();
   return (
     <div onClick={()=>{setSearchOpen(false)}} className='h-full flex-1 my-8 flex flex-col items-center xl:pl-[20%] md:pl-[8%] sm:pl-0'>
         <div className='h-full'>

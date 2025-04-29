@@ -19,7 +19,7 @@ const SignUp = () => {
     const [loading, setLoading] = useState(false);
     const CreateUser = async (event) => {
         event.preventDefault();
-        console.log(inputs);
+        // console.log(inputs);
         try {
             setLoading(true);
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/register`, {

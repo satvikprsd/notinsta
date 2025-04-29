@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
-import { Bookmark, BookMarked, Heart, MessageCircle, MoreHorizontal, SendIcon, XIcon } from 'lucide-react'
+import { Dialog, DialogContent} from './ui/dialog'
+import { Bookmark, Heart, MessageCircle, MoreHorizontal, SendIcon } from 'lucide-react'
 import { Button } from './ui/button'
 import PostDialog from './PostDialog'
 import HelpDialog from './HelpDialog'
@@ -27,7 +27,7 @@ const Post = ({post}) => {
     const [islikerfollowed, setIslikerFollowed] = useState({});
     const [openlikesdialog, setOpenlikesDialog] = useState(false);
     const likes = post?.likes;
-    console.log(likes,"likes")
+    // console.log(likes,"likes")
     const dispatch = useDispatch();
     
     const getLikes = () => {

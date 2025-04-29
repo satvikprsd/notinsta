@@ -33,7 +33,7 @@ const SignIn = () => {
     const [loading, setLoading] = useState(false);
     const LoginUser = async (event) => {
         event.preventDefault();
-        console.log(inputs);
+        // console.log(inputs);
         try {
             setLoading(true);
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/login`, {
@@ -46,7 +46,7 @@ const SignIn = () => {
             });
             const data = await response.json();
             if (data.success) {
-                console.log(data.user)
+                // console.log(data.user)
                 dispatch(setAuthUser(data.user));
                 toast.success(data.message);
                 setInputs({
