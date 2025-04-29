@@ -111,7 +111,10 @@ const SideBar = () => {
                             onFocus={() => document.querySelector('.search-icon').classList.add('hidden')} 
                             onBlur={() => {if(!searchtext) {document.querySelector('.search-icon').classList.remove('hidden')}}}
                         />
-                        <Searchuser searchtext={searchtext} />
+                        <hr />
+                        <div className="bg-black bg-opacity-80 p-2 mt-2 rounded-lg max-h-[80%] overflow-y-auto z-20">
+                            <Searchuser searchtext={searchtext} />
+                        </div>
                     </div>}
             </div>
             <CreatePost open={open} setOpen={setOpen} />

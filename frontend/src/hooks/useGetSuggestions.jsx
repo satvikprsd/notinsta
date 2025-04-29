@@ -1,3 +1,4 @@
+import { useLoading } from "@/components/LoadingContext";
 import { setSuggestedUsers } from "@/redux/authSlice";
 import  { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,8 +8,10 @@ import { toast } from "sonner";
 const useGetSuggestions = () => {
     const dispatch = useDispatch();
     const {user} = useSelector(store=>store.auth)
+    const { setLoading } = useLoading();
     useEffect(()=>{
         const fetchAllSuggestions = async () => {
+            setLoading(true);
             try {
                 const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/suggestions`, {credentials:'include'});
                 const data = await response.json();
@@ -20,6 +23,9 @@ const useGetSuggestions = () => {
                 }
             } catch (error) {
                 console.error(error);
+            }
+            finally {
+                setLoading(false);
             }
         }
         if (user) fetchAllSuggestions();

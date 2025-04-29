@@ -18,8 +18,8 @@ const Home = () => {
     }, [user, navigate]);
 
     useGetFeed();
-    useGetSuggestions();
     useGetSavedPosts();
+    useGetSuggestions();
     return (
         <div className="text-white flex">
             <div className="flex grow">

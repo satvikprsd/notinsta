@@ -23,10 +23,9 @@ const Searchuser = ({searchtext}) => {
     },[searchtext])
     return (
     <div className=''>
-        <hr />
         <div className='w-full h-full bg-background'>
             <div className='overflow-y-auto px-2 pt-2 h-full'>
-            {results?.map((users) => {
+            {results.length > 0 ? results?.map((users) => {
                 return (
                     <div key={users._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4'>
                         <Link onClick={()=>{setSearchOpen(false)}} to={`/profile/${users.username}`}>
@@ -43,7 +42,7 @@ const Searchuser = ({searchtext}) => {
                         </div>
                     </div>
                 )})
-            }
+            : <p className='text-center text-gray-600'>No results found</p>}
             </div>
         </div>
     </div>

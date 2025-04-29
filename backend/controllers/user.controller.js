@@ -65,11 +65,11 @@ export const login = async(req,res) => {
         }
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
-        setTimeout(()=>{return res.cookie('token', token, { httpOnly: true, sameSite: 'none', secure: true, maxAge: 30*24*60*60*1000 }).json({
+        return res.cookie('token', token, { httpOnly: true, sameSite: 'none', secure: true, maxAge: 30*24*60*60*1000 }).json({
             success: true,
             message: `${user.username} logged in successfully`,
             user: userData
-        })},1000); //Timeout only for me to test the loading animation
+        }); //Timeout only for me to test the loading animation
     }
     catch (error) {
         return res.status(400).json({ success: false, message: error });
@@ -198,10 +198,15 @@ export const searchUser = async(req, res) => {
             return res.status(400).json({ success: false, message: 'This should not happen' });
         }
         const users = await User.find({
-            username: { $regex: username, $options: "i" }
+            $or: [
+                { username: { $regex: username, $options: "i" } },
+                { name: { $regex: username, $options: "i" } }
+              ]
         })
-        .limit(10)
-        .select("username profilePic name");
+        .limit(15)
+        .select("username profilePic name")
+        
+        console.log(users);
         return res.status(200).json({ success: true, users });
     } catch (error) {
         console.error(error);

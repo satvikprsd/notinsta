@@ -65,7 +65,7 @@ const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, 
     }
     return (
         <Dialog open={openfollowerdialog}>
-            <DialogContent className="pt-3 px-0 w-sm max-w-[90%] max-h-[50vh] overflow-y-auto custom-scrollbar focus:outline-none focus:ring-0" onInteractOutside={()=> setOpenFollowerDialog(false)}>
+            <DialogContent className="flex flex-col pt-3 px-0 w-sm max-w-[90%] max-h-[50vh] focus:outline-none focus:ring-0" onInteractOutside={()=> setOpenFollowerDialog(false)}>
                 <div className="w-full flex items-center justify-between">
                 <div className="w-full flex-1 text-center font-bold">
                     <DialogTitle>Followers</DialogTitle>
@@ -79,22 +79,24 @@ const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, 
                     onFocus={() => document.querySelector('.search-icon').classList.add('hidden')} 
                     onBlur={() => {if(!searchtext) document.querySelector('.search-icon').classList.remove('hidden')}}/>
                 </div>
-                {searchfollowers?.map((f)=> {return (
-                    <div key={f._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4 px-5'>
-                    <Link onClick={()=>openfollowerdialog(false)} to={`/profile/${f.username}`}>
-                        <Avatar className="h-12 w-12">
-                        <AvatarImage src={f.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
-                        <AvatarFallback>USER</AvatarFallback>
-                        </Avatar>
-                    </Link>
-                    <div className='text-sm flex flex-col items-start gap-1'>
+                <div className="flex flex-col overflow-y-auto custom-scrollbar">
+                    {searchfollowers?.map((f)=> {return (
+                        <div key={f._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4 px-5'>
                         <Link onClick={()=>openfollowerdialog(false)} to={`/profile/${f.username}`}>
-                        <h1 className='font-bold'>{f.username}</h1>
+                            <Avatar className="h-12 w-12">
+                            <AvatarImage src={f.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
+                            <AvatarFallback>USER</AvatarFallback>
+                            </Avatar>
                         </Link>
-                    </div>
-                    <Button onClick={()=>{handleFollow(f)}} className='text-xs hover:cursor-pointer bg-gray-800 hover:bg-gray-900 font-bold text-white'>{f._id===user._id ? 'You' : isfollowerfollowed[f._id] ? "Following" : "Follow"}</Button>
-                    </div>
-                )})}
+                        <div className='text-sm flex flex-col items-start gap-1'>
+                            <Link onClick={()=>openfollowerdialog(false)} to={`/profile/${f.username}`}>
+                            <h1 className='font-bold'>{f.username}</h1>
+                            </Link>
+                        </div>
+                        <Button onClick={()=>{handleFollow(f)}} className='text-xs hover:cursor-pointer bg-gray-800 hover:bg-gray-900 font-bold text-white'>{f._id===user._id ? 'You' : isfollowerfollowed[f._id] ? "Following" : "Follow"}</Button>
+                        </div>
+                    )})}
+                </div>
             </DialogContent>
         </Dialog>
     );
@@ -147,7 +149,7 @@ const FollowingDialog = ({openfollowingdialog, setOpenFollowingDialog, following
     }
     return (
         <Dialog open={openfollowingdialog}>
-            <DialogContent className="pt-3 px-0 w-sm max-w-[90%] max-h-[50vh] overflow-y-auto custom-scrollbar focus:outline-none focus:ring-0" onInteractOutside={()=> setOpenFollowingDialog(false)}>
+            <DialogContent className="flex flex-col pt-3 px-0 w-sm max-w-[90%] max-h-[50vh] focus:outline-none focus:ring-0" onInteractOutside={()=> setOpenFollowingDialog(false)}>
                 <div className="w-full flex items-center justify-between">
                     <div className="w-full flex-1 text-center font-bold">
                         <DialogTitle>Following</DialogTitle>
@@ -161,22 +163,24 @@ const FollowingDialog = ({openfollowingdialog, setOpenFollowingDialog, following
                     onFocus={() => document.querySelector('.search-icon').classList.add('hidden')} 
                     onBlur={() => {if(!searchtext) document.querySelector('.search-icon').classList.remove('hidden')}}/>
                 </div>
-                {searchfollowings?.map((f)=> {return (
-                    <div key={f._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4 px-5'>
-                    <Link onClick={()=>openfollowingdialog(false)} to={`/profile/${f.username}`}>
-                        <Avatar className="h-12 w-12">
-                        <AvatarImage src={f.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
-                        <AvatarFallback>USER</AvatarFallback>
-                        </Avatar>
-                    </Link>
-                    <div className='text-sm flex flex-col items-start gap-1'>
+                <div className="flex flex-col overflow-y-auto custom-scrollbar">
+                    {searchfollowings?.map((f)=> {return (
+                        <div key={f._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4 px-5'>
                         <Link onClick={()=>openfollowingdialog(false)} to={`/profile/${f.username}`}>
-                        <h1 className='font-bold'>{f.username}</h1>
+                            <Avatar className="h-12 w-12">
+                            <AvatarImage src={f.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
+                            <AvatarFallback>USER</AvatarFallback>
+                            </Avatar>
                         </Link>
-                    </div>
-                    <Button onClick={()=>{handleFollow(f)}} className='text-xs hover:cursor-pointer bg-gray-800 hover:bg-gray-900 font-bold text-white'>{f._id===user._id ? 'You' : isfollowingfollowed[f._id] ? "Following" : "Follow"}</Button>
-                    </div>
-                )})}
+                        <div className='text-sm flex flex-col items-start gap-1'>
+                            <Link onClick={()=>openfollowingdialog(false)} to={`/profile/${f.username}`}>
+                            <h1 className='font-bold'>{f.username}</h1>
+                            </Link>
+                        </div>
+                        <Button onClick={()=>{handleFollow(f)}} className='text-xs hover:cursor-pointer bg-gray-800 hover:bg-gray-900 font-bold text-white'>{f._id===user._id ? 'You' : isfollowingfollowed[f._id] ? "Following" : "Follow"}</Button>
+                        </div>
+                    )})}
+                </div>
             </DialogContent>
         </Dialog>
     );
@@ -265,8 +269,8 @@ const Profile = () => {
     }
 
     return (
-        <div className="min-h-screen flex-1 my-3 flex flex-col items-center sm:pl-[20%]">
-            <div className="w-full flex items-start mt-10 mb-2 p-2 pl-5 sm:pl-[20%]">
+        <div className="min-h-screen flex-1 my-3 flex flex-col items-center md:pl-[10%] lg:pl-[20%]">
+            <div className="w-full flex items-start mt-10 mb-2 p-2 pl-5 md:pl-[10%] lg:pl-[20%]">
                 {user && <FollowersDialog openfollowerdialog={openfollowerdialog} setOpenFollowerDialog={setOpenFollowerDialog} followers={followers} isfollowerfollowed={isfollowerfollowed} setIsFollowerFollowed={setIsFollowerFollowed} dispatch={dispatch} user={user} />}
                 {user && <FollowingDialog openfollowingdialog={openfollowingdialog} setOpenFollowingDialog={setOpenFollowingDialog} followings={followings} isfollowingfollowed={isfollowingfollowed} setIsFollowingFollowed={setIsFollowingFollowed} dispatch={dispatch} user={user} />}
                 <ChangePfp open={openPfpDialog} setOpen={setopenPfpDialog} />
@@ -328,7 +332,7 @@ const Profile = () => {
             </div>
             : <></>
             }
-            <div className="grid my-10 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1 items-center pb-10">
+            <div className="grid my-10 grid-cols-1 sm:grid-cols-2 [@media(min-width:1150px)]:grid-cols-3 gap-1 items-center pb-10">
                 {postorsaved ? profile?.posts.length > 0 ? profile?.posts.map((post) => {
                     return (
                         <div onClick={() => {setSelectedPost(post);setOpenPostDialog(true);}} key={post._id} className="relative h-[400px] w-[300px] group hover:cursor-pointer overflow-hidden rounded-lg">
