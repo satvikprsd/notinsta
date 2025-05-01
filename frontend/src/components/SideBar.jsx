@@ -112,21 +112,21 @@ const SideBar = () => {
                             onBlur={() => {if(!searchtext) {document.querySelector('.search-icon').classList.remove('hidden')}}}
                         />
                         <hr />
-                        <div className="bg-black bg-opacity-80 p-2 mt-2 rounded-lg max-h-[80%] overflow-y-auto z-20">
+                        <div className="bg-background bg-opacity-80 p-2 mt-2 rounded-lg max-h-[80%] overflow-y-auto custom-scrollbar z-20">
                             <Searchuser searchtext={searchtext} />
                         </div>
                     </div>}
             </div>
             <CreatePost open={open} setOpen={setOpen} />
         </div>
-        <div className="fixed bottom-0 z-10 left-0 right-0 border-t border-gray-800 bg-black md:hidden flex justify-around items-center h-14">
+        <div className="fixed bottom-0 z-10 left-0 right-0 border-t border-gray-800 bg-background md:hidden flex justify-around items-center h-14">
             {bottombarItems.map(item => (
                 <div onClick={()=>sidebarClickHandler(item.label)} key={item.label+'-bottom'} className="flex flex-col items-center justify-center hover:text-white cursor-pointer text-gray-400 text-sm">
                     {item.icon}
                 </div>
             ))}
         </div>
-        <div className="fixed top-0 z-10 left-0 right-0 border-b border-gray-800 bg-black md:hidden flex justify-around items-center h-12">
+        <div className="fixed top-0 z-10 left-0 right-0 border-b border-gray-800 bg-background md:hidden flex justify-around items-center h-12">
             <div className="flex gap-3 w-full relative">
                 <Link className="w-20" to="/">
                     <img src={NotextLogo} alt="Description" width="50" className="my-10 pl-3"/>
@@ -137,7 +137,7 @@ const SideBar = () => {
                         onBlur={() => {if(!searchtext) {document.querySelector('.search-icon').classList.remove('hidden')}}}
                     />
                     {searchtext && searchOpen && (
-                        <div className="absolute top-full left-0 right-0 bg-black bg-opacity-80 p-2 mt-2 rounded-lg max-h-100 overflow-y-auto z-20">
+                        <div className="absolute top-full left-0 right-0 bg-background bg-opacity-80 p-2 mt-2 rounded-lg max-h-100 overflow-y-auto custom-scrollbar z-20">
                             <Searchuser searchtext={searchtext} />
                         </div>
                     )}

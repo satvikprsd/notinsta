@@ -2,7 +2,7 @@ import express from "express";
 import upload from "../middleware/multer.js";
 import { isauthenticated } from "../middleware/isAuth.js";
 
-import { addCommentToPost, addNewPost, deletePost, getAllFeedPost, getAllPostsByUser, getCommentsByPost, likeOrDislikePost, savePost } from "../controllers/post.controller.js";
+import { addCommentToPost, addNewPost, deletePost, getAllFeedPost, getAllPostsByUser, getCommentsByPost, getPostbyID, likeOrDislikePost, savePost } from "../controllers/post.controller.js";
 
 
 
@@ -16,5 +16,6 @@ router.route('/:postId/newcomment').post(isauthenticated, addCommentToPost);
 router.route('/:postId/allcomments').get(isauthenticated, getCommentsByPost);
 router.route('/delete/:postId').post(isauthenticated, deletePost);
 router.route('/:postId/save').get(isauthenticated, savePost);
+router.route('/getpost/:postId').get(getPostbyID);
 
 export default router;

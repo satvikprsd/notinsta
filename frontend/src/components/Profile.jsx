@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "./ui/button";
 import { Link, useParams } from "react-router-dom";
-import useGetUser from "@/hooks/useGetUser";
+import useGetProfile from "@/hooks/useGetProfile";
 import { Heart, MessageCircle, Search, XIcon } from "lucide-react";
 import { Dialog, DialogContent } from "./ui/dialog";
 import PostDialog from "./PostDialog";
@@ -16,6 +16,7 @@ import NotextLogo from "./notinstalogo.png";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Input } from "./ui/input";
 import { useLoading } from "./LoadingContext";
+import useGetUser from "@/hooks/useGetUser";
 
 const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, isfollowerfollowed, setIsFollowerFollowed, dispatch ,user}) => {
     const [searchfollowers, setSearchFollowers] = useState(followers);
@@ -196,10 +197,12 @@ const Profile = () => {
     const params = useParams();
     // console.log(params,"params");
     const userId = params.username;
-    const { loading } = useLoading();
-    useGetUser(userId);
+    const { userloading, profileloading } = useLoading();
+    console.log(userloading,profileloading)
     const dispatch = useDispatch();
     const { profile,user,savedPosts } = useSelector((store) => store.auth);
+    useGetUser(user?.username);
+    useGetProfile(userId);
     const [isfollowed, setIsFollowed] = useState(profile?.followers?.map((f)=>f._id).includes(user?._id));
     const [isfollowerfollowed, setIsFollowerFollowed] = useState({});
     const [isfollowingfollowed, setIsFollowingFollowed] = useState({});
@@ -210,7 +213,15 @@ const Profile = () => {
     useEffect(()=>{
         // console.log('profile refetch')
         setIsFollowed(profile?.followers?.map((f)=>f._id).includes(user?._id));
-    },[loading])
+    },[userloading,profileloading])
+
+    useEffect(() => {
+        if (selectedPost) {
+          if (typeof window !== 'undefined' && window.innerWidth <= 1024) {
+            navigate(`/p/${selectedPost._id}`);
+          } 
+        }
+      }, [selectedPost, openPostDialog]);
 
     const getfollowers = () => {
         const followingIDs = new Set(user?.following?.map(f => f._id));
@@ -261,7 +272,7 @@ const Profile = () => {
         }
     }
 
-    if (loading || !profile)
+    if (userloading || profileloading || !profile)
     {
         return (<div className="min-h-screen flex-1 my-3 flex flex-col justify-center items-center sm:pl-[20%]">
             <img src={NotextLogo} alt="Description" width="100" className="block my-8 pl-3"/>
@@ -335,7 +346,7 @@ const Profile = () => {
             <div className="grid my-10 grid-cols-1 sm:grid-cols-2 [@media(min-width:1150px)]:grid-cols-3 gap-1 items-center pb-10">
                 {postorsaved ? profile?.posts.length > 0 ? profile?.posts.map((post) => {
                     return (
-                        <div onClick={() => {setSelectedPost(post);setOpenPostDialog(true);}} key={post._id} className="relative h-[400px] w-[300px] group hover:cursor-pointer overflow-hidden rounded-lg">
+                        <div onClick={() => {setSelectedPost(post);setOpenPostDialog(true);}} key={post._id} className="relative h-[400px] w-[300px] group hover:cursor-pointer overflow-hidden">
                             <img src={post.image} alt="postimg" className="object-cover w-full h-full group-hover:opacity-70 "/>
                             <div className="absolute flex items-center justify-center bottom-0 left-0 h-full w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <div className="flex gap-5 text-white">
@@ -372,10 +383,10 @@ const Profile = () => {
                     );
                 }) : (<div className='col-start-2'><h1 className='text-2xl'>No saved posts yet</h1></div>)
                 }
-                {selectedPost && (
+                {selectedPost && window.innerWidth > 1024 && (
                     <Dialog open={openPostDialog} onOpenChange={setOpenPostDialog}>
                         <DialogContent
-                        className="max-w-5xl p-0 flex flex-col focus:outline-none focus:ring-0"
+                        className='max-w-6xl p-0 flex items-center lg:items-stretch flex-col focus:outline-none focus:ring-0'
                         onInteractOutside={() => setOpenPostDialog(false)}
                         >
                         <PostDialog setOpenPostDialog={setOpenPostDialog} post={selectedPost} />

@@ -14,7 +14,7 @@ const SuggestionBar = () => {
   const [isfollowed, setIsFollowed] = useState({});
   const [showAllSuggestions, setShowAllSuggestions] = useState(false);
   const { setSearchOpen } = useSearch();
-  const { loading } = useLoading();
+  const { suggestionloading } = useLoading();
   const dispatch = useDispatch();
   const handleFollow = async (profile) => {
     const profileID = profile._id;
@@ -72,7 +72,7 @@ const SuggestionBar = () => {
           <h1 className='font-semibold text-gray-600'>Suggested for you</h1>
           <span onClick={()=>setShowAllSuggestions(prev=>!prev)} className='font-bold text-white hover:cursor-pointer'>{showAllSuggestions?'See less' : 'See more'}</span>
         </div>
-        {loading ? (<div className="min-h-[300px] flex-1 flex flex-col justify-center items-center">
+        {suggestionloading ? (<div className="min-h-[300px] flex-1 flex flex-col justify-center items-center">
                               <img src={NotextLogo} alt="Description" width="80" className="block"/>
                           </div>) :
         visibleSuggestions?.length > 0 ?

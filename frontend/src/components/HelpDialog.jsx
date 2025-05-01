@@ -55,10 +55,10 @@ const HelpDialog = ({post,setDialog,setisSaved,isSaved}) => {
         <DialogContent className="w-[300px] px-0 py-2" onInteractOutside={()=>setOpenhelp(false)}>
             <div className='flex flex-col gap-2'>
                 <Button className='bg-background text-red-600 hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0'>Report</Button>
-                {user?._id == post.author?._id && <hr/>}
-                {user?._id == post.author?._id && (<Button onClick={()=>DeletPost()} className='bg-background text-red-600 hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0'>{loading ? <Loader2Icon className='h-4 w-4 animate-spin' /> : "Delete Post"}</Button>)}
+                {user?._id == post?.author._id && <hr/>}
+                {user?._id == post?.author._id && (<Button onClick={()=>DeletPost()} className='bg-background text-red-600 hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0'>{loading ? <Loader2Icon className='h-4 w-4 animate-spin' /> : "Delete Post"}</Button>)}
                 <hr/>
-                <Button className='bg-background text-white hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0 '>Go to Post</Button>
+                <Button onClick={()=>navigate(`/p/${post?._id}`)} className='bg-background text-white hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0 '>Go to Post</Button>
                 <hr/>
                 <Button onClick={()=>ViewProfile()} className='bg-background text-white hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0'>View Profile</Button>
                 <hr/>

@@ -28,10 +28,10 @@ const useGetFeed = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const {user} = useSelector(store=>store.auth)
-    const { setLoading } = useLoading();
+    const { setfeedLoading } = useLoading();
     useEffect(()=>{
         const fetchFeed = async () => {
-            setLoading(true);
+            setfeedLoading(true);
             try {
                 const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/post/feed`, {credentials:'include'});
                 const data = await response.json();
@@ -45,7 +45,7 @@ const useGetFeed = () => {
             } catch (error) {
                 console.error(error);
             } finally {
-                setLoading(false);
+                setfeedLoading(false);
             }
         }
         if (user) fetchFeed();

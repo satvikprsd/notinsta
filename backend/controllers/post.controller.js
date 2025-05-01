@@ -146,3 +146,19 @@ export const savePost = async (req, res) => {
         console.error(error);
     }
 };
+
+export const getPostbyID = async (req,res) => {
+    try{
+        const postId = req.params.postId;
+        const post = await Post.findById(postId)
+        .populate({path: 'author', select:'-password -email'})
+        .populate({path: 'comments', sort:{createdAt:-1}, populate:{path:'author', select:'name username profilePic'}})
+        .populate({path: 'likes', select:'username profilePic'});
+        if (!post) return res.status(404).json({message: 'Post not found', success: false});
+        return res.status(200).json({success: true, post})
+    }
+    catch(e){
+        console.error(e);
+        res.status(404).json({message: 'Error', success: false});
+    }
+}

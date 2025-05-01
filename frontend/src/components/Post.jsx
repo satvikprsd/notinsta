@@ -7,7 +7,7 @@ import PostDialog from './PostDialog'
 import HelpDialog from './HelpDialog'
 import { useDispatch, useSelector } from 'react-redux'
 import { handleDoubleClick, handleLike, handleNewComment, LikesDialog, SavePost } from './PostHandler'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { setSavedPosts } from '@/redux/authSlice'
 import NotextLogo from "./notinstalogo.png";
 
@@ -26,6 +26,7 @@ const Post = ({post}) => {
     const [isSaved, setisSaved] = useState(savedPosts?.map((post)=>post._id).includes(post?._id));
     const [islikerfollowed, setIslikerFollowed] = useState({});
     const [openlikesdialog, setOpenlikesDialog] = useState(false);
+    const navigate = useNavigate();
     const likes = post?.likes;
     // console.log(likes,"likes")
     const dispatch = useDispatch();
@@ -64,21 +65,23 @@ const Post = ({post}) => {
         <div className='mx-5 md:mx-0 flex items-center justify-between my-2'>
             <div className='flex items-center gap-3'>
                 <Heart onClick={()=>handleLike(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch)} size={'25px'} className={`cursor-pointer hover:text-gray-600 hover:bounce-once`} fill={isLiked ? 'red' : 'none'} stroke={isLiked ? 'red' : 'currentColor'} />
-                <MessageCircle onClick={()=>setOpenPostDialog(true)} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
+                <MessageCircle onClick={()=>{window.innerWidth <= 1024 ? navigate(`/p/${post?._id}`) : setOpenPostDialog(true)}} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
                 <SendIcon size={'23px'} className='cursor-pointer hover:text-gray-600' />
             </div>
             <Bookmark onClick={()=>SavePost(user, isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch)} fill={isSaved ? 'white' : ''} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
         </div>
-        <span onClick={()=>getLikes()} className='mx-5 md:mx-0 font-medium block '>{curLikes} likes</span>
-        <span className='ml-5 md:ml-0 font-medium mb-2'>{post.author?.username} </span>
-        <span className='mr-5 md:mr-0 font-light mb-2'>{post.caption}</span>
+        <div className='mx-5 md:mx-0'>
+        <span onClick={()=>getLikes()} className=' font-medium block '>{curLikes} likes</span>
+        <span className='font-medium mb-2'>{post.author?.username} </span>
+        <span className='font-light mb-2'>{post.caption}</span>
+        </div>
         {curComments>0 && <span onClick={()=>setOpenPostDialog(true)} className='mx-5 md:mx-0 font-light block hover:cursor-pointer'>View all {curComments} comments</span>}
         <Dialog open={OpenPostDialog}>
-            <DialogContent className='max-w-5xl p-0 flex flex-col focus:outline-none focus:ring-0' onInteractOutside={()=>setOpenPostDialog(false)}>
+            <DialogContent className='max-w-6xl p-0 flex items-center lg:items-stretch flex-col focus:outline-none focus:ring-0' onInteractOutside={()=>setOpenPostDialog(false)}>
                 <PostDialog setOpenPostDialog={setOpenPostDialog} newsetIsLiked={setIsLiked} newisLiked={isLiked} newcurLikes={curLikes} newsetCurLikes={setCurLikes} newsetCurComments={setCurComments}  post={post}/>
             </DialogContent>
         </Dialog>
-        <div className='mx-2 md:mx-0 flex items-center'>
+        <div className='mx-2 md:mx-0 hidden lg:flex items-center'>
             <input type="text" placeholder="Add a comment..." className='w-full p-3 rounded-md h-10 focus:outline-none focus:ring-0' value={commenttext} onChange={(e)=>{e.target.value.trim() ? setCommenttext(e.target.value) : setCommenttext("")}} />
             {commenttext && <Button onClick={()=>handleNewComment(user,post,null,feed,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments)} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)]">Post</Button>}
         </div>

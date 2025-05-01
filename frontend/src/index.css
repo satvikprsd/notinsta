@@ -121,8 +121,15 @@
   }
 }
 
+body::-webkit-scrollbar {
+  width: 8px; 
+  height: 0;
+}
+
 html, body {
   overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #1f1f1f;
 }
 
 @keyframes fadeIn {

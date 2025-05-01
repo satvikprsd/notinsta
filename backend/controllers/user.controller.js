@@ -203,7 +203,7 @@ export const searchUser = async(req, res) => {
                 { name: { $regex: username, $options: "i" } }
               ]
         })
-        .limit(15)
+        .limit(10)
         .select("username profilePic name")
         
         console.log(users);

@@ -8,10 +8,10 @@ import { toast } from "sonner";
 const useGetSuggestions = () => {
     const dispatch = useDispatch();
     const {user} = useSelector(store=>store.auth)
-    const { setLoading } = useLoading();
+    const { setsuggestionLoading } = useLoading();
     useEffect(()=>{
         const fetchAllSuggestions = async () => {
-            setLoading(true);
+            setsuggestionLoading(true);
             try {
                 const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/suggestions`, {credentials:'include'});
                 const data = await response.json();
@@ -25,7 +25,7 @@ const useGetSuggestions = () => {
                 console.error(error);
             }
             finally {
-                setLoading(false);
+                setsuggestionLoading(false);
             }
         }
         if (user) fetchAllSuggestions();
