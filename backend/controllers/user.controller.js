@@ -66,7 +66,13 @@ export const login = async(req,res) => {
         }
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
-        return res.cookie('token', token, { httpOnly: true, sameSite: 'none', secure: true, maxAge: 30*24*60*60*1000 }).json({
+        return res.cookie('token', token, { 
+            httpOnly: true, 
+            sameSite: 'none', 
+            secure: true, 
+            path: '/',
+            maxAge: 30*24*60*60*1000 
+        }).json({
             success: true,
             message: `${user.username} logged in successfully`,
             user: userData
@@ -79,7 +85,14 @@ export const login = async(req,res) => {
 
 export const logout = async(req,res) => {
     try {
-        res.clearCookie('token', { path: '/' });
+        res.clearCookie('token', { 
+            path: '/',
+            sameSite: 'none', 
+            secure: true,
+            httpOnly: true,
+            domain: '.railway.app',
+            partitioned: true
+        });
         return res.status(200).json({ success: true, message: 'User logged out successfully' });
     }
     catch (error) {

@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
-    origin: [process.env.URL,'https://notinsta-gr7b.onrender.com','https://notinsta.vercel.app'],
+    origin: [process.env.URL,'https://notinsta-gr7b.onrender.com','https://notinsta.vercel.app','https://notinsta-production.up.railway.app'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE']
 }
