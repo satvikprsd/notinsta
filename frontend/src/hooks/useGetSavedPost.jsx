@@ -1,8 +1,6 @@
 import { setSavedPosts } from "@/redux/authSlice";
 import  { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "sonner";
-
 
 const useGetSavedPosts = () => {
     const dispatch = useDispatch();
@@ -16,7 +14,7 @@ const useGetSavedPosts = () => {
                     // console.log(data.savedPosts, "saved posts 123");
                     dispatch(setSavedPosts(data.savedPosts));
                 } else {
-                    toast.error(data.message);
+                    console.error(data.message);
                 }
             } catch (error) {
                 console.error(error);

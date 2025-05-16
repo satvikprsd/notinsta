@@ -3,8 +3,6 @@ import { setAuthUser, setProfile } from "@/redux/authSlice";
 import  {useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-
 
 const useGetUser = (username) => {
     const dispatch = useDispatch();
@@ -21,7 +19,7 @@ const useGetUser = (username) => {
                     dispatch(setAuthUser(data.user));
                     
                 } else {
-                    toast.error(data.message);
+                    console.error(data.message);
                 }
             } catch (error) {
                 console.error(error);

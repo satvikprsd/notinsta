@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import getDataUri from '../components/datauri.js';
 import cloudinary from '../components/cloudinary.js';
+import { Convo } from '../models/convo.model.js';
 
 export const register = async(req,res) => {
     try {
@@ -213,3 +214,26 @@ export const searchUser = async(req, res) => {
         return res.status(400).json({ success: false, message: error});
     }
 };
+
+
+export const getConvos = async(req, res) => {
+    try{
+        const userId = req.id;
+        const allConversations = await Convo.find({ participants: userId })
+            .populate('participants', 'username profilePic')
+            .sort({ updatedAt: -1 })
+            .lean();
+        const filteredConversations = allConversations.map(convo => {
+            const chatuser = convo.participants.find(p => p._id.toString() !== userId.toString());
+            return {
+                chatuser,
+                updatedAt: convo.updatedAt,
+            };
+        });
+        return res.status(200).json({success: true, convo: filteredConversations })
+    }
+    catch(e){
+        console.log(e);
+        return res.status(400).json({success: false, message: e})
+    }
+}

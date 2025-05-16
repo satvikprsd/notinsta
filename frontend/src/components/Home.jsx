@@ -7,10 +7,16 @@ import useGetSuggestions from "@/hooks/useGetSuggestions";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import useGetSavedPosts from "@/hooks/useGetSavedPost";
+import { useActiveSideBar } from "./SideBarActiveContext";
 
 const Home = () => {
     const navigate = useNavigate();
     const { user } = useSelector((store) => store.auth);
+    const {setActiveItem} = useActiveSideBar();
+    useEffect(()=>{
+        setActiveItem('Home');
+        return () => {setActiveItem(null)}
+    },[]);
     useEffect(() => {
         if (!user) {
             navigate("/login");

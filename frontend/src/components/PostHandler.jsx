@@ -12,7 +12,11 @@ export const handleLike = async (user,profile,post,posts,isLiked,setIsLiked,setC
     // console.log(post)
     setCurLikes(prev=> isLiked ? prev - 1 : prev + 1);
     setIsLiked(prev=>!prev);
-    if (!user) toast.error('Please login to like');
+    if (!user) {
+        toast.error('Please login to like')
+        setIsLiked(prev=>!prev);
+        setCurLikes(prev=> isLiked ? prev + 1 : prev - 1);
+    }
     else {
         try{
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/post/${post._id}/likeordislike`, {credentials: 'include'});

@@ -6,9 +6,9 @@ import connectDB from './components/db.js';
 import userRoutes from './routes/user.route.js';
 import postRoutes from './routes/post.route.js';
 import messageRoutes from './routes/message.route.js';
+import { app, server } from './socket/socketio.js';
 
 dotenv.config();
-const app = express();
 
 const PORT = process.env.PORT || 8000;
 
@@ -26,7 +26,7 @@ app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/post', postRoutes);
 app.use('/api/v1/message', messageRoutes);
 
-app.listen(PORT,()=>{
+server.listen(PORT,()=>{
     connectDB();
     console.log(`Server at port ${PORT}`)
 });

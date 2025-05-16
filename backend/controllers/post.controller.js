@@ -2,6 +2,7 @@ import sharp from'sharp';
 import cloudinary from '../components/cloudinary.js';
 import { Post } from '../models/post.model.js';
 import { User } from '../models/user.model.js';
+import { getSocketId } from '../socket/socketio.js';
 
 export const addNewPost = async (req, res) => {
     try{
@@ -69,6 +70,21 @@ export const likeOrDislikePost = async (req, res) => {
         }
         else {
             await Post.findByIdAndUpdate(postId, {$addToSet: {likes: userId}}, {new: true});
+
+            const user = await User.findById(userId).select('username profilePic');
+            const postAuthorId = post.author.toString();
+            if (userId != postAuthorId){
+                const notification = {
+                    type: 'like',
+                    userId,
+                    user,
+                    postId,
+                    message: 'Your post was liked'
+                }
+                
+                const postAutherSocketId = getSocketId(postAuthorId);
+                io.to(postAutherSocketId).emit('notification', notification);
+            }
             return res.status(200).json({success: true, message: 'Post liked successfully'});
         }
     }

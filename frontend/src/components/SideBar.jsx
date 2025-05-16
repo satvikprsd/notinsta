@@ -1,5 +1,6 @@
 import { Heart, Home, LogOut, MessageCircle, PlayCircle, PlusSquare, Search } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { useActiveSideBar } from "./SideBarActiveContext";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Logo from "./notinsta.png";
 import NotextLogo from "./notinstalogo.png";
@@ -11,11 +12,14 @@ import CreatePost from "./CreatePost";
 import { Input } from "./ui/input";
 import Searchuser from "./SearchUser";
 import { useSearch } from "./SearchContext";
+import { useChat } from "./ChatContext";
 const SideBar = () => {
     const [open,setOpen] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { activeItem, setActiveItem } = useActiveSideBar();
     const {user} = useSelector(store=>store.auth);
+    const { chatOpen, setChatOpen } = useChat();
     const { searchOpen, setSearchOpen } = useSearch();
     const [searchtext, setSearchText] = useState('')
     const sidebarItems = [
@@ -44,7 +48,9 @@ const SideBar = () => {
             if (data.success) {
                 dispatch(setAuthUser(null));
                 toast.success(data.message);
-                navigate("/login");
+                Promise.resolve().then(() => {
+                    navigate("/login");
+                });
             } else {
                 toast.error(data.message);
             }
@@ -55,24 +61,48 @@ const SideBar = () => {
 
     const sidebarClickHandler = (itemtext) => {
         if(itemtext === "Logout") {
+            setChatOpen(false);
             setSearchOpen(false);
-            logout();
+            Promise.resolve().then(() => {
+                logout();
+            });
         }
         else if(itemtext === "Upload"){
+            setActiveItem('Upload')
             setSearchOpen(false);
+            setChatOpen(false);
             if (user) setOpen(true);
         }
         else if(itemtext === "Profile"){
             setSearchOpen(false);
-            if (!user) navigate('/login')
-            else navigate(`/profile/${user?.username}`);
+            setChatOpen(false);
+            setActiveItem('Profile')
+            if (!user) Promise.resolve().then(() => {
+                navigate("/login");
+            });
+            else Promise.resolve().then(() => {
+                navigate(`/profile/${user?.username}`);
+            });
         }
         else if(itemtext === "Home"){
+            setActiveItem('Home')
+            setChatOpen(false);
             setSearchOpen(false);
-            navigate("/");
+            Promise.resolve().then(() => {
+                navigate("/");
+            });
         }
         else if (itemtext === "Search") {
+            setActiveItem('Search')
             setSearchOpen(prev => !prev);
+        }
+        else if(itemtext === "Messages") {
+            setActiveItem('Messages')
+            setSearchOpen(false)
+            setChatOpen(true);
+            Promise.resolve().then(() => {
+                navigate("/chat");
+            });
         }
     }
 
@@ -82,31 +112,31 @@ const SideBar = () => {
 
     return (
         <div>
-        <div className={`hidden md:block fixed top-0 z-10 left-0 px-4 border-r border-gray-900 ${searchOpen ? "xl:w-[30%]" : "xl:w-[18%]"} bg-background h-screen`}>
+        <div className={`hidden md:block fixed top-0 z-10 left-0 px-4 border-r border-gray-900 ${searchOpen ? "xl:w-[30%]" : chatOpen ? "xl:block" : "xl:w-[18%]"} bg-background h-screen`}>
             <div className="flex min-h-32">
-                <Link to="/">
-                    <img src={Logo} alt="Description" width="150" className={`hidden ${searchOpen ? "" : "xl:block"} my-8 pl-3`}/>
-                    <img src={NotextLogo} alt="Description" width="50" className={`block ${searchOpen ? "" : "xl:hidden"} my-8 pl-1`}/>
+                <Link onClick={()=>{setChatOpen(false);setSearchOpen(false);setActiveItem('Home')}} to="/">
+                    <img src={Logo} alt="Description" width="150" className={`hidden ${searchOpen || chatOpen ? "" : "xl:block"} my-8 pl-3`}/>
+                    <img src={NotextLogo} alt="Description" width="50" className={`block ${searchOpen || chatOpen ? "" : "xl:hidden"} my-8 pl-1`}/>
                 </Link>
                 {searchOpen && 
                 <div className="flex pl-10 pb-1 justify-start items-center w-full">
                     <h1 className="font-bold text-2xl">Search</h1>
                 </div>}
             </div>
-            <div className="flex gap-10">
-                <div className={`flex w-full ${searchOpen ? "max-w-[12%]" : ""}`}>
-                    <div className="w-full">
+            <div className="flex">
+                <div className={`flex w-full ${searchOpen || chatOpen ? "max-w-[50px] mr-3" : ""}`}>
+                    <div className="flex gap-3 flex-col w-full h-full">
                         {sidebarItems.map(item => (
-                                <div onClick={()=>sidebarClickHandler(item.label)} key={item.label} className={`flex items-center gap-5 relative hover:bg-gray-700 cursor-pointer rounded-lg p-3 my-3`}>
+                                <div onClick={()=>sidebarClickHandler(item.label)} key={item.label} className={`flex items-center gap-5 relative ${activeItem===item.label ? 'bg-gray-800' : ''} hover:bg-gray-700 cursor-pointer rounded-lg h-15 px-3`}>
                                         {item.icon}
-                                        <span className={`hidden ${searchOpen ? "" : "xl:block"} text-sm text-gray-400`}>{item.label}</span>
+                                        <span className={`hidden ${activeItem===item.label ? 'font-bold' : ''} ${searchOpen || chatOpen ? "" : "xl:block"} text-md text-white` }>{item.label}</span>
                                 </div>
                         ))}
                     </div>
                 </div>
                 {searchOpen && 
                     <div className="w-full">
-                        <Search className='absolute xl:left-[25%]  left-[30%] top-34 w-6 h-6 search-icon' />
+                        <Search className='absolute left-[84px] top-34 w-6 h-6 search-icon' />
                         <Input autoFocus value={searchtext} onChange={(e)=>setSearchText(e.target.value.trim())} className={`w-[100%]  mb-5  ${searchtext ? 'pl-2' : 'pl-8'} focus:pl-2 bg-gray-500/50  h-10  placeholder:text-white text-white`} placeholder="Search"
                             onFocus={() => document.querySelector('.search-icon').classList.add('hidden')} 
                             onBlur={() => {if(!searchtext) {document.querySelector('.search-icon').classList.remove('hidden')}}}

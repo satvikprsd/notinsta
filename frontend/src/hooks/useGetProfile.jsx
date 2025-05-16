@@ -3,7 +3,6 @@ import { setProfile } from "@/redux/authSlice";
 import  {useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { useLocation } from 'react-router-dom';
 
 const useGetProfile = (username) => {
@@ -22,7 +21,7 @@ const useGetProfile = (username) => {
                     dispatch(setProfile(data.user));
                     
                 } else {
-                    toast.error(data.message);
+                    consolen.error(data.message);
                 }
             } catch (error) {
                 console.error(error);

@@ -17,24 +17,30 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 import { Input } from "./ui/input";
 import { useLoading } from "./LoadingContext";
 import useGetUser from "@/hooks/useGetUser";
+import { useActiveSideBar } from "./SideBarActiveContext";
 
-const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, isfollowerfollowed, setIsFollowerFollowed, dispatch ,user}) => {
+const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, isfollowerfollowed, setIsFollowerFollowed, dispatch ,user , profile}) => {
+    console.log(isfollowerfollowed, followers)
     const [searchfollowers, setSearchFollowers] = useState(followers);
     const [searchtext, setSearchText] = useState('');
-
+    console.log(searchfollowers,'n')
     useEffect(()=>{
         const timer = setTimeout(()=>{
-            const newfollowing = followers.filter((f)=>f.username.toLowerCase().includes(searchtext.toLowerCase()))
-            // console.log(newfollowing,"newfollwing");
-            setSearchFollowers(newfollowing);
+            if (!searchtext) {
+                setSearchFollowers(followers);
+            }else {
+                const newfollowing = followers.filter((f)=>f.username.toLowerCase().includes(searchtext.toLowerCase()))
+                // console.log(newfollowing,"newfollwing");
+                setSearchFollowers(newfollowing);
+            }
         },300)
         return () => {
             clearTimeout(timer)
         };
-    },[searchtext])
+    },[searchtext, followers])
 
-    const handleFollow = async (profile) => {
-        const profileID = profile._id;
+    const handleFollow = async (followprofile) => {
+        const profileID = followprofile._id;
         setIsFollowerFollowed(prev => ({...prev,  [profileID]:!prev[profileID]}))
         try{
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/followorunfollow/${profileID}`,{
@@ -47,10 +53,12 @@ const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, 
                 if (isfollowerfollowed[profileID]){
                     const newfollowing = user?.following.filter((f)=>f._id!=profileID)
                     dispatch(setAuthUser({...user, following: newfollowing}))
+                    if(user._id == profile._id) dispatch(setProfile({...profile, following: newfollowing}))
                 }
                 else{
-                    const {_id, username, profilePic} = profile;
+                    const {_id, username, profilePic} = followprofile;
                     dispatch(setAuthUser({...user, following:[...user.following, {_id,username,profilePic}]}))
+                    if(user._id == profile._id) dispatch(setProfile({...profile, following:[...user.following, {_id,username,profilePic}]}))
                 }
                 toast.success(isfollowerfollowed[profileID] ? "Unfollowed successfully" : "Followed successfully");
               }else{
@@ -81,6 +89,7 @@ const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, 
                     onBlur={() => {if(!searchtext) document.querySelector('.search-icon').classList.remove('hidden')}}/>
                 </div>
                 <div className="flex flex-col overflow-y-auto custom-scrollbar">
+                    {console.log(searchfollowers,"y")}
                     {searchfollowers?.map((f)=> {return (
                         <div key={f._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4 px-5'>
                         <Link onClick={()=>openfollowerdialog(false)} to={`/profile/${f.username}`}>
@@ -109,14 +118,18 @@ const FollowingDialog = ({openfollowingdialog, setOpenFollowingDialog, following
 
     useEffect(()=>{
         const timer = setTimeout(()=>{
-            const newfollowing = followings.filter((f)=>f.username.toLowerCase().includes(searchtext.toLowerCase()))
-            // console.log(newfollowing,"newfollwing");
-            setSearchFollowings(newfollowing);
+            if (!searchtext) {
+                setSearchFollowings(followings);
+            }else {
+                const newfollowing = followings.filter((f)=>f.username.toLowerCase().includes(searchtext.toLowerCase()))
+                // console.log(newfollowing,"newfollwing");
+                setSearchFollowings(newfollowing);
+            }
         },300)
         return () => {
             clearTimeout(timer)
         };
-    },[searchtext])
+    },[searchtext, followings])
 
     const handleFollow = async (profile) => {
         const profileID = profile._id;
@@ -210,6 +223,11 @@ const Profile = () => {
     const [openfollowingdialog, setOpenFollowingDialog] = useState(false);
     const followers = profile?.followers;
     const followings = profile?.following;
+    const {activeItem, setActiveItem} = useActiveSideBar();
+    useEffect(()=>{
+        setActiveItem("Profile");
+        return ()=>{setActiveItem(null)}
+    },[])
     useEffect(()=>{
         // console.log('profile refetch')
         setIsFollowed(profile?.followers?.map((f)=>f._id).includes(user?._id));
@@ -282,7 +300,7 @@ const Profile = () => {
     return (
         <div className="min-h-screen flex-1 my-3 flex flex-col items-center md:pl-[10%] lg:pl-[20%]">
             <div className="w-full flex items-start mt-10 mb-2 p-2 pl-5 md:pl-[10%] lg:pl-[20%]">
-                {user && <FollowersDialog openfollowerdialog={openfollowerdialog} setOpenFollowerDialog={setOpenFollowerDialog} followers={followers} isfollowerfollowed={isfollowerfollowed} setIsFollowerFollowed={setIsFollowerFollowed} dispatch={dispatch} user={user} />}
+                {user && <FollowersDialog openfollowerdialog={openfollowerdialog} setOpenFollowerDialog={setOpenFollowerDialog} followers={followers} isfollowerfollowed={isfollowerfollowed} setIsFollowerFollowed={setIsFollowerFollowed} dispatch={dispatch} user={user} profile={profile} />}
                 {user && <FollowingDialog openfollowingdialog={openfollowingdialog} setOpenFollowingDialog={setOpenFollowingDialog} followings={followings} isfollowingfollowed={isfollowingfollowed} setIsFollowingFollowed={setIsFollowingFollowed} dispatch={dispatch} user={user} />}
                 <ChangePfp open={openPfpDialog} setOpen={setopenPfpDialog} />
                 <Avatar onClick={()=>{if(profile?._id==user?._id) setopenPfpDialog(true)}} className={`h-25 w-25 sm:h-40 sm:w-40 ${profile?._id==user?._id ? 'hover:cursor-pointer' : ''}`}>
@@ -293,7 +311,7 @@ const Profile = () => {
                     <div className="flex flex-col sm:flex-row gap-5">
                         <h1 className="text-xl ">{profile?.username}</h1>
                         <UpdateProfile open={openEditDialog} setOpen={setopenEditDialog} />
-                        {!user ? (<Button onClick={()=>navigate('/login')} className="bg-blue-400 text-white text-sm">Login to Follow</Button>) : profile?._id==user?._id ? (<Button onClick={()=>{setopenEditDialog(true)}}>Edit profile</Button>) : (<Button onClick={()=>handleFollow()} className="bg-blue-400 text-white text-lg">{isfollowed ? "Following" : "Follow"}</Button>)}
+                        {!user ? (<Button onClick={()=>navigate('/login')} className="bg-blue-400 text-white text-sm">Login to Follow</Button>) : profile?._id==user?._id ? (<Button onClick={()=>{setopenEditDialog(true)}}>Edit profile</Button>) : (<Button onClick={()=>handleFollow()} className={`${isfollowed ? 'bg-gray-800' : 'bg-blue-400'} text-white text-md`}>{isfollowed ? "Following" : "Follow"}</Button>)}
                     </div>
                     <div className="hidden sm:flex gap-5 sm:gap-10">
                         <div className="flex">
