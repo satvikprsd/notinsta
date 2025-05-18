@@ -8,13 +8,13 @@ import { useChat } from './ChatContext';
 import { Button } from './ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useActiveSideBar } from './SideBarActiveContext';
-import { Input } from './ui/input';
 import { useSearch } from './SearchContext';
 import { setChatOrder, setConversations } from '@/redux/chatSlice';
 import useGetConvo from '@/hooks/useGetConvo';
 import useGetSocketConvo from '@/hooks/useGetSocketConvo';
 import { Textarea } from './ui/textarea';
 import EmojiPicker from 'emoji-picker-react';
+import useGetChatOrder from '@/hooks/useGetChatOrder';
 const ChatPage = () => {
     const {user, suggestedUsers, selectedChat} = useSelector(store => store.auth);
     const { onlineUsers, conversations, chatorder } = useSelector(store=>store.chats);
@@ -27,9 +27,14 @@ const ChatPage = () => {
     const [chattext, setChatText] = useState('');
     const [showEmoji, setShowEmoji] = useState(false);
 
+    useGetChatOrder();
     useGetSocketConvo();
     useGetConvo();
+
     const sendMsgHandler = async (receiverId) => {
+        const idbeforeapicall = Math.random().toString(36)
+        dispatch(setConversations([...conversations, {_id: idbeforeapicall, sender:{_id: user?._id} , receiver:{_id: receiverId}, message: chattext.trim()}]));
+        setChatText('')
         try{
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/message/send/${receiverId}`,{
                 method: 'POST',
@@ -40,30 +45,23 @@ const ChatPage = () => {
                 body: JSON.stringify({text: chattext.trim()})});
             const data = await response.json();
             if(data.success){
-                dispatch(setConversations([...conversations, data.newmessage]));
+                const newconvesations = conversations.filter((msg)=>msg._id!=idbeforeapicall);
+                dispatch(setConversations([...newconvesations, data.newmessage]));
                 const filteredOrder = chatorder.filter(chat => chat.chatuser._id !== data.newmessage.receiver._id);
                 dispatch(setChatOrder([{chatuser: data.newmessage.receiver, updatedAt: new Date().toISOString()}, ...filteredOrder]))
+                setChatText('')
             }
-            setChatText('')
+            else{
+                const failedConversation = conversations.filter((msg)=>msg!=chattext.trim());
+                dispatch(setConversations(failedConversation))
+                toast.error('Failed to send message');
+            }
+            
         }
         catch(e){
             console.log(e);
         }
     }
-
-    useEffect(()=>{
-        const fetchconvos = async() => {
-            try{
-                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/getconvos`, {credentials:'include'});
-                const data = await response.json();
-                dispatch(setChatOrder(data.convo));
-            }
-            catch(e){
-                console.log(e);
-            }
-        }
-        fetchconvos();
-    },[])
 
     useEffect(()=>{
         setActiveItem('Messages');
@@ -89,15 +87,15 @@ const ChatPage = () => {
                 <div  className='overflow-y-auto h-[calc(100vh-90px)] custom-scrollbar'>
                     {
                         chatorder?.map((users) => {
-                            const isonline = onlineUsers.includes(users.chatuser._id);
+                            const isonline = onlineUsers.includes(users.chatuser?._id);
                             return (
-                                <div onClick={()=>{dispatch(setSelectedChat(users.chatuser));setShowEmoji(false);}} key={users.chatuser._id} className={`${selectedChat?._id == users.chatuser._id ? 'bg-gray-800' : ''}  grid grid-cols-[60px_3fr] gap-2 items-center my-2 hover:cursor-pointer hover:bg-gray-700 rounded-lg pt-2 px-2`}>
+                                <div onClick={()=>{dispatch(setSelectedChat(users.chatuser));setShowEmoji(false);}} key={users.chatuser?._id} className={`${selectedChat?._id == users.chatuser?._id ? 'bg-gray-800' : ''}  grid grid-cols-[60px_3fr] gap-2 items-center my-2 hover:cursor-pointer hover:bg-gray-700 rounded-lg pt-2 px-2`}>
                                     <Avatar className="relative flex size-8 shrink-0 overflow-hidden rounded-full h-15 w-15">
-                                        <AvatarImage src={users.chatuser.profilePic=='default.jpg' ? NotextLogo : users.chatuser.profilePic} alt="postimg" className='size-full object-cover rounded-lg aspect-square' />
+                                        <AvatarImage src={users.chatuser?.profilePic=='default.jpg' ? NotextLogo : users.chatuser?.profilePic} alt="postimg" className='size-full object-cover rounded-lg aspect-square' />
                                         <AvatarFallback>USER</AvatarFallback>
                                     </Avatar>
                                     <div className='text-sm flex flex-col items-start gap-1'>
-                                        <h1 className='font-bold'>{users.chatuser.username}</h1>
+                                        <h1 className='font-bold'>{users.chatuser?.username}</h1>
                                     <span className={`font-semibold ${isonline ? 'text-green-400' : 'text-red-600'}`}>{isonline ? 'Online' : 'Offline'}</span>
                                     </div>
                                     <span  className='text-xs hover:cursor-pointer hover:text-white font-bold text-blue-400'></span>
@@ -149,8 +147,8 @@ const ChatPage = () => {
                 <div onClick={()=>{setShowEmoji(false)}} className='flex w-full flex-col gap-2 mt-10' style={{ flex: '1 1 auto', minHeight: '0px' }}>
                     {conversations?.map((msg)=>{
                         return (
-                            <div key={msg._id} className={`mx-3 flex ${user._id === msg.sender._id ? 'justify-end' : 'justify-start'}`}>
-                                <div style={user._id !== msg.sender._id ? { paddingLeft: `calc(${msg?.message.length > 63 ? 15 : 10+msg?.message.length*0.05}px)` } : { paddingLeft: `calc(${msg?.message.length > 63 ? 20 : 10+msg?.message.length*0.1}px)` }} className={`p-2 text-left  max-w-xl break-words text-white  ${user._id === msg.sender._id ? 'bg-blue-600 rounded-l-4xl rounded-tr-4xl rounded-br-md pl-4' : 'bg-[#333333] rounded-r-4xl rounded-tl-4xl rounded-bl-md'} `}>
+                            <div key={msg._id} className={`mx-3 flex ${user._id === msg.sender?._id ? 'justify-end' : 'justify-start'}`}>
+                                <div style={user._id !== msg.sender?._id ? { paddingLeft: `calc(${msg.message?.length > 63 ? 15 : 10+msg.message?.length*0.05}px)` } : { paddingLeft: `calc(${msg.message?.length > 63 ? 20 : 10+msg.message?.length*0.1}px)` }} className={`p-2 text-left  max-w-xl break-words text-white  ${user._id === msg.sender?._id ? 'bg-blue-600 rounded-l-4xl rounded-tr-4xl rounded-br-md pl-4' : 'bg-[#333333] rounded-r-4xl rounded-tl-4xl rounded-bl-md'} `}>
                                     {msg?.message}
                                 </div>
                             </div>
