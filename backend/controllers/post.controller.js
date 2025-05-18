@@ -63,7 +63,6 @@ export const likeOrDislikePost = async (req, res) => {
         const userId = req.id;
         const postId = req.params.postId;
         const post = await Post.findById(postId);
-        console.log(post);
         if (post.likes.includes(userId)) {
             await Post.findByIdAndUpdate(postId, {$pull: {likes: userId}}, {new: true});
             return res.status(200).json({success: true, message: 'Post disliked successfully'});
@@ -98,7 +97,6 @@ export const addCommentToPost = async (req, res) => {
         const postId = req.params.postId;
         const userId = req.id;
         const { comment } = req.body;
-        console.log(req.body);
         if (!comment) return res.status(400).json({message: 'No comment provided', success: false});
         const user = await User.findById(userId);
         const newcomment = {author:userId, comment}

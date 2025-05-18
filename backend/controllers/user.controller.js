@@ -8,7 +8,6 @@ import { Convo } from '../models/convo.model.js';
 export const register = async(req,res) => {
     try {
         const {username, email, password } = req.body;
-        console.log(req.body);
         if (!username ||!email ||!password) {
             return res.status(400).json({ success: false, message: 'Please fill all fields' });
         }
@@ -220,7 +219,7 @@ export const searchUser = async(req, res) => {
         .limit(10)
         .select("username profilePic name")
         
-        console.log(users);
+        // console.log(users);
         return res.status(200).json({ success: true, users });
     } catch (error) {
         console.error(error);

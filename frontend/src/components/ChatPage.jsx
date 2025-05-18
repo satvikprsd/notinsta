@@ -89,7 +89,6 @@ const ChatPage = () => {
                 <div  className='overflow-y-auto h-[calc(100vh-90px)] custom-scrollbar'>
                     {
                         chatorder?.map((users) => {
-                            console.log(users);
                             const isonline = onlineUsers.includes(users.chatuser._id);
                             return (
                                 <div onClick={()=>{dispatch(setSelectedChat(users.chatuser));setShowEmoji(false);}} key={users.chatuser._id} className={`${selectedChat?._id == users.chatuser._id ? 'bg-gray-800' : ''}  grid grid-cols-[60px_3fr] gap-2 items-center my-2 hover:cursor-pointer hover:bg-gray-700 rounded-lg pt-2 px-2`}>

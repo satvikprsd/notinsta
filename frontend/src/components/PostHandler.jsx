@@ -112,7 +112,6 @@ export const handleDoubleClick = (user,profile,post,posts,isLiked,setIsLiked,set
             }
             else{
                 setisSaved(prev=>!prev);
-                console.log(data);
                 toast.error('Failed to save Post');
             }
         }catch(e){

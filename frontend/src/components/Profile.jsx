@@ -20,10 +20,8 @@ import useGetUser from "@/hooks/useGetUser";
 import { useActiveSideBar } from "./SideBarActiveContext";
 
 const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, isfollowerfollowed, setIsFollowerFollowed, dispatch ,user , profile}) => {
-    console.log(isfollowerfollowed, followers)
     const [searchfollowers, setSearchFollowers] = useState(followers);
     const [searchtext, setSearchText] = useState('');
-    console.log(searchfollowers,'n')
     useEffect(()=>{
         const timer = setTimeout(()=>{
             if (!searchtext) {
@@ -89,7 +87,6 @@ const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, 
                     onBlur={() => {if(!searchtext) document.querySelector('.search-icon').classList.remove('hidden')}}/>
                 </div>
                 <div className="flex flex-col overflow-y-auto custom-scrollbar">
-                    {console.log(searchfollowers,"y")}
                     {searchfollowers?.map((f)=> {return (
                         <div key={f._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4 px-5'>
                         <Link onClick={()=>openfollowerdialog(false)} to={`/profile/${f.username}`}>
