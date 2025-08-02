@@ -56,7 +56,8 @@ const SignIn = () => {
                 navigate("/"); 
             }
             else {
-                toast.error(data.message);
+                console.log(data.message)
+                toast.error("Something went wrong");
             }
         }catch(error){
             console.error(error);
