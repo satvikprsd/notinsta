@@ -73,7 +73,7 @@ const UpdateProfile = ({ open, setOpen }) => {
                             <h2 className='mx-4 my-2'>Bio</h2>
                             <Textarea onChange={(e)=>{setBio(e.target.value)}} value={bio} type='text' placeholder='Bio' maxLength={100}/>
                         </div>
-                        <Button disabled={name==user?.name && username==user?.username && bio==user?.bio} onClick={()=>{handleChanges()}}>Update</Button>
+                        <Button className="hover:cursor-pointer" disabled={name==user?.name && username==user?.username && bio==user?.bio} onClick={()=>{handleChanges()}}>Update</Button>
                     </div>
                 </div>
             </DialogContent>

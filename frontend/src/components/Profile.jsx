@@ -309,7 +309,7 @@ const Profile = () => {
                         <h1 className="text-xl ">{profile?.username}</h1>
                         <UpdateProfile open={openEditDialog} setOpen={setopenEditDialog} />
                         <div className="flex gap-2">
-                            {!user ? (<Button onClick={()=>navigate('/login')} className="bg-blue-400 text-white text-sm h-8">Login to Follow</Button>) : profile?._id==user?._id ? (<Button className='bg-[#363636] text-white text-md h-8' onClick={()=>{setopenEditDialog(true)}}>Edit profile</Button>) : (<Button onClick={()=>handleFollow()} className={`${isfollowed ? 'bg-[#363636]' : 'bg-blue-400'} text-white text-md h-8`}>{isfollowed ? "Following" : "Follow"}</Button>)}
+                            {!user ? (<Button onClick={()=>navigate('/login')} className="bg-blue-400 text-white text-sm h-8">Login to Follow</Button>) : profile?._id==user?._id ? (<Button className='bg-[#363636] text-white text-md h-8 hover:cursor-pointer' onClick={()=>{setopenEditDialog(true)}}>Edit profile</Button>) : (<Button onClick={()=>handleFollow()} className={`${isfollowed ? 'bg-[#363636]' : 'bg-blue-400'} text-white text-md h-8`}>{isfollowed ? "Following" : "Follow"}</Button>)}
                             {isfollowed && (<Button onClick={()=>navigate(`/chat/${profile?._id}`)} className='bg-[#363636] text-white text-md h-8'>Message</Button>)}
                         </div>
                     </div>

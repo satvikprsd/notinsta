@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Dialog, DialogContent} from './ui/dialog'
-import { Bookmark, Heart, MessageCircle, MoreHorizontal, PlayIcon, SendIcon, Volume2, VolumeOff, VolumeX } from 'lucide-react'
+import { Bookmark, Heart, MessageCircle, MoreHorizontal, PlayIcon, SendIcon, Volume2, VolumeOff, VolumeX, X } from 'lucide-react'
 import { Button } from './ui/button'
 import PostDialog from './PostDialog'
 import HelpDialog from './HelpDialog'
@@ -80,7 +80,7 @@ const Post = ({post}) => {
     }, [isMuted])
 
     return (
-    <div className='mt-8 w-[390px] sm:w-[468px] max-w-lg mx-auto'>
+    <div className='mt-8 w-[100vw] max-w-[390px] sm:w-[468px] mx-auto'>
         {user && <LikesDialog openlikesdialog={openlikesdialog} setOpenlikesDialog={setOpenlikesDialog} likes={likes} islikerfollowed={islikerfollowed} setIslikerFollowed={setIslikerFollowed} dispatch={dispatch} user={user} />}
         <div className='flex items-center justify-between pb-3'>
             <div className='flex items-center gap-3'>
@@ -122,14 +122,16 @@ const Post = ({post}) => {
         <span className='font-light mb-2'>{post.caption}</span>
         </div>
         {curComments>0 && <span onClick={()=>setOpenPostDialog(true)} className='mx-5 md:mx-0 font-light block hover:cursor-pointer'>View all {curComments} comments</span>}
+        
         <Dialog open={OpenPostDialog}>
+            {OpenPostDialog && <X className='cursor-pointer fixed top-5 right-10 z-100' />}
             <DialogContent className='max-w-6xl p-0 flex items-center lg:items-stretch flex-col focus:outline-none focus:ring-0' onInteractOutside={()=>setOpenPostDialog(false)}>
                 <PostDialog setOpenPostDialog={setOpenPostDialog} newsetIsLiked={setIsLiked} newisLiked={isLiked} newcurLikes={curLikes} newsetCurLikes={setCurLikes} newsetCurComments={setCurComments}  post={post}/>
             </DialogContent>
         </Dialog>
         <div className='mx-2 md:mx-0 hidden lg:flex items-center'>
             <input type="text" placeholder="Add a comment..." className='w-full p-3 rounded-md h-10 focus:outline-none focus:ring-0' value={commenttext} onChange={(e)=>{e.target.value.trim() ? setCommenttext(e.target.value) : setCommenttext("")}} />
-            {commenttext && <Button onClick={()=>handleNewComment(user,post,null,feed,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments)} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)]">Post</Button>}
+            {commenttext && <Button onClick={()=>handleNewComment(user,post,null,feed,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments)} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)] hover:cursor-pointer">Post</Button>}
         </div>
     </div>
   )

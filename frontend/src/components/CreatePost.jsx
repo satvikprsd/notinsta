@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader } from './ui/dialog';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import Loader from './ui/loader';
-import { Loader2, Loader2Icon, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, Loader2, Loader2Icon, Volume2, VolumeX } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFeed } from '@/redux/postSlice';
 import { setProfile } from '@/redux/authSlice';
@@ -94,6 +94,13 @@ const CreatePost = ({ open, setOpen }) => {
                                 <div className="absolute right-0">
                                     <Button disabled={!caption} onClick={handleNewPost} className="mr-2 max-h-7 bg-blue-600 text-white hover:bg-blue-700 hover:cursor-pointer">
                                         {loading ? <Loader2Icon className='h-4 w-4 animate-spin' />: "Post"}
+                                    </Button>
+                                </div>
+                            )}
+                            {imgPreview && (
+                                <div className="absolute left-0">
+                                    <Button onClick={() => {setImgPreview(null);setFile(null);setCaption('');setOpen(false)}} className="ml-2 max-h-7 bg-blue-600 text-white hover:bg-blue-700 hover:cursor-pointer">
+                                        <ArrowLeft />
                                     </Button>
                                 </div>
                             )}
