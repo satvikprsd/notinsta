@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Dialog, DialogContent} from './ui/dialog'
-import { Bookmark, Heart, MessageCircle, MoreHorizontal, SendIcon } from 'lucide-react'
+import { Bookmark, Heart, MessageCircle, MoreHorizontal, PlayIcon, SendIcon, Volume2, VolumeOff, VolumeX } from 'lucide-react'
 import { Button } from './ui/button'
 import PostDialog from './PostDialog'
 import HelpDialog from './HelpDialog'
@@ -10,6 +10,7 @@ import { handleDoubleClick, handleLike, handleNewComment, LikesDialog, SavePost 
 import { Link, useNavigate } from 'react-router-dom'
 import { setSavedPosts, setSelectedChat } from '@/redux/authSlice'
 import NotextLogo from "./notinstalogo.png";
+import { useInView } from 'react-intersection-observer'
 
 
 const Post = ({post}) => {
@@ -30,7 +31,11 @@ const Post = ({post}) => {
     const likes = post?.likes;
     // console.log(likes,"likes")
     const dispatch = useDispatch();
-    
+    const [blobUrl, setBlobUrl] = useState(null);
+    const { ref, inView } = useInView({ threshold: 0.5 });
+    const videoRef = useRef(null);
+    const [isPlaying, setIsPlaying] = useState(true);
+    const [isMuted, setIsMuted] = useState(true);
     const getLikes = () => {
         const followingIDs = new Set(user?.following?.map(f => f._id));
         const followedStatus = {};
@@ -40,11 +45,44 @@ const Post = ({post}) => {
         setIslikerFollowed(followedStatus);
         setOpenlikesDialog(true)
     }
-    console.log(post.author._id)
+
+    useEffect(() => {
+        const fetchImage = async () => {
+          const response = await fetch(post.image);
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          setBlobUrl(url);
+        };
+    
+        fetchImage();
+    
+        return () => {
+          if (blobUrl) URL.revokeObjectURL(blobUrl);
+        };
+      }, [post.image]);
+    
+    useEffect(() => {
+        const video = videoRef.current;
+        console.log(video)
+        if (!video) return;
+        if (inView) {
+            video.play().then(()=>{setIsPlaying(true)}).catch(() => {});
+        } else {
+            setIsPlaying(false);
+            video.pause();
+        }
+    }, [inView]);
+
+    useEffect(()=>{
+        if (videoRef.current){
+            videoRef.current.muted = isMuted
+        }
+    }, [isMuted])
+
     return (
-    <div className='my-8 w-full max-w-lg mx-auto'>
+    <div className='mt-8 w-[390px] sm:w-[468px] max-w-lg mx-auto'>
         {user && <LikesDialog openlikesdialog={openlikesdialog} setOpenlikesDialog={setOpenlikesDialog} likes={likes} islikerfollowed={islikerfollowed} setIslikerFollowed={setIslikerFollowed} dispatch={dispatch} user={user} />}
-        <div className='flex items-center justify-between'>
+        <div className='flex items-center justify-between pb-3'>
             <div className='flex items-center gap-3'>
                 <Link to={`/profile/${post?.author.username}`}>
                 <Avatar className="ml-5 md:ml-0 h-10 w-10">
@@ -58,8 +96,16 @@ const Post = ({post}) => {
             </div>
             <HelpDialog isSaved={isSaved} setisSaved={setisSaved} post={post} />
         </div>
-        <div className='relative w-full h-full'>
-            <img onClick={()=>handleDoubleClick(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike)} src={post.image} alt="postimg" className='rounded-sm my-2 w-full h-full aspect-square object-cover' />
+        {console.log(isPlaying)}
+        <div className='relative w-full h-full flex items-center justify-center border-1 border-[rgb(38,38,38)]'>
+            {post.image.split('/')[4] == 'image' && <div style={{backgroundImage: `url(${blobUrl})`}} onClick={()=>handleDoubleClick(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike)}  alt="postimg" className="w-full aspect-square bg-center bg-cover" />}
+            {post.image.split('/')[4] == 'video' && <video muted playsInline onContextMenu={(e) => e.preventDefault()} loop onClick={()=>{handleDoubleClick(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike); if (isPlaying) {videoRef.current?.pause();setIsPlaying(false)} else {videoRef.current?.play();setIsPlaying(true)}}} ref={(node)=>{videoRef.current=node;ref(node)}} src={blobUrl} alt="postimg" className='w-[320px] h-[585px] object-cover hover:cursor-pointer' />}
+            {post.image.split('/')[4] == 'video' && !isPlaying && <div onClick={()=>{if (isPlaying) {videoRef.current?.pause();setIsPlaying(false)} else {videoRef.current?.play();setIsPlaying(true)}}} size={'80px'} className='absolute' style={{left: "50%",top: "50%",transform: "translate(-50%, -50%)",backgroundImage: `url('https://static.cdninstagram.com/images/instagram/xig_legacy_spritesheets/sprite_video_2x.png?__makehaste_cache_breaker=QGBM-RRQtO6')`,backgroundPosition: '0px 0px',backgroundRepeat: 'no-repeat',backgroundSize: '271px 149px',width: '135px',height: '135px',cursor: 'pointer',display: 'block',}}></div>}
+            {post.image.split('/')[4] == 'video' && 
+                <div className='absolute right-0 bottom-0 m-3 bg-[#22262C] w-7 h-7 hover:cursor-pointer rounded-full flex items-center justify-center' >
+                    {isMuted ? <VolumeX fill='white' onClick={()=>setIsMuted(false)} size={15} className='' /> : <Volume2 fill='white' onClick={()=>setIsMuted(true)} size={15} className='' />}
+                </div>
+            }
             {doubleClick && <Heart style={{left: "50%",top: "50%",transform: "translate(-50%, -50%)",}} size={'150px'} fill='red' className='absolute text-red-500 animate-fly-up' />}
         </div>
         <div className='mx-5 md:mx-0 flex items-center justify-between my-2'>

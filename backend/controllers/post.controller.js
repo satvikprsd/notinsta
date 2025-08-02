@@ -5,30 +5,81 @@ import { User } from '../models/user.model.js';
 import { getSocketId } from '../socket/socketio.js';
 
 export const addNewPost = async (req, res) => {
-    try{
-        const { caption} = req.body;
-        const image = req.file;
-        const userId = req.id;
-
-        if(!image) return res.status(400).json({message: 'No image provided', success: false});
-
-        const compressedImageBuffer = await sharp(image.buffer).resize({width: 800, height: 600, fit: 'inside'}).toFormat('jpeg',{quality:80}).toBuffer();
-
-        const fileUri = `data:image/jpeg;base64,${compressedImageBuffer.toString('base64')}`;
-        const cloudResponse = await cloudinary.uploader.upload(fileUri);
-        const newPost = await Post.create({caption, image: cloudResponse.secure_url, author: userId});
-
-        const user = await User.findByIdAndUpdate(userId, {$push: {posts: { $each: [newPost._id], $position: 0}}}, {new: true});
-
-        await newPost.populate({path: 'author', select:'-password'});
-        
-        return res.status(201).json({success: true, message: 'Post added successfully', post: newPost});
-        
+  try {
+    const { caption } = req.body;
+    const file = req.file;
+    const userId = req.id;
+    console.log(file.type)
+    if (!file) {
+      return res.status(400).json({ message: 'No file provided', success: false });
     }
-    catch(error){
-        console.error(error);
+
+    let uploadResult;
+    const mimeType = file.mimetype;
+
+    if (mimeType.startsWith('image/')) {
+      // Process image
+      const compressedImageBuffer = await sharp(file.buffer)
+        .resize({ width: 800, height: 600, fit: 'inside' })
+        .toFormat('jpeg', { quality: 80 })
+        .toBuffer();
+
+      const fileUri = `data:image/jpeg;base64,${compressedImageBuffer.toString('base64')}`;
+      uploadResult = await cloudinary.uploader.upload(fileUri, { resource_type: 'image' });
+
+    } else if (mimeType.startsWith('video/')) {
+      // Upload video directly
+      uploadResult = await cloudinary.uploader.upload_stream(
+        { resource_type: 'video' },
+        async (error, result) => {
+          if (error) throw error;
+          return result;
+        }
+      );
+      // Need to convert buffer to stream
+      const streamifier = await import('streamifier');
+      streamifier.createReadStream(file.buffer).pipe(uploadResult);
+      uploadResult = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { resource_type: 'video' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        streamifier.createReadStream(file.buffer).pipe(uploadStream);
+      });
+
+    } else {
+      return res.status(400).json({ message: 'Unsupported file type', success: false });
     }
-}
+
+    const newPost = await Post.create({
+      caption,
+      image: uploadResult.secure_url,
+      author: userId,
+    });
+
+    await User.findByIdAndUpdate(
+      userId,
+      { $push: { posts: { $each: [newPost._id], $position: 0 } } },
+      { new: true }
+    );
+
+    await newPost.populate({ path: 'author', select: '-password' });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Post added successfully',
+      post: newPost,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 
 export const getAllFeedPost = async (req, res) => {
     try{

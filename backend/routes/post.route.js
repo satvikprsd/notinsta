@@ -8,7 +8,7 @@ import { addCommentToPost, addNewPost, deletePost, getAllFeedPost, getAllPostsBy
 
 const router = express.Router();
 
-router.route('/newpost').post(isauthenticated, upload.single('image'), addNewPost);
+router.route('/newpost').post(isauthenticated, upload.single('video'), addNewPost);
 router.route('/feed').get(isauthenticated, getAllFeedPost);
 router.route('/allposts').get(isauthenticated, getAllPostsByUser);
 router.route('/:postId/likeordislike').get(isauthenticated, likeOrDislikePost);

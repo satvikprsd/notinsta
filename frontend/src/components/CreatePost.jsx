@@ -12,6 +12,7 @@ import { setProfile } from '@/redux/authSlice';
 const CreatePost = ({ open, setOpen }) => {
     const imgref = useRef();
     const [file, setFile] = useState(null);
+    const [fileType, setFileType] = useState(null);
     const [caption, setCaption] = useState('');
     const [imgPreview, setImgPreview] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -21,6 +22,8 @@ const CreatePost = ({ open, setOpen }) => {
 
     const handleFileChange = (e) => {
         const file = e.target.files?.[0];
+        console.log(file.type)
+        setFileType(file.type);
         if (file) {
             setFile(file);
             const reader = new FileReader();
@@ -35,7 +38,7 @@ const CreatePost = ({ open, setOpen }) => {
         setLoading(true);
         const postData = new FormData();
         if (imgPreview) {
-            postData.append('image', file);
+            postData.append(fileType.split('/')[0], file);
         }
         postData.append('caption', caption);
         try {
@@ -85,11 +88,12 @@ const CreatePost = ({ open, setOpen }) => {
                             )}
                         </div>
                     </DialogHeader>
-                    <div className={`h-full w-full flex flex-col sm:flex-row flex-1 ${imgPreview ? '' : 'items-center justify-center'}`}>
+                    <div className={`h-[calc(100%-72px)] w-full flex flex-col sm:flex-row flex-1 ${imgPreview ? '' : 'items-center justify-center'}`}>
                         {
                             imgPreview && (
                                 <div className='flex w-full justify-center items-center'>
-                                    <img className='object-cover max-w-2xl max-h-80 sm:max-h-full' src={imgPreview} alt='post' />
+                                    {fileType.split('/')[0] == 'image' && <img className='object-cover max-w-2xl max-h-80 sm:max-h-full' src={imgPreview} alt='post' />}
+                                    {fileType.split('/')[0] == 'video' && <video controls className='object-cover max-w-2xl max-h-80 sm:max-h-full' src={imgPreview} alt='post' />}
                                 </div>)
                         }
                         <input ref={imgref} type='file' className='hidden' onChange={handleFileChange} />
