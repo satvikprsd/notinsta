@@ -74,10 +74,10 @@ const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, 
         <Dialog open={openfollowerdialog}>
             <DialogContent className="flex flex-col pt-3 px-0 w-sm max-w-[90%] max-h-[50vh] focus:outline-none focus:ring-0" onInteractOutside={()=> setOpenFollowerDialog(false)}>
                 <div className="w-full flex items-center justify-between">
-                <div className="w-full flex-1 text-center font-bold">
-                    <DialogTitle>Followers</DialogTitle>
-                </div>
-                <XIcon onClick={()=>setOpenFollowerDialog(false)} className="absolute right-4 hover:cursor-pointer"/>
+                    <div className="w-full flex-1 text-center font-bold">
+                        <DialogTitle>Followers</DialogTitle>
+                    </div>
+                    <XIcon onClick={()=>setOpenFollowerDialog(false)} className="absolute right-4 hover:cursor-pointer"/>
                 </div>
                 <hr className="border-t-2 p-0"/>
                 <div className="relative flex items-center justify-center">
@@ -295,8 +295,8 @@ const Profile = () => {
     }
 
     return (
-        <div className="min-h-screen flex-1 my-3 flex flex-col items-center md:pl-[10%] lg:pl-[20%]">
-            <div className="w-full flex items-start mt-10 mb-2 p-2 pl-5 md:pl-[10%] lg:pl-[20%]">
+        <div className="min-h-screen flex-1 flex flex-col items-center md:pl-[10%] lg:pl-[20%]">
+            <div className="w-full flex items-start mt-15 md:mt-10 mb-2 p-2 pl-5 md:pl-[10%] lg:pl-[13%]">
                 {user && <FollowersDialog openfollowerdialog={openfollowerdialog} setOpenFollowerDialog={setOpenFollowerDialog} followers={followers} isfollowerfollowed={isfollowerfollowed} setIsFollowerFollowed={setIsFollowerFollowed} dispatch={dispatch} user={user} profile={profile} />}
                 {user && <FollowingDialog openfollowingdialog={openfollowingdialog} setOpenFollowingDialog={setOpenFollowingDialog} followings={followings} isfollowingfollowed={isfollowingfollowed} setIsFollowingFollowed={setIsFollowingFollowed} dispatch={dispatch} user={user} />}
                 <ChangePfp open={openPfpDialog} setOpen={setopenPfpDialog} />
@@ -308,7 +308,10 @@ const Profile = () => {
                     <div className="flex flex-col sm:flex-row gap-5">
                         <h1 className="text-xl ">{profile?.username}</h1>
                         <UpdateProfile open={openEditDialog} setOpen={setopenEditDialog} />
-                        {!user ? (<Button onClick={()=>navigate('/login')} className="bg-blue-400 text-white text-sm">Login to Follow</Button>) : profile?._id==user?._id ? (<Button onClick={()=>{setopenEditDialog(true)}}>Edit profile</Button>) : (<Button onClick={()=>handleFollow()} className={`${isfollowed ? 'bg-gray-800' : 'bg-blue-400'} text-white text-md`}>{isfollowed ? "Following" : "Follow"}</Button>)}
+                        <div className="flex gap-2">
+                            {!user ? (<Button onClick={()=>navigate('/login')} className="bg-blue-400 text-white text-sm h-8">Login to Follow</Button>) : profile?._id==user?._id ? (<Button className='bg-[#363636] text-white text-md h-8' onClick={()=>{setopenEditDialog(true)}}>Edit profile</Button>) : (<Button onClick={()=>handleFollow()} className={`${isfollowed ? 'bg-[#363636]' : 'bg-blue-400'} text-white text-md h-8`}>{isfollowed ? "Following" : "Follow"}</Button>)}
+                            {isfollowed && (<Button onClick={()=>navigate(`/chat/${profile?._id}`)} className='bg-[#363636] text-white text-md h-8'>Message</Button>)}
+                        </div>
                     </div>
                     <div className="hidden sm:flex gap-5 sm:gap-10">
                         <div className="flex">
@@ -358,10 +361,10 @@ const Profile = () => {
             </div>
             : <></>
             }
-            <div className="grid my-10 grid-cols-1 sm:grid-cols-2 [@media(min-width:1150px)]:grid-cols-3 gap-1 items-center pb-10">
+            <div className="grid my-10 grid-cols-3 gap-1 items-center pb-10 pr-1">
                 {postorsaved ? profile?.posts.length > 0 ? profile?.posts.map((post) => {
                     return (
-                        <div onClick={() => {setSelectedPost(post);setOpenPostDialog(true);}} key={post._id} className="relative h-[400px] w-[300px] group hover:cursor-pointer overflow-hidden">
+                        <div onClick={() => {setSelectedPost(post);setOpenPostDialog(true);}} key={post._id} className="relative aspect-[3/4] max-w-[300px] group hover:cursor-pointer overflow-hidden">
                             <img src={post.image} alt="postimg" className="object-cover w-full h-full group-hover:opacity-70 "/>
                             <div className="absolute flex items-center justify-center bottom-0 left-0 h-full w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <div className="flex gap-5 text-white">
@@ -380,7 +383,7 @@ const Profile = () => {
                 }) : (<div className='col-start-2'><h1 className='text-2xl'>No posts yet</h1></div>)
                 : savedPosts?.length > 0 ? savedPosts?.map((post) => {
                     return (
-                        <div onClick={() => {setSelectedPost(post);setOpenPostDialog(true);}} key={post._id} className="relative h-[400px] w-[300px] group hover:cursor-pointer overflow-hidden rounded-lg">
+                        <div onClick={() => {setSelectedPost(post);setOpenPostDialog(true);}} key={post._id} className="relative aspect-[3/4] max-w-[300px] group hover:cursor-pointer overflow-hidden">
                             <img src={post.image} alt="postimg" className="object-cover w-full h-full group-hover:opacity-70 "/>
                             <div className="absolute flex items-center justify-center bottom-0 left-0 h-full w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <div className="flex gap-5 text-white">

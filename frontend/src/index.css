@@ -283,3 +283,59 @@ html, body {
   right: 15%;
   animation-delay: .3s;
 }
+
+/* From Uiverse.io by aaronross1 */ 
+.typing-indicator {
+  width: 60px;
+  height: 25px;
+  position: relative;
+  z-index: 4;
+}
+
+.typing-circle {
+  width: 8px;
+  height: 8px;
+  position: absolute;
+  top: 10px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  opacity: 0;
+  transform: scale(0.5);
+  animation: typing-circle-appear 1.2s ease-in-out infinite;
+}
+
+.typing-circle:nth-child(1) {
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.typing-circle:nth-child(2) {
+  left: 45%;
+  animation-delay: 0.2s;
+}
+
+.typing-circle:nth-child(3) {
+  left: 80%;
+  animation-delay: 0.4s;
+}
+
+@keyframes typing-circle-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.2);
+  }
+  50% {
+    transform: translateY(-7px) scale(1);
+  }
+  75% {
+    transform: translateY(-5px) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+}

@@ -157,11 +157,11 @@ const SideBar = () => {
             ))}
         </div>
         <div className="fixed top-0 z-10 left-0 right-0 border-b border-gray-800 bg-background md:hidden flex justify-around items-center h-12">
-            <div className="flex gap-3 w-full relative">
-                <Link className="w-20" to="/">
-                    <img src={NotextLogo} alt="Description" width="50" className="my-10 pl-3"/>
+            <div className="fixed top-0 flex gap-3 w-full">
+                <Link className="h-[40px] pl-3 pt-1" to="/">
+                    <img src={NotextLogo} alt="Description" className="w-[60px] "/>
                 </Link>
-                <div className="w-full relative mt-10 h-9">
+                <div className="w-full relative mt-[6px] h-9">
                     <Input value={searchtext} onChange={(e)=>setSearchText(e.target.value.trim())} className={`w-[100%]  mb-5  ${searchtext ? 'pl-2' : 'pl-8'} focus:pl-2 bg-gray-500/50  h-9  placeholder:text-white text-white`} placeholder="Search"
                         onFocus={() => {setSearchOpen(true); document.querySelector('.search-icon').classList.add('hidden')}} 
                         onBlur={() => {if(!searchtext) {document.querySelector('.search-icon').classList.remove('hidden')}}}
@@ -173,7 +173,7 @@ const SideBar = () => {
                     )}
                 </div>
                 {topbarItems.map(item => (
-                <div onClick={()=>sidebarClickHandler(item.label)} key={item.label+'-top'} className="flex flex-col items-center justify-center hover:text-white cursor-pointer text-gray-400 text-sm mr-1  ">
+                <div onClick={()=>sidebarClickHandler(item.label)} key={item.label+'-top'} className="flex flex-col items-center justify-center hover:text-white cursor-pointer text-gray-400 text-sm mr-1 mt-1 ">
                         {item.icon}
                     </div>
                 ))}

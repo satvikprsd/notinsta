@@ -236,7 +236,8 @@ export const getConvos = async(req, res) => {
             .sort({ updatedAt: -1 })
             .lean();
         const filteredConversations = allConversations.map(convo => {
-            const chatuser = convo.participants.find(p => p._id.toString() !== userId.toString());
+            let chatuser = convo.participants.find(p => p._id.toString() !== userId.toString());
+            if (!chatuser) chatuser = convo.participants[0]
             return {
                 chatuser,
                 updatedAt: convo.updatedAt,

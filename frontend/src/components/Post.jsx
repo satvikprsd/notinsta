@@ -40,7 +40,7 @@ const Post = ({post}) => {
         setIslikerFollowed(followedStatus);
         setOpenlikesDialog(true)
     }
-
+    console.log(post.author._id)
     return (
     <div className='my-8 w-full max-w-lg mx-auto'>
         {user && <LikesDialog openlikesdialog={openlikesdialog} setOpenlikesDialog={setOpenlikesDialog} likes={likes} islikerfollowed={islikerfollowed} setIslikerFollowed={setIslikerFollowed} dispatch={dispatch} user={user} />}
@@ -66,7 +66,7 @@ const Post = ({post}) => {
             <div className='flex items-center gap-3'>
                 <Heart onClick={()=>handleLike(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch)} size={'25px'} className={`cursor-pointer hover:text-gray-600 hover:bounce-once`} fill={isLiked ? 'red' : 'none'} stroke={isLiked ? 'red' : 'currentColor'} />
                 <MessageCircle onClick={()=>{window.innerWidth <= 1024 ? navigate(`/p/${post?._id}`) : setOpenPostDialog(true)}} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
-                <SendIcon onClick={()=>{dispatch(setSelectedChat(post.author));navigate(`/chat`)}} size={'23px'} className='cursor-pointer hover:text-gray-600' />
+                <SendIcon onClick={()=>{navigate(`/chat/${post.author._id}`)}} size={'23px'} className='cursor-pointer hover:text-gray-600' />
             </div>
             <Bookmark onClick={()=>SavePost(user, isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch)} fill={isSaved ? 'white' : ''} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
         </div>

@@ -96,10 +96,10 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
             </DialogContent>
         </Dialog>
         {user && <LikesDialog openlikesdialog={openlikesdialog} setOpenlikesDialog={setOpenlikesDialog} likes={likes} islikerfollowed={islikerfollowed} setIslikerFollowed={setIslikerFollowed} dispatch={dispatch} user={user} />}
-        <div className='flex lg:hidden items-center justify-between py-4'>
-            <div className='flex items-center gap-3'>
+        <div className='flex lg:hidden items-center justify-between py-2'>
+            <div className='flex items-center gap-3 px-3 sm:px-0'>
                 <Link onClick={()=>setOpenPostDialog(false)}>
-                    <Avatar>
+                    <Avatar className='h-10 w-10'>
                         <AvatarImage src={post?.author.profilePic=='default.jpg' ? NotextLogo : post?.author.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
                         <AvatarFallback>Post</AvatarFallback>
                     </Avatar>
@@ -110,11 +110,11 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
             </div>
             <HelpDialog isSaved={isSaved} setisSaved={setisSaved} setDialog={setOpenPostDialog} post={post} />
         </div>
-        <div className='relative rounded-lg w-[300px] h-[400px] sm:w-[500px] md:h-[600px] lg:w-full lg:h-full aspect-square object-cover'>
-            <img onClick={()=>handleDoubleClick(user,profile,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike)} src={post?.image} alt="postimg" className="rounded-lg lg:rounded-l-lg lg:rounded-tr-none lg:rounded-br-none w-full h-full object-cover"/>
+        <div className='relative aspect-[3/4] sm:aspect-square w-full sm:w-[500px] md:h-[600px] lg:w-full lg:h-full object-cover'>
+            <img onClick={()=>handleDoubleClick(user,profile,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike)} src={post?.image} alt="postimg" className="lg:rounded-l-lg lg:rounded-tr-none lg:rounded-br-none w-full h-full object-cover"/>
             {doubleClick && <Heart style={{left: "50%",top: "50%",transform: "translate(-50%, -50%)",}} size={'150px'} fill='red' className='absolute text-red-500 animate-fly-up' />}
         </div>
-        <div className='min-w-[300px] max-w-[300px] sm:min-w-[500px] sm:max-w-[500px] lg:min-w-[40%] flex flex-col justify-between'>
+        <div className='min-w-[300px] sm:min-w-[500px] sm:max-w-[500px] lg:min-w-[40%] flex flex-col justify-between'>
             <div className='hidden lg:flex items-center justify-between p-4'>
                 <div className='flex items-center gap-3'>
                     <Link onClick={()=>setOpenPostDialog(false)}>

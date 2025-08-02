@@ -51,8 +51,8 @@ const PostPage = () => {
     }
     
     return (
-    <div className='h-full w-full flex items-center justify-center pl-0 md:pl-[85px]'>
-        <div className='flex'>
+    <div className='fixed top-12 h-[calc(100%-110px)] w-full flex sm:mt-0 items-center justify-center pl-0 md:pl-[85px]'>
+        <div className='flex w-full sm:w-auto'>
             <PostDialog post={post} />
         </div>
     </div>
