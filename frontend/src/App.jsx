@@ -28,6 +28,9 @@ function App() {
   useEffect(()=>{
       if(user){
         const socketio = io(import.meta.env.VITE_BACKEND_URL, {
+          reconnection: true,
+          reconnectionAttempts: 5,
+          reconnectionDelay: 1000,
           query: {
             userID: user?._id
           }
