@@ -365,7 +365,7 @@ const Profile = () => {
                 {postorsaved ? profile?.posts.length > 0 ? profile?.posts.map((post) => {
                     return (
                         <div onClick={() => {setSelectedPost(post);setOpenPostDialog(true);}} key={post._id} className="relative aspect-[3/4] max-w-[300px] group hover:cursor-pointer overflow-hidden">
-                            <img src={post.image} alt="postimg" className="object-cover w-full h-full group-hover:opacity-70 "/>
+                            <img src={post.image.split('/')[4] == 'image' ? post.image : post.image.replace('/upload/', '/upload/so_2.5/').replace('.mp4', '.jpg')} alt="postimg" className="object-cover w-full h-full group-hover:opacity-70 "/>
                             <div className="absolute flex items-center justify-center bottom-0 left-0 h-full w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <div className="flex gap-5 text-white">
                                 <div className="flex items-center">
@@ -384,7 +384,7 @@ const Profile = () => {
                 : savedPosts?.length > 0 ? savedPosts?.map((post) => {
                     return (
                         <div onClick={() => {setSelectedPost(post);setOpenPostDialog(true);}} key={post._id} className="relative aspect-[3/4] max-w-[300px] group hover:cursor-pointer overflow-hidden">
-                            <img src={post.image} alt="postimg" className="object-cover w-full h-full group-hover:opacity-70 "/>
+                            <img src={post.image.split('/')[4] == 'image' ? post.image : post.image.replace('/upload/', '/upload/so_2.5/').replace('.mp4', '.jpg')} alt="postimg" className="object-cover w-full h-full group-hover:opacity-70 "/>
                             <div className="absolute flex items-center justify-center bottom-0 left-0 h-full w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <div className="flex gap-5 text-white">
                                 <div className="flex items-center">

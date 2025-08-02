@@ -289,6 +289,7 @@ html, body {
   width: 60px;
   height: 25px;
   position: relative;
+  padding: 8px,12px;
   z-index: 4;
 }
 
@@ -296,7 +297,7 @@ html, body {
   width: 8px;
   height: 8px;
   position: absolute;
-  top: 10px;
+  top: 12px;
   border-radius: 50%;
   background-color: #ffffff;
   opacity: 0;
@@ -305,7 +306,7 @@ html, body {
 }
 
 .typing-circle:nth-child(1) {
-  left: 10%;
+  left: 15%;
   animation-delay: 0s;
 }
 
@@ -315,7 +316,7 @@ html, body {
 }
 
 .typing-circle:nth-child(3) {
-  left: 80%;
+  left: 75%;
   animation-delay: 0.4s;
 }
 

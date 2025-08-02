@@ -54,3 +54,25 @@ export const getMessages = async (req, res) => {
         console.error(error);
     }
 };
+
+export const getAllLastMessages = async (req, res) => {
+    try {
+        const userId = req.id;
+        const convos = await Convo.find({ participants: userId })
+            .populate({
+                path: 'messages',
+                options: { sort: { createdAt: -1 }},
+            })
+        const chats = convos.map(convo => {
+            const otherUser = convo.participants.find(p => p._id.toString() !== userId);
+            return {
+                participant: otherUser,
+                lastMessage: convo.messages[0] || null
+            };
+        });
+
+        return res.status(200).json({ success: true, chats });
+    } catch (error) {
+        console.error(error);
+    }
+};

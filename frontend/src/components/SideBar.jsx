@@ -119,7 +119,7 @@ const SideBar = () => {
                     <img src={NotextLogo} alt="Description" width="50" className={`block ${searchOpen || chatOpen ? "" : "xl:hidden"} my-8 pl-1`}/>
                 </Link>
                 {searchOpen && 
-                <div className="flex pl-10 pb-1 justify-start items-center w-full">
+                <div className="flex fixed left-25 top-10 pb-1 justify-start items-center w-full">
                     <h1 className="font-bold text-2xl">Search</h1>
                 </div>}
             </div>
@@ -135,7 +135,7 @@ const SideBar = () => {
                     </div>
                 </div>
                 {searchOpen && 
-                    <div className="w-full">
+                    <div className="w-full min-w-[350px]">
                         <Search className='absolute left-[84px] top-34 w-6 h-6 search-icon' />
                         <Input autoFocus value={searchtext} onChange={(e)=>setSearchText(e.target.value.trim())} className={`w-[100%]  mb-5  ${searchtext ? 'pl-2' : 'pl-8'} focus:pl-2 bg-gray-500/50  h-10  placeholder:text-white text-white`} placeholder="Search"
                             onFocus={() => document.querySelector('.search-icon').classList.add('hidden')} 
@@ -159,7 +159,7 @@ const SideBar = () => {
         <div className="fixed top-0 z-10 left-0 right-0 border-b border-gray-800 bg-background md:hidden flex justify-around items-center h-12">
             <div className="fixed top-0 flex gap-3 w-full">
                 <Link className="h-[40px] pl-3 pt-1" to="/">
-                    <img src={NotextLogo} alt="Description" className="w-[60px] "/>
+                    <img src={NotextLogo} alt="Description" className="max-w-[40px] min-w-[40px] "/>
                 </Link>
                 <div className="w-full relative mt-[6px] h-9">
                     <Input value={searchtext} onChange={(e)=>setSearchText(e.target.value.trim())} className={`w-[100%]  mb-5  ${searchtext ? 'pl-2' : 'pl-8'} focus:pl-2 bg-gray-500/50  h-9  placeholder:text-white text-white`} placeholder="Search"

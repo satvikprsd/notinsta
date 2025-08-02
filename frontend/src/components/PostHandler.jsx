@@ -102,7 +102,7 @@ export const handleDoubleClick = (user,profile,post,posts,isLiked,setIsLiked,set
             const data = await response.json();
             if (data.success){
                 if (isSaved){
-                    dispatch(setSavedPosts(savedPosts.filter((post)=>post._id!=post?._id)));
+                    dispatch(setSavedPosts(savedPosts.filter((p)=>p._id!=post?._id)));
                     toast.success('Post removed from saved successfully');
                 }
                 else{

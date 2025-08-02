@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import HelpDialog from './HelpDialog'
 import { Button } from './ui/button'
-import { ArrowBigLeft, ArrowLeft, Bookmark, Heart, MessageCircle, SendIcon } from 'lucide-react'
+import { ArrowBigLeft, ArrowLeft, Bookmark, Heart, MessageCircle, SendIcon, Volume2, VolumeX } from 'lucide-react'
 import { handleLike, handleDoubleClick,handleNewComment, SavePost, LikesDialog } from './PostHandler'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
@@ -38,6 +38,9 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
     const [comments, setComments] = useState(post?.comments);
     const dispatch = useDispatch();
     const [lastclick, setlastclick] = useState(0);
+    const videoRef = useRef(null);
+    const [isPlaying, setIsPlaying] = useState(true);
+    const [isMuted, setIsMuted] = useState(true);
     const [isLikedState, setIsLikedState] = useState(post?.likes.map((f)=>f._id).includes(user?._id));
     const [curLikesState, setCurLikesState] = useState(post?.likes.length || 0);
     const [curCommentsState, setCurCommentsState] = useState(post?.comments.length||0);
@@ -80,6 +83,13 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
         fetchComments();
     }, [post]);
 
+    useEffect(()=>{
+        if (videoRef.current){
+            videoRef.current.muted = isMuted
+        }
+    }, [isMuted])
+
+
     return (
     <div className='flex flex-col flex-1 lg:flex-row '>
         <Dialog open={mobile}>
@@ -110,8 +120,15 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
             </div>
             <HelpDialog isSaved={isSaved} setisSaved={setisSaved} setDialog={setOpenPostDialog} post={post} />
         </div>
-        <div className='relative aspect-[3/4] sm:aspect-square w-full sm:w-[500px] md:h-[600px] lg:w-full lg:h-full object-cover'>
-            <img onClick={()=>handleDoubleClick(user,profile,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike)} src={post?.image} alt="postimg" className="lg:rounded-l-lg lg:rounded-tr-none lg:rounded-br-none w-full h-full object-cover"/>
+        <div className='flex justify-center items-center relative aspect-[3/4] sm:aspect-square w-full sm:w-[500px] md:h-[600px] lg:w-full lg:h-full object-cover'>
+            {post?.image.split('/')[4] == 'image' &&  <img onClick={()=>handleDoubleClick(user,profile,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike)} src={post?.image} alt="postimg" className="lg:rounded-l-lg lg:rounded-tr-none lg:rounded-br-none w-full h-full object-cover"/>}
+            {post?.image.split('/')[4] == 'video' && <video autoPlay muted playsInline onContextMenu={(e) => e.preventDefault()} loop onClick={()=>{handleDoubleClick(user,profile,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike); if (isPlaying) {videoRef.current?.pause();setIsPlaying(false)} else {videoRef.current?.play();setIsPlaying(true)}}} ref={videoRef} src={post.image} alt="postimg" className='w-[350px] h-full object-cover' />}
+            {post?.image.split('/')[4] == 'video' && !isPlaying && <div onClick={()=>{if (isPlaying) {videoRef.current?.pause();setIsPlaying(false)} else {videoRef.current?.play();setIsPlaying(true)}}} size={'80px'} className='absolute' style={{left: "50%",top: "50%",transform: "translate(-50%, -50%)",backgroundImage: `url('https://static.cdninstagram.com/images/instagram/xig_legacy_spritesheets/sprite_video_2x.png?__makehaste_cache_breaker=QGBM-RRQtO6')`,backgroundPosition: '0px 0px',backgroundRepeat: 'no-repeat',backgroundSize: '271px 149px',width: '135px',height: '135px',cursor: 'pointer',display: 'block',}}></div>}
+            {post?.image.split('/')[4] == 'video' && 
+                <div className='absolute right-0 bottom-0 m-3 bg-[#22262C] w-7 h-7 hover:cursor-pointer rounded-full flex items-center justify-center' >
+                    {isMuted ? <VolumeX fill='white' onClick={()=>setIsMuted(false)} size={15} className='' /> : <Volume2 fill='white' onClick={()=>setIsMuted(true)} size={15} className='' />}
+                </div>
+            }
             {doubleClick && <Heart style={{left: "50%",top: "50%",transform: "translate(-50%, -50%)",}} size={'150px'} fill='red' className='absolute text-red-500 animate-fly-up' />}
         </div>
         <div className='min-w-[300px] sm:min-w-[500px] sm:max-w-[500px] lg:min-w-[40%] flex flex-col justify-between'>

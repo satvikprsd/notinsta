@@ -1,7 +1,6 @@
 import React from 'react'
 import Post from './Post'
 import { useSelector } from 'react-redux'
-import Searchuser from './SearchUser';
 import { useSearch } from './SearchContext';
 import { useLoading } from './LoadingContext';
 import NotextLogo from "./notinstalogo.png";

@@ -6,6 +6,7 @@ const chatSlice = createSlice({
         onlineUsers: [],
         conversations: [],
         chatorder: [],
+        lastMsgs: [],
     },
     reducers:{
         setOnlineUsers: (state, action) => {
@@ -16,9 +17,12 @@ const chatSlice = createSlice({
         },
         setChatOrder: (state, action) => {
             state.chatorder = action.payload
+        },
+        setLastMsgs: (state, action) => {
+            state.lastMsgs = action.payload
         }
     }
 });
 
-export const {setSocket, setOnlineUsers, setConversations, setChatOrder} = chatSlice.actions;
+export const {setSocket, setOnlineUsers, setConversations, setChatOrder, setLastMsgs} = chatSlice.actions;
 export default chatSlice.reducer;
