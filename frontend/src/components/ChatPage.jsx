@@ -118,7 +118,7 @@ const ChatPage = () => {
     }
 
   return (
-    <div onClick={()=>setSearchOpen(false)} className='flex ml-0 mt-[47px] md:mt-0 md:ml-[94px] h-[calc(100%-102px)] md:h-screen w-screen md:w-[calc(100%-94px)]'>
+    <div onClick={()=>setSearchOpen(false)} className='flex ml-0 fixed md:top-0 top-[47px] md:mt-0 md:ml-[94px] h-[calc(100%-102px)] md:h-screen w-screen md:w-[calc(100%-94px)]'>
         <div className={`${selectedChat && chatId ? 'hidden sm:block' : ''}  flex-none w-full sm:w-[400px] border-r border-gray-600`}>
             <section className='px-5 sm:pl-5 w-full my-7'>
                 <h1 className='font-bold mb-4 px-3 text-xl'>{user?.username}</h1>
@@ -129,11 +129,13 @@ const ChatPage = () => {
                             const isonline = onlineUsers.includes(users.chatuser?._id);
                             return (
                                 <div onClick={()=>{setShowEmoji(false);navigate(`/chat/${users.chatuser?._id}`)}} key={users.chatuser?._id} className={`${chatId == users.chatuser?._id ? 'bg-gray-800' : ''}  grid grid-cols-[60px_3fr] gap-2 items-center my-2 hover:cursor-pointer hover:bg-gray-700 rounded-lg pt-2 px-2`}>
-                                    <Avatar className="relative flex size-8 shrink-0 overflow-hidden rounded-full h-15 w-15">
-                                        <AvatarImage src={users.chatuser?.profilePic=='default.jpg' ? NotextLogo : users.chatuser?.profilePic} alt="postimg" className='size-full object-cover rounded-lg aspect-square' />
-                                        <AvatarFallback>USER</AvatarFallback>
-                                    </Avatar>
-                                    <div className={`fixed left-43 mt-8 font-semibold rounded-full h-2 w-2 ${isonline ? 'bg-green-400' : 'bg-red-600'}`}></div>
+                                    <div className='relative'>
+                                        <Avatar className="relative flex size-8 shrink-0 overflow-hidden rounded-full h-15 w-15">
+                                            <AvatarImage src={users.chatuser?.profilePic=='default.jpg' ? NotextLogo : users.chatuser?.profilePic} alt="postimg" className='size-full object-cover rounded-lg aspect-square' />
+                                            <AvatarFallback>USER</AvatarFallback>
+                                        </Avatar>
+                                        <div className={`absolute bottom-3   right-0 mt-8 font-semibold rounded-full h-2 w-2 ${isonline ? 'bg-green-400' : 'bg-red-600'}`}></div>
+                                    </div>
                                     <div className='text-sm flex flex-col items-start gap-1'>
                                         <h1 className='font-bold'>{users.chatuser?._id == user?._id ? `${user?.username} (You)` : users.chatuser?.username}</h1>
                                     <span className="text-sm text-gray-400 truncate max-w-[200px] block">
@@ -190,7 +192,7 @@ const ChatPage = () => {
                     {conversations?.map((msg)=>{
                         return (
                             <div key={msg._id} className={`mx-3 flex ${user._id === msg.sender?._id ? 'justify-end' : 'justify-start'}`}>
-                                <div style={user._id !== msg.sender?._id ? { paddingLeft: `calc(${msg.message?.length > 63 ? 15 : 10+msg.message?.length*0.05}px)` } : { paddingLeft: `calc(${msg.message?.length > 63 ? 20 : 10+msg.message?.length*0.1}px)` }} className={`p-2 text-left  max-w-xl break-words text-white  ${user._id === msg.sender?._id ? 'bg-blue-600 rounded-l-4xl rounded-tr-4xl rounded-br-md pl-4' : 'bg-[#333333] rounded-r-4xl rounded-tl-4xl rounded-bl-md'} `}>
+                                <div style={user._id !== msg.sender?._id ? { paddingLeft: `calc(${msg.message?.length > 63 ? 15 : 10+msg.message?.length*0.05}px)` } : { paddingLeft: `calc(${msg.message?.length > 63 ? 20 : 10+msg.message?.length*0.1}px)` }} className={`p-2 text-left max-w-xs  xl:max-w-lg break-words text-white  ${user._id === msg.sender?._id ? 'bg-blue-600 rounded-l-4xl rounded-tr-4xl rounded-br-md pl-4' : 'bg-[#333333] rounded-r-4xl rounded-tl-4xl rounded-bl-md'} `}>
                                     {msg?.message}
                                 </div>
                             </div>

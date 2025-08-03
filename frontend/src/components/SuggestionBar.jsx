@@ -67,8 +67,8 @@ const SuggestionBar = () => {
       </div>
 
 
-      <div className='my-10'>
-        <div className='flex items-center gap-25 text-sm'>
+      <div className='my-10 pr-4'>
+        <div className='flex items-center justify-between text-sm'>
           <h1 className='font-semibold text-gray-600'>Suggested for you</h1>
           <span onClick={()=>setShowAllSuggestions(prev=>!prev)} className='font-bold text-white hover:cursor-pointer'>{showAllSuggestions?'See less' : 'See more'}</span>
         </div>
@@ -78,7 +78,7 @@ const SuggestionBar = () => {
         visibleSuggestions?.length > 0 ?
           visibleSuggestions?.map((users) => {
              return (
-              <div key={users._id} className='grid grid-cols-[60px_1.9fr_1fr] items-center my-4'>
+              <div key={users._id} className='grid grid-cols-[60px_1.9fr_auto] items-center my-4'>
                 <Link to={`/profile/${users.username}`}>
                   <Avatar className="h-12 w-12">
                     <AvatarImage src={users.profilePic=='default.jpg' ? NotextLogo : users.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />

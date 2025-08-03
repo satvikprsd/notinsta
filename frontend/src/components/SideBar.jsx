@@ -31,7 +31,7 @@ const SideBar = () => {
         { label: "Upload", icon: <PlusSquare color="#fff" className="min-w-[24px]"/>, path: "/upload" },
         { label: "Profile", 
             icon: (
-            <Avatar className="-ml-1">
+            <Avatar className="ml-0 xl:-ml-1">
                 <AvatarImage src={user?.profilePic} className='object-cover rounded-lg aspect-square'/>
                 <AvatarFallback>CN</AvatarFallback>
             </Avatar>
@@ -104,6 +104,9 @@ const SideBar = () => {
                 navigate("/chat");
             });
         }
+        else if (itemtext === "Reels" || itemtext === "Notifications") {
+            toast.info("This feature is currently under maintenance")
+        }
     }
 
     useEffect(()=>{
@@ -151,7 +154,7 @@ const SideBar = () => {
         </div>
         <div className="fixed bottom-0 z-10 left-0 right-0 border-t border-gray-800 bg-background md:hidden flex justify-around items-center h-14">
             {bottombarItems.map(item => (
-                <div onClick={()=>sidebarClickHandler(item.label)} key={item.label+'-bottom'} className="flex flex-col items-center justify-center hover:text-white cursor-pointer text-gray-400 text-sm">
+                <div onClick={()=>sidebarClickHandler(item.label)} key={item.label+'-bottom'} className={`flex flex-col items-center justify-center ${activeItem===item.label ? 'bg-gray-800' : ''} w-10 h-10 rounded-2xl hover:text-white cursor-pointer text-gray-400 text-sm`}>
                     {item.icon}
                 </div>
             ))}

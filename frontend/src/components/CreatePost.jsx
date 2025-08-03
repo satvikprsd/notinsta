@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader } from './ui/dialog';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import Loader from './ui/loader';
-import { ArrowLeft, Loader2, Loader2Icon, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, Loader2, Loader2Icon, Volume2, VolumeOff, VolumeX } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFeed } from '@/redux/postSlice';
 import { setProfile } from '@/redux/authSlice';
@@ -116,7 +116,7 @@ const CreatePost = ({ open, setOpen }) => {
                                     {fileType.split('/')[0] == 'video' && !isPlaying && <div onClick={()=>{if (isPlaying) {videoRef.current?.pause();setIsPlaying(false)} else {videoRef.current?.play();setIsPlaying(true)}}} size={'80px'} className='absolute' style={{left: "50%",top: "50%",transform: "translate(-50%, -50%)",backgroundImage: `url('https://static.cdninstagram.com/images/instagram/xig_legacy_spritesheets/sprite_video_2x.png?__makehaste_cache_breaker=QGBM-RRQtO6')`,backgroundPosition: '0px 0px',backgroundRepeat: 'no-repeat',backgroundSize: '271px 149px',width: '135px',height: '135px',cursor: 'pointer',display: 'block',}}></div>}
                                     {fileType.split('/')[0] == 'video' && 
                                         <div onClick={()=>setIsMuted(prev => !prev)} className='absolute right-0 bottom-0 m-3 bg-[#22262C] w-7 h-7 hover:cursor-pointer rounded-full flex items-center justify-center' >
-                                            {isMuted ? <VolumeX fill='white' size={15} className='' /> : <Volume2 fill='white' size={15} className='' />}
+                                            {isMuted ? <VolumeOff fill='white' size={15} className='' /> : <Volume2 fill='white' size={15} className='' />}
                                         </div>
                                     }
                                 </div>)
