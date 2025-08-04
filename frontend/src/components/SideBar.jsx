@@ -70,7 +70,6 @@ const SideBar = () => {
         else if(itemtext === "Upload"){
             setActiveItem('Upload')
             setSearchOpen(false);
-            setChatOpen(false);
             if (user) setOpen(true);
         }
         else if(itemtext === "Profile"){
