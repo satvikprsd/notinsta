@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AvatarFallback } from './ui/avatar';
 import NotextLogo from "./notinstalogo.png";
-import { setSelectedChat } from '@/redux/authSlice';
 import { useChat } from './ChatContext';
 import { Button } from './ui/button';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -19,11 +18,12 @@ import { useLoading } from './LoadingContext';
 import { useSocket } from './SocketContext';
 import TypingLoader from './ui/typingloader';
 import useGetLastMsgs from '@/hooks/useGetLastMsgs';
+import { toast } from 'sonner';
 const ChatPage = () => {
-    const {user, suggestedUsers, selectedChat} = useSelector(store => store.auth);
+    const {user, selectedChat} = useSelector(store => store.auth);
     const { onlineUsers, conversations, chatorder, lastMsgs } = useSelector(store=>store.chats);
     const { setChatOpen } = useChat();
-    const { searchOpen, setSearchOpen } = useSearch();
+    const { setSearchOpen } = useSearch();
     const messagesEndRef = useRef(null);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -31,6 +31,8 @@ const ChatPage = () => {
     const [chattext, setChatText] = useState('');
     const [showEmoji, setShowEmoji] = useState(false);
     const [istyping, setIsTyping] = useState(false);
+    const textareaRef = useRef(null);
+    const ChatPageRef = useRef(null);
     const { chatpageloading, lastmsgloading, typinganimation, setTypingAnimation } = useLoading();
     const { socketio } = useSocket();
     const params = useParams();
@@ -75,6 +77,35 @@ const ChatPage = () => {
         }
     }
 
+    const handleFocus = () => {
+        setTimeout(() => {
+        textareaRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+        });
+        }, 100);
+        ChatPageRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        const handleResize = () => {
+        if (textareaRef.current && document.activeElement === textareaRef.current) {
+            setTimeout(() => {
+            textareaRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+            }, 100); 
+        }
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => {
+        window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
+
     useEffect(()=>{
         setActiveItem('Messages');
         socketio?.on('user_typing', (id)=>{
@@ -118,7 +149,7 @@ const ChatPage = () => {
     }
 
   return (
-    <div onClick={()=>setSearchOpen(false)} className='flex ml-0 fixed md:top-0 top-[47px] md:mt-0 md:ml-[94px] h-[calc(100%-102px)] md:h-screen w-screen md:w-[calc(100%-94px)]'>
+    <div ref={ChatPageRef} onClick={()=>setSearchOpen(false)} className='flex ml-0 fixed md:top-0 top-[47px] md:mt-0 md:ml-[94px] h-[calc(100%-102px)] md:h-screen w-screen md:w-[calc(100%-94px)]'>
         <div className={`${selectedChat && chatId ? 'hidden sm:block' : ''}  flex-none w-full sm:w-[400px] border-r border-gray-600`}>
             <section className='px-5 sm:pl-5 w-full my-7'>
                 <h1 className='font-bold mb-4 px-3 text-xl'>{user?.username}</h1>
@@ -209,7 +240,7 @@ const ChatPage = () => {
                 <EmojiPicker open={showEmoji} onEmojiClick={(e)=>setChatText(prev=>prev+e.emoji)} className='!fixed !bottom-13 !z-10 mb-2' width={300} height={400} theme='dark' emojiStyle='apple' skinTonesDisabled={true} suggestedEmojisMode='recent' />
                 <div className='border-[rgba(255,255,255,0.3)] w-full border-[2px] rounded-4xl px-5 relative flex'>
                     <svg onClick={()=>setShowEmoji(prev=>!prev)} className='fixed bottom-[81px] md:bottom-[26px] hover:cursor-pointer transition-opacity duration-300 active:opacity-70' aria-label="Choose an emoji" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Choose an emoji</title><path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z"></path></svg>
-                    <Textarea onClick={()=>setShowEmoji(false)} value={chattext} onChange={(e)=>{setChatText(e.target.value);if(!istyping){socketio.emit('typing_started',(chatId));setIsTyping(true);}}} className="w-[95%] ml-6 resize-none !text-md !border-0 !ring-0 !shadow-none focus:!ring-0 focus:!shadow-none focus:!border-0 focus-visible:!ring-0 focus-visible:!shadow-none focus-visible:!border-0 font-normal" style={{ minHeight: '40px', maxHeight: '150px', height: 'auto', overflowY: 'auto', transition: 'height 0.1s ease-out', flexShrink: 0, display: 'block', position: 'relative' }} />
+                    <Textarea onFocus={handleFocus} onClick={()=>setShowEmoji(false)} value={chattext} onChange={(e)=>{setChatText(e.target.value);if(!istyping){socketio.emit('typing_started',(chatId));setIsTyping(true);}}} className="w-[95%] ml-6 resize-none !text-md !border-0 !ring-0 !shadow-none focus:!ring-0 focus:!shadow-none focus:!border-0 focus-visible:!ring-0 focus-visible:!shadow-none focus-visible:!border-0 font-normal" style={{ minHeight: '40px', maxHeight: '150px', height: 'auto', overflowY: 'auto', transition: 'height 0.1s ease-out', flexShrink: 0, display: 'block', position: 'relative' }} />
                     {chattext.trim() != '' && <span onClick={()=>sendMsgHandler(selectedChat._id)} className="absolute bottom-[10px] right-[15px] text-blue-500 font-bold hover:cursor-pointer hover:text-white transition-all duration-150 active:translate-y-[2px] active:opacity-70">Send</span>}
                 </div>
             </div>
