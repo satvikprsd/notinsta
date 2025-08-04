@@ -6,7 +6,7 @@ import { useChat } from "./ChatContext";
 const MainPage = () => {
     const {ChatPageRef} = useChat();
     return (
-            <div ref={ChatPageRef} className="w-screen h-screen fade-in overflow-y-auto">
+            <div ref={ChatPageRef} className="w-screen h-screen fade-in">
                 <SideBar />
                 <>
                     <Outlet />
