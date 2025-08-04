@@ -13,7 +13,7 @@ import { SidebarActiveProvider } from './components/SideBarActiveContext'
 import { io } from 'socket.io-client'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { setOnlineUsers, setSocket } from './redux/chatSlice'
+import { setOnlineUsers } from './redux/chatSlice'
 import { useSocket } from './components/SocketContext'
 
 const router = createBrowserRouter([

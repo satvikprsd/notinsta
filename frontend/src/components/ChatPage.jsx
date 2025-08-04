@@ -32,7 +32,7 @@ const ChatPage = () => {
     const [showEmoji, setShowEmoji] = useState(false);
     const [istyping, setIsTyping] = useState(false);
     const textareaRef = useRef(null);
-    const ChatPageRef = useRef(null);
+    const { ChatPageRef } = useChat();
     const { chatpageloading, lastmsgloading, typinganimation, setTypingAnimation } = useLoading();
     const { socketio } = useSocket();
     const params = useParams();
@@ -149,7 +149,7 @@ const ChatPage = () => {
     }
 
   return (
-    <div ref={ChatPageRef} onClick={()=>setSearchOpen(false)} className='flex ml-0 fixed md:top-0 top-[47px] md:mt-0 md:ml-[94px] h-[calc(100%-102px)] md:h-screen w-screen md:w-[calc(100%-94px)]'>
+    <div onClick={()=>setSearchOpen(false)} className='flex ml-0 fixed md:top-0 top-[47px] md:mt-0 md:ml-[94px] h-[calc(100%-102px)] md:h-screen w-screen md:w-[calc(100%-94px)]'>
         <div className={`${selectedChat && chatId ? 'hidden sm:block' : ''}  flex-none w-full sm:w-[400px] border-r border-gray-600`}>
             <section className='px-5 sm:pl-5 w-full my-7'>
                 <h1 className='font-bold mb-4 px-3 text-xl'>{user?.username}</h1>
