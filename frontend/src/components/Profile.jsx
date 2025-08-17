@@ -210,7 +210,6 @@ const Profile = () => {
     const params = useParams();
     const userId = params.username;
     const { userloading, profileloading } = useLoading();
-    console.log(userloading,profileloading)
     const dispatch = useDispatch();
     const [searchParams] = useSearchParams();
     const { profile,user,savedPosts, currentSong } = useSelector((store) => store.auth);
