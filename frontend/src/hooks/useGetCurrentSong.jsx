@@ -10,7 +10,7 @@ const useGetCurrentSong = (userId, isConnected) => {
     if (!isConnected) {
         dispatch(setCurrentSong(null));
     }
-    
+
     useEffect(()=>{
         const fetchCurrentSong = async () => {
             try {
@@ -19,7 +19,12 @@ const useGetCurrentSong = (userId, isConnected) => {
                 const data = await response.json();
                 if (data.success) {
                     const { item } = data;
-                    dispatch(setCurrentSong(item));
+                    if (item && item.is_playing) {
+                        dispatch(setCurrentSong(item));
+                    }
+                    else {
+                        dispatch(setCurrentSong(null));
+                    }
                 } else {
                     console.error(data.message);
                 }
