@@ -17,13 +17,15 @@ const useGetProfile = (username) => {
                 const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/${username}/profile`, {credentials:'include'});
                 const data = await response.json();
                 if (data.success) {
-                    // console.log(data.user,'data user');
                     dispatch(setProfile(data.user));
                     
                 } else {
-                    dispatch(setProfile(null));
-                    setprofileLoading(false);
-                    console.error(data.message);
+                    if (username)
+                    {
+                        dispatch(setProfile(null));
+                        setprofileLoading(false);
+                        console.error(data.message);
+                    }
                 }
             } catch (error) {
                 console.error(error);

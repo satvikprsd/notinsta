@@ -210,14 +210,15 @@ const Profile = () => {
     const params = useParams();
     const userId = params.username;
     const { userloading, profileloading } = useLoading();
-    console.log(userloading,profileloading)
     const dispatch = useDispatch();
     const [searchParams] = useSearchParams();
     const { profile,user,savedPosts, currentSong } = useSelector((store) => store.auth);
     if (!params.username) {
-        navigate(`/profile/${user?.username}`)
         if (searchParams.get("connected")) {
-            toast.success("Spotify connected successfully");
+            navigate(`/profile/${user?.username}?connected=true`);
+        }
+        else {
+            navigate(`/profile/${user?.username}`);
         }
     }
     useGetUser(user?.username);
@@ -233,6 +234,26 @@ const Profile = () => {
     const followers = profile?.followers;
     const followings = profile?.following;
     const {activeItem, setActiveItem} = useActiveSideBar();
+
+    useEffect(() => {
+    if (searchParams.get("connected")) {
+        toast.success("Spotify connected successfully", {
+        toastId: "spotify-success",
+        });
+
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete("connected");
+
+        const queryString = newParams.toString();
+        const newUrl = queryString
+        ? `${window.location.pathname}?${queryString}`
+        : window.location.pathname;
+
+        window.history.replaceState({}, "", newUrl);
+    }
+    }, []);
+
+
     useEffect(()=>{
         setActiveItem("Profile");
         return ()=>{setActiveItem(null)}
@@ -306,7 +327,7 @@ const Profile = () => {
         </div>)
     }
 
-    if (!profile) {
+    if (!profile && !profileloading && !userloading) {
         return (
             <div className="min-h-screen flex-1 flex flex-col items-center md:pl-[10%] lg:pl-[20%]">
                 <NotFound />
