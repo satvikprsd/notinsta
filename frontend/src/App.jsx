@@ -15,9 +15,10 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setOnlineUsers } from './redux/chatSlice'
 import { useSocket } from './components/SocketContext'
+import NotFound from './components/NotFound'
 
 const router = createBrowserRouter([
-  { path: '/', element: <MainPage />,children: [{path: '/',element: <Home />}, {path: '/profile/:username', element: <Profile />}, { path: '/p/:postid', element: <PostPage />}, { path: '/chat', element: <ChatPage />}, { path: '/chat/:chatid', element: <ChatPage />}] },
+  { path: '/', element: <MainPage />,children: [{path: '/',element: <Home />}, {path: '/profile/:username', element: <Profile />}, {path: '/profile', element: <Profile />}, { path: '/p/:postid', element: <PostPage />}, { path: '/chat', element: <ChatPage />}, { path: '/chat/:chatid', element: <ChatPage />}, { path: "*", element: <NotFound /> }] },
   { path: '/signup', element: <SignUp /> },
   { path: '/login', element: <SignIn /> },
 ])

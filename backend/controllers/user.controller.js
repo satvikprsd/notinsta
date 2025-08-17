@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import getDataUri from '../components/datauri.js';
 import cloudinary from '../components/cloudinary.js';
 import { Convo } from '../models/convo.model.js';
+import axios from 'axios';
 
 export const register = async(req,res) => {
     try {
@@ -61,7 +62,9 @@ export const login = async(req,res) => {
             following: populatedFollowing.following,
             posts: populatedPosts.posts,
             likes: user.likes,
-            saved: user.savedPosts
+            saved: user.savedPosts,
+            spotify_connected: user.spotify_connected,
+            expires_at: user.expires_at,
         }
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
@@ -101,7 +104,7 @@ export const logout = async(req,res) => {
 
 export const getProfile = async(req,res) => {
     try {
-        const user = await User.findOne({ username: req.params.username }).select("-password -savedPosts").populate("followers", "username profilePic").populate("following", "username profilePic").populate({path: "posts",populate: [{path: "author",select: "-password",},{path: "likes",select: "username profilePic",}]
+        const user = await User.findOne({ username: req.params.username }).select("-password -savedPosts -access_token -refresh_token").populate("followers", "username profilePic").populate("following", "username profilePic").populate({path: "posts",populate: [{path: "author",select: "-password",},{path: "likes",select: "username profilePic",}]
         });
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
@@ -248,5 +251,133 @@ export const getConvos = async(req, res) => {
     catch(e){
         console.log(e);
         return res.status(400).json({success: false, message: e})
+    }
+}
+
+export const spotifyConnect = async (req, res) => {
+    const code = req.query.code;
+    const userID = req.id;
+    const user = await User.findById(userID);
+
+    if (!user) {
+        return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (!code) {
+        return res.status(400).json({ error: 'Missing code parameter' });
+    }
+
+    try {
+        const client_id = process.env.SPOTIFY_CLIENT_ID;
+        const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+        const redirect_uri = "https://notinsta-production.up.railway.app/api/v1/user/spotify-connect";  
+
+        const tokenResponse = await axios.post(
+            'https://accounts.spotify.com/api/token',
+            new URLSearchParams({
+                grant_type: 'authorization_code',
+                code,
+                redirect_uri,
+                client_id,
+                client_secret
+            }),
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }
+        );
+        const { access_token, refresh_token, expires_in } = tokenResponse.data;
+        user.access_token = access_token;
+        user.refresh_token = refresh_token;
+        user.spotify_connected = true;
+        user.expires_at = Date.now() + expires_in * 1000;
+        await user.save();
+        console.log('Spotify access token:', access_token, 'refresh token:', refresh_token, 'expires in:', expires_in);
+        res.redirect(`${process.env.URL}/profile?connected=true`);
+    } catch (error) {
+        res.status(500).json({ error: 'Spotify token exchange failed', details: error.message });
+    }
+};
+
+export const spotifyDisconnect = async (req, res) => {
+    try {
+        const userID = req.id;
+        const user = await User.findById(userID);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        user.spotify_connected = false;
+        user.access_token = null;
+        user.refresh_token = null;
+        user.expires_at = null;
+        await user.save();
+        return res.status(200).json({ success: true, message: 'Spotify disconnected successfully' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: 'Failed to disconnect Spotify', error: error.message });
+    }
+}
+
+const refreshSpotifyToken = async (user) => {
+    try {
+        const client_id = process.env.SPOTIFY_CLIENT_ID;
+        const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+
+        const response = await axios.post(
+            'https://accounts.spotify.com/api/token',
+            new URLSearchParams({
+                grant_type: 'refresh_token',
+                refresh_token: user.refresh_token,
+                client_id,
+                client_secret
+            }),
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }
+        );
+
+        const { access_token, expires_in } = response.data;
+        user.access_token = access_token;
+        user.expires_at = Date.now() + expires_in * 1000;
+        await user.save();
+        return access_token;
+    }
+    catch (error) {
+        console.error('Error refreshing Spotify token:', error.message);
+        throw new Error('Failed to refresh Spotify token');
+    }
+}
+
+export const getCurrentSong = async (req, res) => {
+    try {
+        const userID = req.params.id;
+        const user = await User.findById(userID);
+        if (!user || !user.spotify_connected || !user.access_token) {
+            return res.status(400).json({ success: false, message: 'Spotify not connected or access token missing' });
+        }
+        let access_token = user.access_token;
+
+        if (!user.expires_at || Date.now() > user.expires_at) {
+            access_token = await refreshSpotifyToken(user);
+        }
+
+        const response = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
+            headers: {
+                'Authorization': `Bearer ${access_token}`
+            }
+        });
+
+        if (response.status === 204) {
+            return res.status(200).json({ success: true, message: 'No song is currently playing' });
+        }
+
+        const currentSong = response.data.item;
+        return res.status(200).json({ success: true, item: currentSong });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: 'Failed to fetch current song', error: error.message });
     }
 }

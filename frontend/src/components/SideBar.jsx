@@ -131,7 +131,7 @@ const SideBar = () => {
                         {sidebarItems.map(item => (
                                 <div onClick={()=>sidebarClickHandler(item.label)} key={item.label} className={`flex items-center gap-5 relative ${activeItem===item.label ? 'bg-gray-800' : ''} hover:bg-gray-700 cursor-pointer rounded-lg h-15 px-3`}>
                                         {item.icon}
-                                        <span className={`hidden ${activeItem===item.label ? 'font-bold' : ''} ${searchOpen || chatOpen ? "" : "xl:block"} text-md text-white` }>{item.label}</span>
+                                        <span className={`hidden ${activeItem===item.label ? 'font-bold' : ''} ${searchOpen || chatOpen ? "" : "xl:block"} text-base text-white` }>{item.label}</span>
                                 </div>
                         ))}
                     </div>

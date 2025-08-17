@@ -11,8 +11,9 @@ export const LoadingProvider = ({ children }) => {
     const [chatpageloading, setchatpageLoading] = useState(true)
     const [convoloading, setconvoLoading] = useState(true);
     const [typinganimation, setTypingAnimation] = useState(false);
+    const [spotifyloading, setSpotifyLoading] = useState(true);
     return (
-        <LoadingContext.Provider value={{ feedloading, setfeedLoading, suggestionloading, setsuggestionLoading, userloading, setuserLoading, profileloading, setprofileLoading, chatpageloading, setchatpageLoading, convoloading, setconvoLoading, typinganimation, setTypingAnimation, lastmsgloading, setLastMsgLoading }}>
+        <LoadingContext.Provider value={{ feedloading, setfeedLoading, suggestionloading, setsuggestionLoading, userloading, setuserLoading, profileloading, setprofileLoading, chatpageloading, setchatpageLoading, convoloading, setconvoLoading, typinganimation, setTypingAnimation, lastmsgloading, setLastMsgLoading, spotifyloading, setSpotifyLoading }}>
             {children}
         </LoadingContext.Provider>
     );

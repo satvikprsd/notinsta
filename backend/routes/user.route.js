@@ -1,5 +1,5 @@
 import express from 'express';
-import { followOrUnfollowUser, getConvos, getProfile, getSavedPosts, getSuggestions, login, logout, register, searchUser, updateProfile } from '../controllers/user.controller.js';
+import { followOrUnfollowUser, getConvos, getCurrentSong, getProfile, getSavedPosts, getSuggestions, login, logout, register, searchUser, spotifyConnect, spotifyDisconnect, updateProfile } from '../controllers/user.controller.js';
 import { isauthenticated } from '../middleware/isAuth.js';
 import upload from '../middleware/multer.js';
 
@@ -15,5 +15,7 @@ router.route('/savedposts').get(isauthenticated, getSavedPosts);
 router.route('/followorunfollow/:id').get(isauthenticated, followOrUnfollowUser);
 router.route('/search/:username').get(isauthenticated,searchUser);
 router.route('/getconvos').get(isauthenticated, getConvos);
-
+router.route('/spotify-connect').get(isauthenticated, spotifyConnect);
+router.route('/spotify-disconnect').get(isauthenticated, spotifyDisconnect);
+router.route('/current-song/:id').get(getCurrentSong);
 export default router;

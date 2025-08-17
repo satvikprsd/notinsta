@@ -21,7 +21,9 @@ const useGetProfile = (username) => {
                     dispatch(setProfile(data.user));
                     
                 } else {
-                    consolen.error(data.message);
+                    dispatch(setProfile(null));
+                    setprofileLoading(false);
+                    console.error(data.message);
                 }
             } catch (error) {
                 console.error(error);

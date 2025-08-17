@@ -215,7 +215,7 @@ const ChatPage = () => {
                         </div>
                     </div>
                     <div>
-                        <Button onClick={()=>{navigate(`/profile/${selectedChat.username}`)}} className="mt-2 bg-[rgb(54,54,54)] text-white text-md hover:bg-[rgba(54,54,54,0.7)] hover:cursor-pointer">View Profile</Button>
+                        <Button onClick={()=>{navigate(`/profile/${selectedChat.username}`)}} className="mt-2 bg-[rgb(54,54,54)] text-white text-base hover:bg-[rgba(54,54,54,0.7)] hover:cursor-pointer">View Profile</Button>
                     </div>
                 </div>
                 {/* Chats map */}
@@ -240,7 +240,7 @@ const ChatPage = () => {
                 <EmojiPicker open={showEmoji} onEmojiClick={(e)=>setChatText(prev=>prev+e.emoji)} className='!fixed !bottom-13 !z-10 mb-2' width={300} height={400} theme='dark' emojiStyle='apple' skinTonesDisabled={true} suggestedEmojisMode='recent' />
                 <div className='border-[rgba(255,255,255,0.3)] w-full border-[2px] rounded-4xl px-5 relative flex'>
                     <svg onClick={()=>setShowEmoji(prev=>!prev)} className='fixed bottom-[81px] md:bottom-[26px] hover:cursor-pointer transition-opacity duration-300 active:opacity-70' aria-label="Choose an emoji" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Choose an emoji</title><path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z"></path></svg>
-                    <Textarea onFocus={handleFocus} onClick={()=>setShowEmoji(false)} value={chattext} onChange={(e)=>{setChatText(e.target.value);if(!istyping){socketio.emit('typing_started',(chatId));setIsTyping(true);}}} className="w-[95%] ml-6 resize-none !text-md !border-0 !ring-0 !shadow-none focus:!ring-0 focus:!shadow-none focus:!border-0 focus-visible:!ring-0 focus-visible:!shadow-none focus-visible:!border-0 font-normal" style={{ minHeight: '40px', maxHeight: '150px', height: 'auto', overflowY: 'auto', transition: 'height 0.1s ease-out', flexShrink: 0, display: 'block', position: 'relative' }} />
+                    <Textarea onFocus={handleFocus} onClick={()=>setShowEmoji(false)} value={chattext} onChange={(e)=>{setChatText(e.target.value);if(!istyping){socketio.emit('typing_started',(chatId));setIsTyping(true);}}} className="w-[95%] ml-6 resize-none !text-base !border-0 !ring-0 !shadow-none focus:!ring-0 focus:!shadow-none focus:!border-0 focus-visible:!ring-0 focus-visible:!shadow-none focus-visible:!border-0 font-normal" style={{ minHeight: '40px', maxHeight: '150px', height: 'auto', overflowY: 'auto', transition: 'height 0.1s ease-out', flexShrink: 0, display: 'block', position: 'relative' }} />
                     {chattext.trim() != '' && <span onClick={()=>sendMsgHandler(selectedChat._id)} className="absolute bottom-[10px] right-[15px] text-blue-500 font-bold hover:cursor-pointer hover:text-white transition-all duration-150 active:translate-y-[2px] active:opacity-70">Send</span>}
                 </div>
             </div>

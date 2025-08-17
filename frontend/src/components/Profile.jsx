@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "./ui/button";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import useGetProfile from "@/hooks/useGetProfile";
 import { Heart, MessageCircle, Search, XIcon } from "lucide-react";
 import { Dialog, DialogContent } from "./ui/dialog";
 import PostDialog from "./PostDialog";
 import { toast } from "sonner";
-import { setAuthUser, setProfile } from "@/redux/authSlice";
+import { setAuthUser, setCurrentSong, setProfile } from "@/redux/authSlice";
 import ChangePfp from "./ChangePfp";
 import UpdateProfile from "./EditProfile";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +18,9 @@ import { Input } from "./ui/input";
 import { useLoading } from "./LoadingContext";
 import useGetUser from "@/hooks/useGetUser";
 import { useActiveSideBar } from "./SideBarActiveContext";
+import NotFound from "./NotFound";
+import useGetCurrentSong from "@/hooks/useGetCurrentSong";
+import SpotifyLogo from "./spotifylogo.png";
 
 const FollowersDialog = ({openfollowerdialog, setOpenFollowerDialog, followers, isfollowerfollowed, setIsFollowerFollowed, dispatch ,user , profile}) => {
     const [searchfollowers, setSearchFollowers] = useState(followers);
@@ -205,16 +208,25 @@ const Profile = () => {
     const [postorsaved, setPostOrSaved] = useState(true);
     const navigate = useNavigate();
     const params = useParams();
-    // console.log(params,"params");
     const userId = params.username;
     const { userloading, profileloading } = useLoading();
     console.log(userloading,profileloading)
     const dispatch = useDispatch();
-    const { profile,user,savedPosts } = useSelector((store) => store.auth);
+    const [searchParams] = useSearchParams();
+    const { profile,user,savedPosts, currentSong } = useSelector((store) => store.auth);
+    if (!params.username) {
+        navigate(`/profile/${user?.username}`)
+        if (searchParams.get("connected")) {
+            toast.success("Spotify connected successfully");
+        }
+    }
     useGetUser(user?.username);
     useGetProfile(userId);
+    useGetCurrentSong(profile?._id, profile?.spotify_connected);
+    
     const [isfollowed, setIsFollowed] = useState(profile?.followers?.map((f)=>f._id).includes(user?._id));
     const [isfollowerfollowed, setIsFollowerFollowed] = useState({});
+    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [isfollowingfollowed, setIsFollowingFollowed] = useState({});
     const [openfollowerdialog, setOpenFollowerDialog] = useState(false);
     const [openfollowingdialog, setOpenFollowingDialog] = useState(false);
@@ -287,30 +299,100 @@ const Profile = () => {
         }
     }
 
-    if (userloading || profileloading || !profile)
+    if (userloading || profileloading)
     {
         return (<div className="min-h-screen flex-1 my-3 flex flex-col justify-center items-center sm:pl-[20%]">
             <img src={NotextLogo} alt="Description" width="100" className="block my-8 pl-3"/>
         </div>)
     }
 
+    if (!profile) {
+        return (
+            <div className="min-h-screen flex-1 flex flex-col items-center md:pl-[10%] lg:pl-[20%]">
+                <NotFound />
+            </div>
+        )
+        
+    }
+
     return (
         <div className="min-h-screen flex-1 flex flex-col items-center md:pl-[10%] lg:pl-[20%]">
             <div className="w-full flex items-start mt-15 md:mt-10 mb-2 p-2 pl-5 md:pl-[10%] lg:pl-[13%]">
+                <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+                    <DialogContent className="flex flex-col items-center justify-center p-6 w-[300px]">
+                        <DialogTitle className="text-lg font-bold mb-4">Spotify Connection</DialogTitle>
+                        <p className="text-base text-center text-gray-600 mb-6">Are you sure you want to disconnect your Spotify account?</p>
+                        <div className="flex gap-4">
+                            <Button className="hover:cursor-pointer" variant="outline" onClick={() => setConfirmDialogOpen(false)}>Cancel</Button>
+                            <Button className="bg-red-500 text-white hover:cursor-pointer" onClick={async () => {
+                                try {
+                                    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/spotify-disconnect`, {
+                                        method: 'GET',
+                                        credentials: 'include',
+                                    });
+                                    const data = await response.json();
+                                    if (data.success) {
+                                        dispatch(setAuthUser({ ...user, spotify_connected: false, expires_at: null }));
+                                        if (profile?._id === user?._id) {
+                                            dispatch(setProfile({ ...profile, spotify_connected: false, expires_at: null }));
+                                            dispatch(setCurrentSong(null));
+                                        }
+                                        toast.success("Spotify disconnected successfully");
+                                    }
+                                    else {
+                                        toast.error(data.message);
+                                    }
+                                }
+                                catch (error) {
+                                    console.error("Error disconnecting Spotify:", error);
+                                    toast.error("Failed to disconnect Spotify");
+                                }
+                                setConfirmDialogOpen(false);
+                            }}>Disconnect</Button>
+                        </div>
+                    </DialogContent>  
+                </Dialog>
                 {user && <FollowersDialog openfollowerdialog={openfollowerdialog} setOpenFollowerDialog={setOpenFollowerDialog} followers={followers} isfollowerfollowed={isfollowerfollowed} setIsFollowerFollowed={setIsFollowerFollowed} dispatch={dispatch} user={user} profile={profile} />}
                 {user && <FollowingDialog openfollowingdialog={openfollowingdialog} setOpenFollowingDialog={setOpenFollowingDialog} followings={followings} isfollowingfollowed={isfollowingfollowed} setIsFollowingFollowed={setIsFollowingFollowed} dispatch={dispatch} user={user} />}
                 <ChangePfp open={openPfpDialog} setOpen={setopenPfpDialog} />
-                <Avatar onClick={()=>{if(profile?._id==user?._id) setopenPfpDialog(true)}} className={`h-25 w-25 sm:h-40 sm:w-40 ${profile?._id==user?._id ? 'hover:cursor-pointer' : ''}`}>
-                    <AvatarImage src={profile?.profilePic=='default.jpg' ? NotextLogo : profile?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
-                    <AvatarFallback>User</AvatarFallback>
-                </Avatar>
+                <div className="flex items-center justify-center h-full">
+                    <Avatar onClick={()=>{if(profile?._id==user?._id) setopenPfpDialog(true)}} className={`h-25 w-25 sm:h-40 sm:w-40 ${profile?._id==user?._id ? 'hover:cursor-pointer' : ''}`}>
+                        <AvatarImage src={profile?.profilePic=='default.jpg' ? NotextLogo : profile?.profilePic} alt="postimg" className='object-cover rounded-lg aspect-square' />
+                        <AvatarFallback>User</AvatarFallback>
+                    </Avatar>
+                </div>
                 <div className="flex flex-col gap-5 mx-5 sm:mx-20">
                     <div className="flex flex-col sm:flex-row gap-5">
                         <h1 className="text-xl ">{profile?.username}</h1>
                         <UpdateProfile open={openEditDialog} setOpen={setopenEditDialog} />
                         <div className="flex gap-2">
-                            {!user ? (<Button onClick={()=>navigate('/login')} className="bg-blue-400 text-white text-sm h-8">Login to Follow</Button>) : profile?._id==user?._id ? (<Button className='bg-[#363636] text-white text-md h-8 hover:cursor-pointer' onClick={()=>{setopenEditDialog(true)}}>Edit profile</Button>) : (<Button onClick={()=>handleFollow()} className={`${isfollowed ? 'bg-[#363636]' : 'bg-blue-400'} text-white text-md h-8`}>{isfollowed ? "Following" : "Follow"}</Button>)}
-                            {isfollowed && (<Button onClick={()=>navigate(`/chat/${profile?._id}`)} className='bg-[#363636] text-white text-md h-8'>Message</Button>)}
+                            {!user ? (<Button onClick={()=>navigate('/login')} className="bg-blue-400 text-white text-sm h-8">Login to Follow</Button>) : profile?._id==user?._id ? (<Button className='bg-[#363636] text-white text-sm sm:text-base h-8 hover:cursor-pointer' onClick={()=>{setopenEditDialog(true)}}>Edit profile</Button>) : (<Button onClick={()=>handleFollow()} className={`${isfollowed ? 'bg-[#363636]' : 'bg-blue-400'} text-white text-base h-8`}>{isfollowed ? "Following" : "Follow"}</Button>)}
+                            {profile?._id==user?._id && <div>
+                                {user?.spotify_connected ?
+                                        <Button className='bg-[#65D370] text-black text-sm md:text-base h-8 hover:cursor-pointer'
+                                                onClick={() => {
+                                                    setConfirmDialogOpen(true);
+                                                }}
+                                            >
+                                        Connected
+                                        </Button>
+                                    :
+                                    <Button className='bg-[#65D370] text-black text-sm md:text-base h-8 hover:cursor-pointer'
+                                    onClick={() => {
+                                        const clientId = import.meta.env.VITE_PUBLIC_SPOTIFY_CLIENT_ID;
+                                        const redirectUri = "https://notinsta-production.up.railway.app/api/v1/user/spotify-connect";
+                                        const scope = "user-read-currently-playing user-read-playback-state";
+                                        const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(
+                                        redirectUri
+                                        )}&scope=${encodeURIComponent(scope)}`;
+                                        window.location.href = authUrl;
+                                    }}
+                                    >
+                                    Connect Spotify
+                                    </Button>
+                                }
+                            </div>}
+                            {isfollowed && (<Button onClick={()=>navigate(`/chat/${profile?._id}`)} className='bg-[#363636] text-white text-base h-8'>Message</Button>)}
                         </div>
                     </div>
                     <div className="hidden sm:flex gap-5 sm:gap-10">
@@ -331,11 +413,72 @@ const Profile = () => {
                         <h1 className="font-bold">{profile?.name}</h1>
                         <p>{profile?.bio}</p>
                     </div>
+                    {currentSong && <div className="box boxanimation hidden sm:flex gap-2">
+                        <img
+                            className="rounded-lg mr-4"
+                            src={currentSong.album.images[0].url}
+                            alt={`Album cover of ${currentSong.album.name}`}
+                            width={50}
+                            height={50}
+                        />
+                        <div>
+                            <div className="flex gap-2 items-center">
+                                <p className="font-bold text-xl text-[#333]">Now playing:</p>
+                                <div className="playing">
+                                    <div className="greenline line-1"></div>
+                                    <div className="greenline line-2"></div>
+                                    <div className="greenline line-3"></div>
+                                    <div className="greenline line-4"></div>
+                                    <div className="greenline line-5"></div>
+                                </div>
+                            </div>
+                            <a
+                            className="link block max-w-[200px] truncate"
+                            href={currentSong.external_urls.spotify}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >
+                            {currentSong.name} by {currentSong.artists.map((artist) => artist.name).join(', ')}
+                            </a>
+                        </div>
+                        
+                        <img className='logo' width={50} height={50} src={SpotifyLogo} alt='' />
+                    </div>}
                 </div>
             </div>
             <div className="w-full pl-5 items-start flex flex-col sm:hidden gap-1 mb-5">
                         <h1 className="font-bold">{profile?.name}</h1>
                         <p>{profile?.bio}</p>
+                        {currentSong && <div className="box boxanimation flex sm:hidden gap-2 mt-1">
+                        <img
+                            className="rounded-lg mr-4"
+                            src={currentSong.album.images[0].url}
+                            alt={`Album cover of ${currentSong.album.name}`}
+                            width={50}
+                            height={40}
+                        />
+                        <div>
+                            <div className="flex gap-2 items-center">
+                                <p className="font-bold text-xl text-[#333]">Now playing:</p>
+                                <div className="playing">
+                                    <div className="greenline line-1"></div>
+                                    <div className="greenline line-2"></div>
+                                    <div className="greenline line-3"></div>
+                                    <div className="greenline line-4"></div>
+                                    <div className="greenline line-5"></div>
+                                </div>
+                            </div>
+                            <a
+                            className="link block max-w-[200px] truncate"
+                            href={currentSong.external_urls.spotify}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >
+                            {currentSong.name} by {currentSong.artists.map((artist) => artist.name).join(', ')}
+                            </a>
+                        </div>
+                        <img className='logo' width={50} height={50} src={SpotifyLogo} alt='' />
+                    </div>}
             </div>
             <div className="flex sm:hidden gap-10">
                         <div className="flex">
