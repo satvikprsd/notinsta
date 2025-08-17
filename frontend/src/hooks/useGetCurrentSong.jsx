@@ -19,7 +19,7 @@ const useGetCurrentSong = (userId, isConnected) => {
                 const data = await response.json();
                 if (data.success) {
                     const { item } = data;
-                    if (item && item.is_playing) {
+                    if (item && data.is_playing) {
                         dispatch(setCurrentSong(item));
                     }
                     else {
