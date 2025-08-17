@@ -375,7 +375,7 @@ export const getCurrentSong = async (req, res) => {
         }
 
         const currentSong = response.data.item;
-        return res.status(200).json({ success: true, item: currentSong });
+        return res.status(200).json({ success: true, item: currentSong, is_playing: response.data.is_playing });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ success: false, message: 'Failed to fetch current song', error: error.message });
