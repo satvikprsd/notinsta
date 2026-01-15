@@ -16,18 +16,25 @@ export const sendMessage = async (req, res) => {
             const newConvo = await Convo.create({ participants: [senderId, receiverId] });
             convo = newConvo;
         }
-        let newmessage = await Message.create({ sender: senderId, receiver: receiverId, message: text });
-        if (newmessage) convo.messages.push(newmessage._id);
-        await Promise.all([convo.save(), newmessage.save()]);
+        const newMessage = await Message.create({ sender: senderId, receiver: receiverId, message: text });
+        
+        convo.messages.push(newMessage._id);
+        convo.lastMessage = newMessage._id;
+        convo.lastMessageAt = newMessage.createdAt;
 
-        newmessage = await newmessage.populate([{path: 'sender',select: 'username profilePic'},{path: 'receiver',select: 'username profilePic'}]);
+        const currentUnreadCount = convo.unreadCounts.get(receiverId) || 0;
+        convo.unreadCounts.set(receiverId.toString(), currentUnreadCount + 1);
+
+        convo.save()
+
+        const populatedMessage = await newMessage.populate([{path: 'sender',select: 'username profilePic'},{path: 'receiver',select: 'username profilePic'}]);
 
         const receiverSocketID = getSocketId(receiverId);
         if(receiverSocketID){
-            io.to(receiverSocketID).emit('newChat', newmessage);
+            io.to(receiverSocketID).emit('newChat', populatedMessage);
         }
 
-        return res.status(200).json({ success: true, message: 'Message sent successfully', newmessage});
+        return res.status(200).json({ success: true, message: 'Message sent successfully', newMessage: populatedMessage });
     }
     catch (error) {
         console.error(error);
@@ -47,7 +54,8 @@ export const getMessages = async (req, res) => {
         if (!convo) {
             return res.status(200).json({ success: true, messages: [], receiver:receiverUser });
         }
-        
+        if (convo.unreadCounts.get(senderId) > 0) await Convo.findByIdAndUpdate(convo._id, { $set: {[`unreadCounts.${senderId}`]: 0} });
+
         return res.status(200).json({ success: true, messages: convo.messages, receiver:receiverUser });
     }
     catch (error) {

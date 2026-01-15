@@ -1,5 +1,5 @@
 import { useLoading } from "@/components/LoadingContext";
-import { setChatOrder } from "@/redux/chatSlice";
+import { setChatOrder, setLastMsgs } from "@/redux/chatSlice";
 import  { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
@@ -15,6 +15,7 @@ const useGetChatOrder = () => {
                 console.log(data)
                 if (data.success){
                     dispatch(setChatOrder(data.convo));
+                    dispatch(setLastMsgs(data.convo.map(convo => convo.lastMessage)));
                 } else {
                     console.error(data.message);
                 }

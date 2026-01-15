@@ -231,7 +231,7 @@ const Profile = () => {
     const [openfollowingdialog, setOpenFollowingDialog] = useState(false);
     const followers = profile?.followers;
     const followings = profile?.following;
-    const {activeItem, setActiveItem} = useActiveSideBar();
+    const {setActiveItem} = useActiveSideBar();
     useEffect(()=>{
         setActiveItem("Profile");
         return ()=>{setActiveItem(null)}

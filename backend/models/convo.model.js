@@ -13,6 +13,19 @@ const convoSchema = new mongoose.Schema({
             ref: 'Message'
         }
     ],
+    lastMessage: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Message'
+    },
+    lastMessageAt: {
+        type: Date,
+        default: Date.now
+    },
+    unreadCounts: {
+        type: Map,
+        of: Number,
+        default: {}
+    }
 }, {
     timestamps: true
 });

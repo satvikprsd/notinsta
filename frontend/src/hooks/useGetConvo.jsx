@@ -2,7 +2,7 @@ import { useLoading } from "@/components/LoadingContext";
 import { setSelectedChat } from "@/redux/authSlice";
 import { setConversations } from "@/redux/chatSlice";
 import  { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 const useGetConvo = (chatId) => {
     const dispatch = useDispatch();

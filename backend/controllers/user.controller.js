@@ -235,8 +235,8 @@ export const getConvos = async(req, res) => {
     try{
         const userId = req.id;
         const allConversations = await Convo.find({ participants: userId })
-            .populate('participants', 'username profilePic')
-            .sort({ updatedAt: -1 })
+            .populate([{ path: 'participants', select: 'username profilePic'}, { path: 'lastMessage', select: '_id sender receiver message createdAt' }])
+            .sort({ lastMessageAt : -1 })
             .lean();
         const filteredConversations = allConversations.map(convo => {
             let chatuser = convo.participants.find(p => p._id.toString() !== userId.toString());
@@ -244,6 +244,8 @@ export const getConvos = async(req, res) => {
             return {
                 chatuser,
                 updatedAt: convo.updatedAt,
+                lastMessage: convo.lastMessage,
+                unreadCount: convo.unreadCounts?.[userId.toString()] || 0
             };
         });
         return res.status(200).json({success: true, convo: filteredConversations })

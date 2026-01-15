@@ -114,51 +114,53 @@ const SideBar = () => {
 
     return (
         <div>
-        <div className={`hidden md:block fixed top-0 z-10 left-0 px-4 border-r border-gray-900 ${searchOpen ? "xl:w-[30%]" : chatOpen ? "xl:block" : "xl:w-[18%]"} bg-background h-screen`}>
-            <div className="flex min-h-32">
+        <div className={`hidden md:flex flex-col fixed top-1/2 -translate-y-1/2 z-10 left-4 px-4 py-6 border border-white/10 ${searchOpen ? "xl:w-[30%]" : chatOpen ? "xl:block" : "xl:w-[18%]"} bg-white/5 backdrop-blur-xl shadow-lg rounded-2xl transition-all duration-300 ease-in-out`}>
+            <div className="flex mb-4">
                 <Link onClick={()=>{setChatOpen(false);setSearchOpen(false);setActiveItem('Home')}} to="/">
-                    <img src={Logo} alt="Description" width="150" className={`hidden ${searchOpen || chatOpen ? "" : "xl:block"} my-8 pl-3`}/>
-                    <img src={NotextLogo} alt="Description" width="50" className={`block ${searchOpen || chatOpen ? "" : "xl:hidden"} my-8 pl-1`}/>
+                    <img src={Logo} alt="Description" width="150" className={`hidden ${searchOpen || chatOpen ? "" : "xl:block"} pl-3 transition-all duration-300 ease-in-out`}/>
+                    <img src={NotextLogo} alt="Description" width="50" className={`block ${searchOpen || chatOpen ? "" : "xl:hidden"} pl-1 transition-all duration-300 ease-in-out`}/>
                 </Link>
                 {searchOpen && 
-                <div className="flex fixed left-25 top-10 pb-1 justify-start items-center w-full">
+                <div className="flex ml-4 justify-start items-center">
                     <h1 className="font-bold text-2xl">Search</h1>
                 </div>}
             </div>
             <div className="flex">
-                <div className={`flex w-full ${searchOpen || chatOpen ? "max-w-[50px] mr-3" : ""}`}>
-                    <div className="flex gap-3 flex-col w-full h-full">
+                <div className={`flex w-full ${searchOpen ? "max-w-[50px] mr-3" : ""} transition-all duration-300 ease-in-out`}>
+                    <div className="flex gap-2 flex-col w-full h-full">
                         {sidebarItems.map(item => (
-                                <div onClick={()=>sidebarClickHandler(item.label)} key={item.label} className={`flex items-center gap-5 relative ${activeItem===item.label ? 'bg-gray-800' : ''} hover:bg-gray-700 cursor-pointer rounded-lg h-15 px-3`}>
-                                        {item.icon}
-                                        <span className={`hidden ${activeItem===item.label ? 'font-bold' : ''} ${searchOpen || chatOpen ? "" : "xl:block"} text-base text-white` }>{item.label}</span>
+                                <div onClick={()=>sidebarClickHandler(item.label)} key={item.label} className={`flex items-center gap-5 relative ${activeItem===item.label ? 'bg-white/20 backdrop-blur-sm' : ''} hover:bg-white/10 cursor-pointer rounded-lg h-15 px-3 transition-all duration-200`}>
+                                        <div className={`w-full ${searchOpen || chatOpen ? "" : "xl:w-auto"} flex justify-center items-center`}>
+                                            {item.icon}
+                                        </div>
+                                        <span className={`hidden ${activeItem===item.label ? 'font-bold' : ''} ${searchOpen || chatOpen ? "" : "xl:block"} text-base text-white transition-all duration-300 ease-in-out` }>{item.label}</span>
                                 </div>
                         ))}
                     </div>
                 </div>
                 {searchOpen && 
-                    <div className="w-full min-w-[350px]">
-                        <Search className='absolute left-[84px] top-34 w-6 h-6 search-icon' />
+                    <div className="w-full min-w-[350px] animate-in slide-in-from-left-5 fade-in duration-300">
+                        <Search className='absolute left-[84px] top-23.5 w-6 h-6 search-icon' />
                         <Input autoFocus value={searchtext} onChange={(e)=>setSearchText(e.target.value.trim())} className={`w-[100%]  mb-5  ${searchtext ? 'pl-2' : 'pl-8'} focus:pl-2 bg-gray-500/50  h-10  placeholder:text-white text-white`} placeholder="Search"
                             onFocus={() => document.querySelector('.search-icon').classList.add('hidden')} 
                             onBlur={() => {if(!searchtext) {document.querySelector('.search-icon').classList.remove('hidden')}}}
                         />
                         <hr />
-                        <div className="bg-background bg-opacity-80 p-2 mt-2 rounded-lg max-h-[80%] overflow-y-auto custom-scrollbar z-20">
+                        <div className="bg-white/10 backdrop-blur-xl border border-white/10 p-2 mt-2 rounded-lg overflow-y-auto custom-scrollbar z-20 shadow-lg">
                             <Searchuser searchtext={searchtext} />
                         </div>
                     </div>}
             </div>
             <CreatePost open={open} setOpen={setOpen} />
         </div>
-        <div className="fixed bottom-0 z-10 left-0 right-0 border-t border-gray-800 bg-background md:hidden flex justify-around items-center h-14">
+        <div className="fixed bottom-0 z-10 left-0 right-0 border-t border-white/10 bg-white/5 backdrop-blur-xl shadow-lg md:hidden flex justify-around items-center h-14">
             {bottombarItems.map(item => (
                 <div onClick={()=>sidebarClickHandler(item.label)} key={item.label+'-bottom'} className={`flex flex-col items-center justify-center ${activeItem===item.label ? 'bg-gray-800' : ''} w-10 h-10 rounded-2xl hover:text-white cursor-pointer text-gray-400 text-sm`}>
                     {item.icon}
                 </div>
             ))}
         </div>
-        <div className="fixed top-0 z-10 left-0 right-0 border-b border-gray-800 bg-background md:hidden flex justify-around items-center h-12">
+        <div className="fixed top-0 z-10 left-0 right-0 border-b border-white/10 bg-white/5 backdrop-blur-xl shadow-lg md:hidden flex justify-around items-center h-12">
             <div className="fixed top-0 flex gap-3 w-full">
                 <Link className="h-[40px] pl-3 pt-1" to="/">
                     <img src={NotextLogo} alt="Description" className="max-w-[40px] min-w-[40px] "/>
@@ -169,7 +171,7 @@ const SideBar = () => {
                         onBlur={() => {if(!searchtext) {document.querySelector('.search-icon').classList.remove('hidden')}}}
                     />
                     {searchtext && searchOpen && (
-                        <div className="absolute top-full left-0 right-0 bg-background bg-opacity-80 p-2 mt-2 rounded-lg max-h-100 overflow-y-auto custom-scrollbar z-20">
+                        <div className="absolute top-full left-0 right-0 bg-white/10 backdrop-blur-xl border border-white/10 p-2 mt-2 rounded-lg max-h-100 overflow-y-auto custom-scrollbar z-20 shadow-lg">
                             <Searchuser searchtext={searchtext} />
                         </div>
                     )}

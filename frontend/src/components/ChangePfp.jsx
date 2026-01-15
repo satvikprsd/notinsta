@@ -61,7 +61,7 @@ const ChangePfp = ({ open, setOpen }) => {
     }
     return (
         <Dialog open={open}>
-            <DialogContent onInteractOutside={() => setOpen(false)} className={`px-0 max-w-4xl ${imgPreview ? "h-[500px] w-[500px]" : "h-[300px] w-[300px]"} focus:outline-none focus:ring-0 bg-[rgb(38,38,38)] flex flex-col`}>
+            <DialogContent onInteractOutside={() => setOpen(false)} className={`px-0 max-w-4xl ${imgPreview ? "h-[500px] w-[500px]" : "h-[300px] w-[300px]"} focus:outline-none focus:ring-0 bg-white/10 backdrop-blur-xl border-white/10 flex flex-col`}>
                 <div className='flex flex-col gap-5 items-center w-full h-full flex-1 overflow-hidden'>
                     <DialogHeader className='text-xl font-semibold text-center w-full sm:text-center'>
                         <div className="relative w-full flex items-center justify-center">

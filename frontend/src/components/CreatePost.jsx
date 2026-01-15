@@ -85,7 +85,7 @@ const CreatePost = ({ open, setOpen }) => {
 
     return (
         <Dialog open={open}>
-            <DialogContent onInteractOutside={() => setOpen(false)} className={`px-0 w-[468px] h-[785px] focus:outline-none focus:ring-0 bg-[rgb(38,38,38)] flex flex-col`}>
+            <DialogContent onInteractOutside={() => setOpen(false)} className={`px-0 w-[468px] h-[785px] focus:outline-none focus:ring-0 bg-white/10 backdrop-blur-xl border-white/10 flex flex-col`}>
                 <div className='flex flex-col gap-5 items-center w-full h-full flex-1 overflow-hidden'>
                     <DialogHeader className='text-xl font-semibold text-center w-full sm:text-center'>
                         <div className="relative w-full flex items-center justify-center">
