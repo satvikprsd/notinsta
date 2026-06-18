@@ -40,7 +40,7 @@ export const LoginPromptProvider = ({ children }) => {
                         <img src={NotextLogo} alt="NotInsta Logo" className="relative w-16 h-16 object-contain animate-bounce" />
                     </div>
 
-                    <DialogTitle className="text-2xl font-bold tracking-tight mb-2 text-center bg-white">
+                    <DialogTitle className="text-2xl font-bold tracking-tight mb-2 text-center text-white">
                         Login Required
                     </DialogTitle>
 
