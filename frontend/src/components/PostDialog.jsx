@@ -6,12 +6,13 @@ import { Button } from './ui/button'
 import { ArrowBigLeft, ArrowLeft, Bookmark, Heart, MessageCircle, SendIcon, Volume2, VolumeOff, VolumeX, X } from 'lucide-react'
 import { handleLike, handleDoubleClick,handleNewComment, SavePost, LikesDialog } from './PostHandler'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { setSavedPosts } from '@/redux/authSlice'
 import NotextLogo from "./notinstalogo.png";
 import { Dialog, DialogContent } from './ui/dialog'
 import MobileComment from './MobileComment'
 import { DialogTitle } from '@radix-ui/react-dialog'
+import { useLoginPrompt } from './LoginPromptContext'
 
 //This function is created by chaptgpt not me, return x days ago for a post
 const timeAgo = (dateString) => {
@@ -33,6 +34,8 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
     
     const [commenttext, setCommenttext] = useState('');
     const { user,profile,savedPosts } = useSelector(store => store.auth);
+    const { showLoginPrompt } = useLoginPrompt();
+    const navigate = useNavigate();
     const [doubleClick,setdoubleClick] = useState(false);
     const { feed } = useSelector(store => store.posts);
     const [comments, setComments] = useState(post?.comments);
@@ -121,8 +124,8 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
             <HelpDialog isSaved={isSaved} setisSaved={setisSaved} setDialog={setOpenPostDialog} post={post} />
         </div>
         <div className='flex justify-center items-center relative aspect-[3/4] sm:aspect-square w-full sm:w-[500px] md:h-[600px] lg:w-full lg:h-full object-cover'>
-            {post?.image.split('/')[4] == 'image' &&  <img onClick={()=>handleDoubleClick(user,profile,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike)} src={post?.image} alt="postimg" className="lg:rounded-l-lg lg:rounded-tr-none lg:rounded-br-none w-full h-full object-cover"/>}
-            {post?.image.split('/')[4] == 'video' && <video autoPlay muted playsInline onContextMenu={(e) => e.preventDefault()} loop onClick={()=>{handleDoubleClick(user,profile,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike); if (isPlaying) {videoRef.current?.pause();setIsPlaying(false)} else {videoRef.current?.play();setIsPlaying(true)}}} ref={videoRef} src={post.image} alt="postimg" className='w-[350px] h-full object-cover' />}
+            {post?.image.split('/')[4] == 'image' &&  <img onClick={()=>handleDoubleClick(user,profile,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike,showLoginPrompt)} src={post?.image} alt="postimg" className="lg:rounded-l-lg lg:rounded-tr-none lg:rounded-br-none w-full h-full object-cover"/>}
+            {post?.image.split('/')[4] == 'video' && <video autoPlay muted playsInline onContextMenu={(e) => e.preventDefault()} loop onClick={()=>{handleDoubleClick(user,profile,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike,showLoginPrompt); if (isPlaying) {videoRef.current?.pause();setIsPlaying(false)} else {videoRef.current?.play();setIsPlaying(true)}}} ref={videoRef} src={post.image} alt="postimg" className='w-[350px] h-full object-cover' />}
             {post?.image.split('/')[4] == 'video' && !isPlaying && <div onClick={()=>{if (isPlaying) {videoRef.current?.pause();setIsPlaying(false)} else {videoRef.current?.play();setIsPlaying(true)}}} size={'80px'} className='absolute' style={{left: "50%",top: "50%",transform: "translate(-50%, -50%)",backgroundImage: `url('https://static.cdninstagram.com/images/instagram/xig_legacy_spritesheets/sprite_video_2x.png?__makehaste_cache_breaker=QGBM-RRQtO6')`,backgroundPosition: '0px 0px',backgroundRepeat: 'no-repeat',backgroundSize: '271px 149px',width: '135px',height: '135px',cursor: 'pointer',display: 'block',}}></div>}
             {post?.image.split('/')[4] == 'video' && 
                 <div onClick={()=>setIsMuted(prev => !prev)} className='absolute right-0 bottom-0 m-3 bg-[#22262C] w-7 h-7 hover:cursor-pointer rounded-full flex items-center justify-center' >
@@ -170,18 +173,18 @@ const PostDialog = ({setOpenPostDialog,newsetIsLiked,newisLiked,newcurLikes,news
             <hr />
             <div className='flex items-center justify-between my-2 px-3'>
                 <div className='flex items-center gap-5'>
-                    <Heart onClick={()=>handleLike(user,profile,post,feed,isLiked,setIsLiked,setCurLikes,dispatch)} size={'25px'} className={`cursor-pointer hover:text-gray-600 hover:bounce-once`} fill={isLiked ? 'red' : 'none'} stroke={isLiked ? 'red' : 'currentColor'} />
+                    <Heart onClick={()=>handleLike(user,profile,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,showLoginPrompt)} size={'25px'} className={`cursor-pointer hover:text-gray-600 hover:bounce-once`} fill={isLiked ? 'red' : 'none'} stroke={isLiked ? 'red' : 'currentColor'} />
                     <MessageCircle onClick={()=> {window.innerWidth <= 1024 ? setMobile(true) : setMobile(false)}} size={'25px'} className='cursor-pointer hover:text-gray-600 hover:bounce-once'/>
-                    <SendIcon size={'23px'} className='cursor-pointer hover:text-gray-600 hover:bounce-once' />
+                    <SendIcon onClick={()=>{if (!user) { showLoginPrompt("Log in to send direct messages to users."); } else { navigate(`/chat/${post.author._id}`); }}} size={'23px'} className='cursor-pointer hover:text-gray-600 hover:bounce-once' />
                 </div>
-                <Bookmark onClick={()=>SavePost(user, isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch)} fill={isSaved ? 'white' : ''} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
+                <Bookmark onClick={()=>SavePost(user, isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch,showLoginPrompt)} fill={isSaved ? 'white' : ''} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
             </div>
             <span onClick={()=>getLikes()} className='font-medium block mb-2 px-3'>{curLikes} likes</span>
             <span className='text-sm block mb-2 px-3'>{timeAgo(post?.createdAt)}</span>
             <hr/>
             <div className='flex items-center'>
                 <input type="text" placeholder="Add a comment..." className='w-full p-3 rounded-md h-10 focus:outline-none focus:ring-0' value={commenttext} onChange={(e)=>{e.target.value.trim() ? setCommenttext(e.target.value) : setCommenttext("")}} />
-                <Button onClick={()=>handleNewComment(user,post,profile,feed,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments)} disabled={!commenttext} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)]">Post</Button>
+                <Button onClick={()=>handleNewComment(user,post,profile,feed,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments,showLoginPrompt)} disabled={!commenttext} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)]">Post</Button>
             </div>
         </div>
     </div>

@@ -8,9 +8,10 @@ import HelpDialog from './HelpDialog'
 import { useDispatch, useSelector } from 'react-redux'
 import { handleDoubleClick, handleLike, handleNewComment, LikesDialog, SavePost } from './PostHandler'
 import { Link, useNavigate } from 'react-router-dom'
-import { setSavedPosts, setSelectedChat } from '@/redux/authSlice'
+import { setSavedPosts } from '@/redux/authSlice'
 import NotextLogo from "./notinstalogo.png";
 import { useInView } from 'react-intersection-observer'
+import { useLoginPrompt } from './LoginPromptContext'
 
 
 const Post = ({post}) => {
@@ -19,6 +20,7 @@ const Post = ({post}) => {
     const [curLikes, setCurLikes] = useState(post?.likes.length);
     const [curComments, setCurComments] = useState(post.comments?.length);
     const { user, savedPosts } = useSelector(store => store.auth);
+    const { showLoginPrompt } = useLoginPrompt();
     const [isLiked, setIsLiked] = useState(post?.likes.map((f)=>f._id).includes(user?._id));
     const [doubleClick,setdoubleClick] = useState(false);
     const { feed } = useSelector(store => store.posts);
@@ -98,8 +100,8 @@ const Post = ({post}) => {
         </div>
         {console.log(isPlaying)}
         <div className='relative w-full h-full flex items-center justify-center border-1 border-[rgb(38,38,38)]'>
-            {post.image.split('/')[4] == 'image' && <div style={{backgroundImage: `url(${blobUrl})`}} onClick={()=>handleDoubleClick(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike)}  alt="postimg" className="w-full aspect-square bg-center bg-cover" />}
-            {post.image.split('/')[4] == 'video' && <video autoPlay muted playsInline onContextMenu={(e) => e.preventDefault()} loop onClick={()=>{handleDoubleClick(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike); if (isPlaying) {videoRef.current?.pause();setIsPlaying(false)} else {videoRef.current?.play();setIsPlaying(true)}}} ref={(node)=>{videoRef.current=node;ref(node)}} src={blobUrl} alt="postimg" className='w-[320px] h-[585px] object-cover hover:cursor-pointer' />}
+            {post.image.split('/')[4] == 'image' && <div style={{backgroundImage: `url(${blobUrl})`}} onClick={()=>handleDoubleClick(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike,showLoginPrompt)}  alt="postimg" className="w-full aspect-square bg-center bg-cover" />}
+            {post.image.split('/')[4] == 'video' && <video autoPlay muted playsInline onContextMenu={(e) => e.preventDefault()} loop onClick={()=>{handleDoubleClick(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,handleLike,showLoginPrompt); if (isPlaying) {videoRef.current?.pause();setIsPlaying(false)} else {videoRef.current?.play();setIsPlaying(true)}}} ref={(node)=>{videoRef.current=node;ref(node)}} src={blobUrl} alt="postimg" className='w-[320px] h-[585px] object-cover hover:cursor-pointer' />}
             {post.image.split('/')[4] == 'video' && !isPlaying && <div onClick={()=>{if (isPlaying) {videoRef.current?.pause();setIsPlaying(false)} else {videoRef.current?.play();setIsPlaying(true)}}} size={'80px'} className='absolute' style={{left: "50%",top: "50%",transform: "translate(-50%, -50%)",backgroundImage: `url('https://static.cdninstagram.com/images/instagram/xig_legacy_spritesheets/sprite_video_2x.png?__makehaste_cache_breaker=QGBM-RRQtO6')`,backgroundPosition: '0px 0px',backgroundRepeat: 'no-repeat',backgroundSize: '271px 149px',width: '135px',height: '135px',cursor: 'pointer',display: 'block',}}></div>}
             {post.image.split('/')[4] == 'video' && 
                 <div onClick={()=>setIsMuted(prev => !prev)} className='absolute right-0 bottom-0 m-3 bg-[#22262C] w-7 h-7 hover:cursor-pointer rounded-full flex items-center justify-center' >
@@ -110,11 +112,11 @@ const Post = ({post}) => {
         </div>
         <div className='mx-5 md:mx-0 flex items-center justify-between my-2'>
             <div className='flex items-center gap-3'>
-                <Heart onClick={()=>handleLike(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch)} size={'25px'} className={`cursor-pointer hover:text-gray-600 hover:bounce-once`} fill={isLiked ? 'red' : 'none'} stroke={isLiked ? 'red' : 'currentColor'} />
+                <Heart onClick={()=>handleLike(user,null,post,feed,isLiked,setIsLiked,setCurLikes,dispatch,showLoginPrompt)} size={'25px'} className={`cursor-pointer hover:text-gray-600 hover:bounce-once`} fill={isLiked ? 'red' : 'none'} stroke={isLiked ? 'red' : 'currentColor'} />
                 <MessageCircle onClick={()=>{window.innerWidth <= 1024 ? navigate(`/p/${post?._id}`) : setOpenPostDialog(true)}} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
-                <SendIcon onClick={()=>{navigate(`/chat/${post.author._id}`)}} size={'23px'} className='cursor-pointer hover:text-gray-600' />
+                <SendIcon onClick={()=>{if (!user) { showLoginPrompt("Log in to send direct messages to users."); } else { navigate(`/chat/${post.author._id}`); }}} size={'23px'} className='cursor-pointer hover:text-gray-600' />
             </div>
-            <Bookmark onClick={()=>SavePost(user, isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch)} fill={isSaved ? 'white' : ''} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
+            <Bookmark onClick={()=>SavePost(user, isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch,showLoginPrompt)} fill={isSaved ? 'white' : ''} size={'25px'} className='cursor-pointer hover:text-gray-600'/>
         </div>
         <div className='mx-5 md:mx-0'>
         <span onClick={()=>getLikes()} className=' font-medium block '>{curLikes} likes</span>
@@ -131,7 +133,7 @@ const Post = ({post}) => {
         </Dialog>
         <div className='mx-2 md:mx-0 hidden lg:flex items-center'>
             <input type="text" placeholder="Add a comment..." className='w-full p-3 rounded-md h-10 focus:outline-none focus:ring-0' value={commenttext} onChange={(e)=>{e.target.value.trim() ? setCommenttext(e.target.value) : setCommenttext("")}} />
-            {commenttext && <Button onClick={()=>handleNewComment(user,post,null,feed,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments)} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)] hover:cursor-pointer">Post</Button>}
+            {commenttext && <Button onClick={()=>handleNewComment(user,post,null,feed,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments,showLoginPrompt)} className="bg-transparent text-blue-400 hover:bg-[rgba(255,255,255,0.1)] hover:cursor-pointer">Post</Button>}
         </div>
     </div>
   )

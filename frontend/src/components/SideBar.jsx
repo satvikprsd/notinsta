@@ -13,12 +13,14 @@ import { Input } from "./ui/input";
 import Searchuser from "./SearchUser";
 import { useSearch } from "./SearchContext";
 import { useChat } from "./ChatContext";
+import { useLoginPrompt } from "./LoginPromptContext";
 const SideBar = () => {
     const [open,setOpen] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { activeItem, setActiveItem } = useActiveSideBar();
     const {user} = useSelector(store=>store.auth);
+    const { showLoginPrompt } = useLoginPrompt();
     const { chatOpen, setChatOpen } = useChat();
     const { searchOpen, setSearchOpen } = useSearch();
     const [searchtext, setSearchText] = useState('')
@@ -68,20 +70,25 @@ const SideBar = () => {
             });
         }
         else if(itemtext === "Upload"){
-            setActiveItem('Upload')
-            setSearchOpen(false);
-            if (user) setOpen(true);
+            if (!user) {
+                showLoginPrompt("Log in to upload new images and videos.");
+            } else {
+                setActiveItem('Upload')
+                setSearchOpen(false);
+                setOpen(true);
+            }
         }
         else if(itemtext === "Profile"){
-            setSearchOpen(false);
-            setChatOpen(false);
-            setActiveItem('Profile')
-            if (!user) Promise.resolve().then(() => {
-                navigate("/login");
-            });
-            else Promise.resolve().then(() => {
-                navigate(`/profile/${user?.username}`);
-            });
+            if (!user) {
+                showLoginPrompt("Log in to view your profile and manage your posts.");
+            } else {
+                setSearchOpen(false);
+                setChatOpen(false);
+                setActiveItem('Profile')
+                Promise.resolve().then(() => {
+                    navigate(`/profile/${user?.username}`);
+                });
+            }
         }
         else if(itemtext === "Home"){
             setActiveItem('Home')
@@ -96,12 +103,16 @@ const SideBar = () => {
             setSearchOpen(prev => !prev);
         }
         else if(itemtext === "Messages") {
-            setActiveItem('Messages')
-            setSearchOpen(false)
-            setChatOpen(true);
-            Promise.resolve().then(() => {
-                navigate("/chat");
-            });
+            if (!user) {
+                showLoginPrompt("Log in to view your direct messages and chat with friends.");
+            } else {
+                setActiveItem('Messages')
+                setSearchOpen(false)
+                setChatOpen(true);
+                Promise.resolve().then(() => {
+                    navigate("/chat");
+                });
+            }
         }
         else if (itemtext === "Reels" || itemtext === "Notifications") {
             toast.info("This feature is currently under maintenance")

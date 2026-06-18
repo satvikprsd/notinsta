@@ -8,9 +8,11 @@ import { setFeed } from '@/redux/postSlice'
 import { setProfile, setSavedPosts } from '@/redux/authSlice'
 import { useNavigate } from 'react-router-dom'
 import { SavePost } from './PostHandler'
+import { useLoginPrompt } from './LoginPromptContext'
 
 const HelpDialog = ({post,setDialog,setisSaved,isSaved}) => {
   const { user,profile,savedPosts } = useSelector(store=>store.auth);
+  const { showLoginPrompt } = useLoginPrompt();
   const {feed} = useSelector(store => store.posts);
   const [openhelp, setOpenhelp] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -64,7 +66,7 @@ const HelpDialog = ({post,setDialog,setisSaved,isSaved}) => {
                 <hr/>
                 <Button className='bg-background text-white hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0'>Copy Link</Button>
                 <hr/>
-                <Button onClick={()=>SavePost(user, isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch)} className='bg-background text-white hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0'>{isSaved ? 'Remove from Saved' : 'Add to Saved'}</Button>
+                <Button onClick={()=>SavePost(user, isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch,showLoginPrompt)} className='bg-background text-white hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0'>{isSaved ? 'Remove from Saved' : 'Add to Saved'}</Button>
                 <hr/>
                 <Button onClick={()=>setOpenhelp(false)} className='bg-background text-white hover:bg-[rgba(255,255,255,0.1)] cursor-pointer border-0'>Close</Button>
             </div>

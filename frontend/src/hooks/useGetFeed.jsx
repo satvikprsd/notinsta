@@ -39,8 +39,10 @@ const useGetFeed = () => {
                     // console.log(data.posts);
                     dispatch(setFeed(data.posts));
                 } else {
-                    logout(dispatch,navigate);
-                    toast.error(data.message);
+                    if (user) {
+                        logout(dispatch,navigate);
+                        toast.error(data.message);
+                    }
                 }
             } catch (error) {
                 console.error(error);
@@ -48,7 +50,7 @@ const useGetFeed = () => {
                 setfeedLoading(false);
             }
         }
-        if (user) fetchFeed();
+        fetchFeed();
     },[])
 };
 

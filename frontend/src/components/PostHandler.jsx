@@ -8,47 +8,53 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 
 
-export const handleLike = async (user,profile,post,posts,isLiked,setIsLiked,setCurLikes,dispatch) => {
-    // console.log(post)
+export const handleLike = async (user,profile,post,posts,isLiked,setIsLiked,setCurLikes,dispatch,showLoginPrompt) => {
+    if (!user) {
+        if (showLoginPrompt) {
+            showLoginPrompt("Log in to like this post and share your appreciation.");
+        } else {
+            toast.error('Please login to like');
+        }
+        return;
+    }
     setCurLikes(prev=> isLiked ? prev - 1 : prev + 1);
     setIsLiked(prev=>!prev);
-    if (!user) {
-        toast.error('Please login to like')
-        setIsLiked(prev=>!prev);
-        setCurLikes(prev=> isLiked ? prev + 1 : prev - 1);
-    }
-    else {
-        try{
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/post/${post._id}/likeordislike`, {credentials: 'include'});
-            const data = await response.json();
-            if(data.success) {
-                // console.log(data);
-                toast.success(isLiked ? "Disliked post" : "Liked post");
-                const {_id,username, profilePic} = user
-                const newLikes = posts.map(p=> p._id === post._id ? {...p, likes: isLiked ? p.likes.filter(f => f._id!==user._id) : [...p.likes,{_id, username, profilePic}]} : p);
-                dispatch(setFeed(newLikes));
-                if (profile && profile._id == post.author._id){
-                    const newlikes = profile.posts.map(p=> p._id === post._id ? {...p, likes: isLiked ? p.likes.filter(id => id!==user._id) : [...p.likes,user._id]} : p);
-                    dispatch(setProfile({...profile, posts:newlikes}));
-                }
-            }
-            else {
-                setIsLiked(prev=>!prev);
-                setCurLikes(prev=> isLiked ? prev + 1 : prev - 1);
-                toast.error(data.message);
+    try{
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/post/${post._id}/likeordislike`, {credentials: 'include'});
+        const data = await response.json();
+        if(data.success) {
+            // console.log(data);
+            toast.success(isLiked ? "Disliked post" : "Liked post");
+            const {_id,username, profilePic} = user
+            const newLikes = posts.map(p=> p._id === post._id ? {...p, likes: isLiked ? p.likes.filter(f => f._id!==user._id) : [...p.likes,{_id, username, profilePic}]} : p);
+            dispatch(setFeed(newLikes));
+            if (profile && profile._id == post.author._id){
+                const newlikes = profile.posts.map(p=> p._id === post._id ? {...p, likes: isLiked ? p.likes.filter(id => id!==user._id) : [...p.likes,user._id]} : p);
+                dispatch(setProfile({...profile, posts:newlikes}));
             }
         }
-        catch(error) {
+        else {
             setIsLiked(prev=>!prev);
             setCurLikes(prev=> isLiked ? prev + 1 : prev - 1);
-            console.error(error);
-            toast.error('Failed to like or dislike post');
+            toast.error(data.message);
         }
+    }
+    catch(error) {
+        setIsLiked(prev=>!prev);
+        setCurLikes(prev=> isLiked ? prev + 1 : prev - 1);
+        console.error(error);
+        toast.error('Failed to like or dislike post');
     }
 }
 
-export const handleNewComment = async (user,post,profile,posts,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments) => {
-    if (!user) toast.error('Please login to comment');
+export const handleNewComment = async (user,post,profile,posts,comments,setComments,commenttext,setCommenttext,dispatch,setCurComments,showLoginPrompt) => {
+    if (!user) {
+        if (showLoginPrompt) {
+            showLoginPrompt("Log in to comment on posts and join the conversation.");
+        } else {
+            toast.error('Please login to comment');
+        }
+    }
     else{
         try{
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/post/${post._id}/newcomment`, {
@@ -83,18 +89,24 @@ export const handleNewComment = async (user,post,profile,posts,comments,setComme
 }
 
 
-export const handleDoubleClick = (user,profile,post,posts,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,like) => {
+export const handleDoubleClick = (user,profile,post,posts,isLiked,setIsLiked,setCurLikes,dispatch,setdoubleClick,lastclick,setlastclick,like,showLoginPrompt) => {
     const now = Date.now();
     if (now - lastclick < 300){
         setdoubleClick(true);
-        {!isLiked && like(user,profile,post,posts,isLiked,setIsLiked,setCurLikes,dispatch);}
+        {!isLiked && like(user,profile,post,posts,isLiked,setIsLiked,setCurLikes,dispatch,showLoginPrompt);}
         setTimeout(()=>setdoubleClick(false),1000);
     }
     setlastclick(now);
 }
 
- export  const SavePost = async (user,isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch) => {
-    if (!user) toast.error('Please login to save');
+ export  const SavePost = async (user,isSaved,setisSaved,setSavedPosts,post,savedPosts,dispatch,showLoginPrompt) => {
+    if (!user) {
+        if (showLoginPrompt) {
+            showLoginPrompt("Log in to save this post to your collection.");
+        } else {
+            toast.error('Please login to save');
+        }
+    }
     else{
         setisSaved(prev=>!prev);
         try {

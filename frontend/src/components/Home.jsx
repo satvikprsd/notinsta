@@ -17,11 +17,6 @@ const Home = () => {
         setActiveItem('Home');
         return () => {setActiveItem(null)}
     },[]);
-    useEffect(() => {
-        if (!user) {
-            navigate("/login");
-        }
-    }, [user, navigate]);
 
     useGetFeed();
     useGetSavedPosts();
